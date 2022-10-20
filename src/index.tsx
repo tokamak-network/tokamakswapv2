@@ -1,29 +1,44 @@
-import { ColorModeScript } from "@chakra-ui/react"
-import * as React from "react"
-import * as ReactDOM from "react-dom/client"
-import { App } from "./App"
-import reportWebVitals from "./reportWebVitals"
-import * as serviceWorker from "./serviceWorker"
+import React from "react";
+import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
+import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
+import { createWeb3ReactRoot, Web3ReactProvider } from "@web3-react/core";
+// import {I18nextProvider} from 'react-i18next';
+import { HelmetProvider } from "react-helmet-async";
 
+import theme from "./theme";
+import store from "./store";
+import {App} from "./App";
+// import i18n from 'i18n';
+import { NetworkContextName } from "./constants/index";
 
-const container = document.getElementById("root")
-if (!container) throw new Error('Failed to find the root element');
-const root = ReactDOM.createRoot(container)
+import { getLibrary } from "./utils";
+import { Toast } from "./components/Toast";
 
-root.render(
-  <React.StrictMode>
-    <ColorModeScript />
-    <App />
-  </React.StrictMode>,
-)
+const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName);
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://cra.link/PWA
-serviceWorker.unregister()
+// @ts-ignore
+if (!!window.ethereum) {
+  // @ts-ignore
+  window.ethereum.autoRefreshOnNetworkChange = false;
+}
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals()
-
+ReactDOM.render(
+  <HelmetProvider>
+    {/* <I18nextProvider i18n={i18n}> */}
+    <Web3ReactProvider getLibrary={getLibrary}>
+      <Web3ProviderNetwork getLibrary={getLibrary}>
+        <ColorModeScript />
+        <Provider store={store}>
+          <ChakraProvider resetCSS theme={theme}>
+            <Toast></Toast>
+            <App />
+          </ChakraProvider>
+        </Provider>
+      </Web3ProviderNetwork>
+    </Web3ReactProvider>
+    {/* </I18nextProvider> */}
+  </HelmetProvider>,
+  document.getElementById("root")
+);
