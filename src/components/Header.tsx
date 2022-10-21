@@ -94,20 +94,19 @@ useEffect(() => {
   }
 
   return (
-    <Flex justifyContent={"space-between"} alignItems={"center"} w='100%' px='140px'>
+    <Flex justifyContent={"space-between"} alignItems={"center"} w='100%' px='7.3%' mt='20px' >
       <Flex width={"350px"}>
        <TokamakSwapLogo />
       </Flex>
       <Flex alignItems={"center"}>
         <Flex
           width={"180px"}
-          height={"36px"}
+          height={"35px"}
           borderRadius={"18px"}
           border={DEFAULT_NETWORK === chainId? "solid 1px #dfe4ee" : 'solid 1px red'}
           backgroundColor={"#fff"}
           justifyContent={"center"}
           alignItems={"center"}
-          margin={"20px"}
         >
           <Box
             width={"12px"}
@@ -130,7 +129,7 @@ useEffect(() => {
             color={theme.colors.gray[225]}
             borderRadius={"18px"}
             w={"151px"}
-            h={"36px"}
+            h={"35px"}
             pl={"6px"}
             onClick={walletOpen}
             bg={"white.100"}
@@ -149,7 +148,7 @@ useEffect(() => {
         ) : (
           <Button
             w={"136px"}
-            h={"36px"}
+            h={"35px"}
             p={"6px 20px 7px"}
             borderRadius={"18px"}
             border={"solid 1px #d7d9df"}

@@ -74,12 +74,12 @@ export const Swapper = () => {
       //   alignItems={"center"}
       margin={"0px auto"}
       borderRadius={"10px"}
-      height="100%"
+      // height="606px"
       position={"relative"}
       boxShadow={"0px 1px 1px 0px rgba(0,0,0,0.16)"}
       backgroundColor={"#fff"}
       flexDirection={"column"}
-      mt={"21px"}
+     
       p="20px"
       fontFamily={theme.fonts.roboto}
     >

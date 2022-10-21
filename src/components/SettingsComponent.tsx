@@ -4,6 +4,7 @@ import {
   Flex,
   Button,
   Image,
+  Switch,
   Divider,
   Input,
   IconButton,
@@ -14,28 +15,30 @@ import {
   Box,
 } from "@chakra-ui/react";
 import expand from "../assets/expand.png";
-import gear from '../assets/gear.png'
+import gear from "../assets/gear.png";
 import icon_arrow from "../assets/icon_arrow.png";
-
+import { QuestionOutlineIcon } from '@chakra-ui/icons'
 export const SettingsComponent = () => {
   const [expanded, setExpanded] = useState<boolean>(false);
   const [slippageAmnt, setSlippageAmnt] = useState<string>("0");
   const [invalidInput, setInvalidInput] = useState<boolean>(false);
+
+
   return (
     <Flex
       border="1px solid #dfe4ee"
       h={expanded ? "511px" : "36px"}
       borderRadius={"18px"}
       mb="30px"
-    
       px="15px"
       alignItems="center"
       flexDir={"column"}
-      pt="8px"
+      pt={expanded? "8px":''}
       fontFamily={""}
+      justifyContent='center'
     >
-      <Flex justifyContent={"space-between"} w="100%">
-        <Text>Settings</Text>
+      <Flex justifyContent={"space-between"} w="100%" h='19px' alignItems={'center'}>
+        <Text  fontSize={'14px'}>Settings</Text>
         <Image
           src={gear}
           w="14px"
@@ -45,10 +48,10 @@ export const SettingsComponent = () => {
       </Flex>
       {expanded && (
         <Flex flexDir={"column"} w="100%" mt="11px" textAlign={"left"}>
-          <Text fontSize="16px" fontWeight={"bold"} mb="12px">
+          <Text fontSize="16px" fontWeight={"bold"} mb="12px" h='21px'>
             Transaction Setting
           </Text>
-          <Text fontSize="14px" fontWeight={"normal"} mb="12px">
+          <Text fontSize="14px" fontWeight={"normal"} mb="12px" h='19px'>
             Slippage tolerance
           </Text>
           <Flex
@@ -110,7 +113,7 @@ export const SettingsComponent = () => {
               Auto
             </Button>
           </Flex>
-          <Text fontSize={"14px"} fontWeight="normal" mb="13px">
+          <Text fontSize={"14px"} fontWeight="normal" mb="13px" h='19px'>
             Transaction Deadline
           </Text>
           <Flex
@@ -126,11 +129,11 @@ export const SettingsComponent = () => {
             <Text>30 minutes</Text>
             <Image src={icon_arrow} h="14px" w="14px" />
           </Flex>
-          <Box h={"1px"} bg={"#e9edf1"} w="280px" mt="14.5px"></Box>
-          <Text fontSize="16px" fontWeight={"bold"} mt={"15.5px"} mb="20px">
+          <Box h={"1px"} bg={"#e9edf1"} w="280px" ></Box>
+          <Text fontSize="16px" fontWeight={"bold"} mt={"15.5px"} mb="20px" h='21px'>
             Auto Router Setting
           </Text>
-          <Flex alignItems={"center"} >
+          <Flex alignItems={"center"} mb='10px'>
             <Flex
               h="20px"
               w="20px"
@@ -141,18 +144,82 @@ export const SettingsComponent = () => {
             <Text fontSize={"12px"} ml="8px" color="#354052">
               70%
             </Text>{" "}
-            {/* <Flex
-           ml='6px'
-              bg={
-                "repeating-linear-gradient(to right,red 0,red 3px,transparent 3px,transparent 7px)"
-              }
-              h="2px"
-               w='100%'
-            ></Flex> */}
-           <svg width="100%" height="35"  viewBox="850 0 300 200" xmlns="http://www.w3.org/2000/svg">
-    <line x1="0" x2="3000" y1="100" y2="100" stroke="currentColor" stroke-width="20" stroke-linecap="round" stroke-dasharray="1, 45"/>
-</svg>
-
+            <Flex w="203px" mx='5px'>
+              <svg
+                width="100%"
+                height="20"
+                viewBox="850 0 300 200"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <line
+                  x1="0"
+                  x2="3000"
+                  y1="100"
+                  y2="100"
+                  stroke="#e9edf1"
+                  stroke-width="20"
+                  stroke-linecap="round"
+                  stroke-dasharray="1, 45"
+                />
+              </svg>
+            </Flex>
+            <Flex
+              h="20px"
+              w="20px"
+              bg={"#e9edf1"}
+              border={"solid 1px #e7edf3"}
+              borderRadius="50%"
+              position={'relative'}
+            ></Flex>
+          </Flex>
+          <Flex alignItems={"center"} mb='19px'>
+            <Flex
+              h="20px"
+              w="20px"
+              bg={"#e9edf1"}
+              border={"solid 1px #e7edf3"}
+              borderRadius="50%"
+            ></Flex>
+            <Text fontSize={"12px"} ml="8px" color="#354052">
+              70%
+            </Text>{" "}
+            <Flex w="203px" mx='5px'>
+              <svg
+                width="100%"
+                height="20"
+                viewBox="850 0 300 200"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <line
+                  x1="0"
+                  x2="3000"
+                  y1="100"
+                  y2="100"
+                  stroke="#e9edf1"
+                  stroke-width="20"
+                  stroke-linecap="round"
+                  stroke-dasharray="1, 45"
+                />
+              </svg>
+            </Flex>
+            <Flex
+              h="20px"
+              w="20px"
+              bg={"#e9edf1"}
+              border={"solid 1px #e7edf3"}
+              borderRadius="50%"
+              position={'relative'}
+            ></Flex>
+          </Flex>
+          <Text mb='19.5px' fontSize={'10px'} color='#8f96a1' h='26px'>This route optimizes your total output by considering split routes, multiple hops, and the gas cost of each step</Text>
+          <Box h={"1px"} bg={"#e9edf1"} w="280px"></Box>
+          <Flex mt='15.5px' h='21px' alignItems={'center'} width='100%' justifyContent={'space-between'}>
+            <Flex>
+            <Text fontSize={'16px'} fontWeight='bold' >Advance Mode</Text>
+            <QuestionOutlineIcon ml='9px'/>
+            </Flex>
+            <Switch/>
+         
           </Flex>
         </Flex>
       )}
