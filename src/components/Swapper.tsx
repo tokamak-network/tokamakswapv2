@@ -41,7 +41,7 @@ export const Swapper = () => {
   useEffect(() => {
     if (chainId !== Number(DEFAULT_NETWORK) && chainId !== undefined) {
       const netType =
-        DEFAULT_NETWORK === 1 ? "mainnet" : "Rinkeby Test Network";
+        DEFAULT_NETWORK === 1 ? "mainnet" : "Goerli Test Network";
       //@ts-ignore
       // dispatch(fetchUserInfo({reset: true}));
       setTonBalance("0");
@@ -83,7 +83,7 @@ export const Swapper = () => {
       p="20px"
       fontFamily={theme.fonts.roboto}
     >
-      <SelectToken />
+      <SelectToken  />
       <Text mt="18px" mb="8px" textAlign={"left"}>
         Balance: {tonBalance}
       </Text>

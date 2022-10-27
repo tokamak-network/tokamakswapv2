@@ -393,15 +393,15 @@ export const Footer = () => {
         flexDirection={{ base: "column", md: "row" }}
         justifyContent={"space-between"}
         alignItems={"center"}
-        h={76}
         width={"100%"}
         px='40px'
-     bottom={'0px'}
-     position='relative'
- 
+    //  bottom={'0px'}
+    //  position='relative'
+     mt='46px'
       >
         <Flex
           flexGrow={2}
+          h={'76px'}
           direction={{ base: "column", md: "row" }}
           alignItems={"center"}
         >
