@@ -1,13 +1,26 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Dispatch, SetStateAction } from "react";
 import { Text, Flex, Image, Input, Box, Button } from "@chakra-ui/react";
 import icon_arrow from "../assets/icon_arrow.png";
 import TON_symbol from "../assets/TON_symbol.svg";
+import getTokensData from "../actions/fetch";
+import ETH_symbol from '../assets/ETH_symbol.png'
 
-export const SelectToken = () => {
-  const [selected, setSelected] = useState("");
+export const SelectToken = (props: {setToken:Dispatch<SetStateAction<any>>}) => {
+const {setToken} = props;
+  const [selected, setSelected] = useState({ name: "", img: "" });
   const wrapperRef = useRef(null);
+  const [expanded, setExpanded] = useState<boolean>(false);
+  const [tokensFromAPI, setTokensFromAPI] = useState<any>([]);
 
-  const [expanded, setExpanded] = useState<boolean>(true);
+  useEffect(() => {
+    async function getTokens() {
+      const tokens = await getTokensData();
+      console.log(tokens);
+      
+      setTokensFromAPI(tokens);
+    }
+    getTokens();
+  }, []);
 
   function useOutsideAlerter(ref: any) {
     useEffect(() => {
@@ -40,17 +53,28 @@ export const SelectToken = () => {
     { img: TON_symbol, name: "TON" },
     { img: TON_symbol, name: "TON" },
   ];
-  const TokenComp = (props: { img: any; name: string }) => {
-    const { img, name } = props;
+
+  const TokenComp = (props: {
+    img: any;
+    name: string;
+    address:string
+  }) => {
+    const { img, name, address } = props;
     return (
       <Flex
         h="44px"
         alignItems={"center"}
         zIndex={1000}
         justifyContent="space-between"
+        onClick={() => {
+          setSelected({ name: name, img: img });
+          setExpanded(false);
+          setToken(address)
+        }}
+        _hover={{cursor:'pointer'}}
       >
         <Flex>
-          <Image src={img} h="32px" w="32px" mr="9px" />
+          <Image src={img !== undefined? img:ETH_symbol} h="32px" w="32px" mr="9px" borderRadius={'50%'}/>
           <Text>{name}</Text>
         </Flex>
         <Button
@@ -70,7 +94,7 @@ export const SelectToken = () => {
     );
   };
   return (
-    <Flex w={"310px"} flexDir="column">
+    <Flex w={"310px"} flexDir="column" ref={wrapperRef}>
       <Flex
         w="100%"
         h={"56px"}
@@ -81,22 +105,38 @@ export const SelectToken = () => {
         zIndex={expanded ? 1000 : 0}
       >
         <Flex alignItems="center" justifyContent={"space-between"} w="100%">
-          <Flex alignItems="center">
-            <Box w="40px" h="40px" borderRadius={"50%"} bg="#dfe4ee"></Box>
+          {selected.name === "" ? (
+            <Flex alignItems="center">
+              <Box w="40px" h="40px" borderRadius={"50%"} bg="#dfe4ee" ></Box>
+              <Text
+                color={"#3d495d"}
+                fontSize="18px"
+                ml="10px"
+                fontWeight={"normal"}
+              >
+                Select a token
+              </Text>
+            </Flex>
+          ) : (
+            <Flex alignItems="center" >
+            <Image w="40px" h="40px" borderRadius={"50%"} src={selected.img} ></Image>
             <Text
               color={"#3d495d"}
               fontSize="18px"
               ml="10px"
               fontWeight={"normal"}
             >
-              Select a token
+            {selected.name}
             </Text>
           </Flex>
+          )}
+
           <Image
             src={icon_arrow}
             h="14px"
             w="14px"
             mr="16px"
+            _hover={{cursor:'pointer'}}
             onClick={() => setExpanded(!expanded)}
           />
         </Flex>
@@ -113,7 +153,6 @@ export const SelectToken = () => {
           borderBottom="solid 1px #dfe4ee"
           borderBottomRadius={"28px"}
           px="15px"
-          ref={wrapperRef}
         >
           <Input
             mt="42px"
@@ -122,8 +161,15 @@ export const SelectToken = () => {
             placeholder="Search Token or Address"
             border={"solid 1px #dfe4ee"}
           ></Input>
-          {tokens.map((token: any, index: number) => (
-            <TokenComp img={token.img} name={token.name} />
+          {tokensFromAPI.map((token: any, index: number) => (
+            <TokenComp
+              img={token.tokenImage}
+              name={token.token.symbol}
+              address={token.tokenAddress}
+              key={index}
+
+              
+            />
           ))}
         </Flex>
       )}

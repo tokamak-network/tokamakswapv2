@@ -38,6 +38,10 @@ export const Swapper = () => {
   const [wtonBalance, setWtonBalance] = useState<string>("0");
   const [swapFromAmt, setSwapFromAmt] = useState<string>("0");
   const [invalidInput, setInvalidInput] = useState<boolean>(false);
+  const [selectedToken0, setSelectedToken0] = useState('')
+  const [selectedToken1, setSelectedToken1] = useState('')
+
+  
   useEffect(() => {
     if (chainId !== Number(DEFAULT_NETWORK) && chainId !== undefined) {
       const netType =
@@ -68,11 +72,16 @@ export const Swapper = () => {
     getBalances();
   }, [account, library, transactionType, blockNumber]);
 
+  const formatNumberWithCommas = (num: string) => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
   return (
     <Flex
       width={"350px"}
       //   alignItems={"center"}
-      margin={"0px auto"}
+      mt={'54px'}
+      mx={'auto'}
       borderRadius={"10px"}
       // height="606px"
       position={"relative"}
@@ -83,9 +92,9 @@ export const Swapper = () => {
       p="20px"
       fontFamily={theme.fonts.roboto}
     >
-      <SelectToken  />
+      <SelectToken  setToken={setSelectedToken0}/>
       <Text mt="18px" mb="8px" textAlign={"left"}>
-        Balance: {tonBalance}
+        Balance: {formatNumberWithCommas(tonBalance)}
       </Text>
       <Flex
         position={"relative"}
@@ -152,9 +161,9 @@ export const Swapper = () => {
           <Image src={swap} maxWidth={17} w={17} />
         </Button>
       </Flex>
-      <SelectToken/>
+      <SelectToken setToken={setSelectedToken1}/>
       <Text mt="18px" mb="8px" textAlign={"left"}>
-        Balance: {tonBalance}
+        Balance: {formatNumberWithCommas(tonBalance)}
       </Text>
       <Flex
         position={"relative"}
@@ -222,6 +231,7 @@ export const Swapper = () => {
           backgroundColor: "#e9edf1",
           color: "#8f96a1",
         }}
+        disabled={selectedToken0 === ''|| selectedToken1 === ''}
       >
         <Text>{account ? "Select Tokens" : "Connect Wallet"} </Text>
       </Button>

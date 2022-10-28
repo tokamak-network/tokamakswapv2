@@ -9,7 +9,7 @@ import { selectTxType } from "../store/tx.reducer";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { useWindowDimensions } from "../hooks/useWindowDimentions";
 import {TokamakSwapLogoMobile} from '../icons/TokamakSwapLogoMobile'
-import {TokamakSwapLogo} from '../icons/TokamakSwapLogo'
+import tokamakSwapLogo from '../assets/tokamakSwapLogo.png'
 import { DEFAULT_NETWORK } from "../constants";
 type HeaderProps = {
   walletOpen: () => void;
@@ -21,8 +21,7 @@ export const Header: FC<HeaderProps> = ({ walletOpen }) => {
   const { chainId, account, library } = useActiveWeb3React();
   const { width } = useWindowDimensions();
   const [network, setNetwork] = useState('Mainnet')
-  console.log('DEFAULT_NETWORK',DEFAULT_NETWORK);
-  
+    
 useEffect(() => {
   if (chainId !== Number(DEFAULT_NETWORK) && chainId !== undefined) {
     const netType =
@@ -94,19 +93,20 @@ useEffect(() => {
   }
 
   return (
-    <Flex justifyContent={"space-between"} alignItems={"center"} w='100%' px='7.3%' mt='20px' >
+    <Flex justifyContent={"space-between"} alignItems={"center"} w='100%' px='7.3%' mt='20px'>
       <Flex width={"350px"}>
-       <TokamakSwapLogo />
+    <Image src={tokamakSwapLogo} />
       </Flex>
       <Flex alignItems={"center"}>
         <Flex
-          width={"180px"}
+          width={"182px"}
           height={"35px"}
-          borderRadius={"18px"}
+          borderRadius={"17.5px"}
           border={DEFAULT_NETWORK === chainId? "solid 1px #dfe4ee" : 'solid 1px red'}
           backgroundColor={"#fff"}
           justifyContent={"center"}
           alignItems={"center"}
+          mr='25px'
         >
           <Box
             width={"12px"}

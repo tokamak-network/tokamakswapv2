@@ -157,9 +157,9 @@ export const SettingsComponent = () => {
                   y1="100"
                   y2="100"
                   stroke="#e9edf1"
-                  stroke-width="20"
-                  stroke-linecap="round"
-                  stroke-dasharray="1, 45"
+                  strokeWidth="20"
+                  strokeLinecap="round"
+                  strokeDasharray="1, 45"
                 />
               </svg>
             </Flex>
