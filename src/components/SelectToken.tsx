@@ -1,22 +1,38 @@
 import { useState, useEffect, useRef, Dispatch, SetStateAction } from "react";
-import { Text, Flex, Image, Input, Box, Button } from "@chakra-ui/react";
+import {
+  Text,
+  Flex,
+  Image,
+  Input,
+  Box,
+  Button,
+  useDisclosure,
+} from "@chakra-ui/react";
 import icon_arrow from "../assets/icon_arrow.png";
 import TON_symbol from "../assets/TON_symbol.svg";
 import getTokensData from "../actions/fetch";
-import ETH_symbol from '../assets/ETH_symbol.png'
+import ETH_symbol from "../assets/ETH_symbol.png";
+import { ImportTokenModal } from "./ImportTokenModal";
+import { useAppDispatch } from "../hooks/useRedux";
+import { openModal } from "../store/modal.reducer";
+import { ethers } from "ethers";
 
-export const SelectToken = (props: {setToken:Dispatch<SetStateAction<any>>}) => {
-const {setToken} = props;
+export const SelectToken = (props: {
+  setToken: Dispatch<SetStateAction<any>>;
+}) => {
+  const { setToken } = props;
   const [selected, setSelected] = useState({ name: "", img: "" });
   const wrapperRef = useRef(null);
   const [expanded, setExpanded] = useState<boolean>(false);
   const [tokensFromAPI, setTokensFromAPI] = useState<any>([]);
+  const [searchToken, setSearchToken] = useState<string>("");
+  const [validAddress, setValidAddress] = useState<boolean>(false);
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     async function getTokens() {
       const tokens = await getTokensData();
-      console.log(tokens);
-      
       setTokensFromAPI(tokens);
     }
     getTokens();
@@ -54,11 +70,12 @@ const {setToken} = props;
     { img: TON_symbol, name: "TON" },
   ];
 
-  const TokenComp = (props: {
-    img: any;
-    name: string;
-    address:string
-  }) => {
+  useEffect(() => {
+    const isAddress = ethers.utils.isAddress(searchToken);
+    setValidAddress(isAddress);
+  }, [searchToken]);
+
+  const TokenComp = (props: { img: any; name: string; address: string }) => {
     const { img, name, address } = props;
     return (
       <Flex
@@ -69,12 +86,18 @@ const {setToken} = props;
         onClick={() => {
           setSelected({ name: name, img: img });
           setExpanded(false);
-          setToken(address)
+          setToken(address);
         }}
-        _hover={{cursor:'pointer'}}
+        _hover={{ cursor: "pointer" }}
       >
         <Flex>
-          <Image src={img !== undefined? img:ETH_symbol} h="32px" w="32px" mr="9px" borderRadius={'50%'}/>
+          <Image
+            src={img !== undefined ? img : ETH_symbol}
+            h="32px"
+            w="32px"
+            mr="9px"
+            borderRadius={"50%"}
+          />
           <Text>{name}</Text>
         </Flex>
         <Button
@@ -87,6 +110,16 @@ const {setToken} = props;
           borderRadius={"28px"}
           _hover={{}}
           _active={{}}
+          onClick={() => {
+            dispatch(
+              openModal({
+                type: "import_tokens",
+                data: {
+                  tokenAddress: address,
+                },
+              })
+            );
+          }}
         >
           Import
         </Button>
@@ -107,7 +140,7 @@ const {setToken} = props;
         <Flex alignItems="center" justifyContent={"space-between"} w="100%">
           {selected.name === "" ? (
             <Flex alignItems="center">
-              <Box w="40px" h="40px" borderRadius={"50%"} bg="#dfe4ee" ></Box>
+              <Box w="40px" h="40px" borderRadius={"50%"} bg="#dfe4ee"></Box>
               <Text
                 color={"#3d495d"}
                 fontSize="18px"
@@ -118,17 +151,22 @@ const {setToken} = props;
               </Text>
             </Flex>
           ) : (
-            <Flex alignItems="center" >
-            <Image w="40px" h="40px" borderRadius={"50%"} src={selected.img} ></Image>
-            <Text
-              color={"#3d495d"}
-              fontSize="18px"
-              ml="10px"
-              fontWeight={"normal"}
-            >
-            {selected.name}
-            </Text>
-          </Flex>
+            <Flex alignItems="center">
+              <Image
+                w="40px"
+                h="40px"
+                borderRadius={"50%"}
+                src={selected.img}
+              ></Image>
+              <Text
+                color={"#3d495d"}
+                fontSize="18px"
+                ml="10px"
+                fontWeight={"normal"}
+              >
+                {selected.name}
+              </Text>
+            </Flex>
           )}
 
           <Image
@@ -136,7 +174,7 @@ const {setToken} = props;
             h="14px"
             w="14px"
             mr="16px"
-            _hover={{cursor:'pointer'}}
+            _hover={{ cursor: "pointer" }}
             onClick={() => setExpanded(!expanded)}
           />
         </Flex>
@@ -160,6 +198,9 @@ const {setToken} = props;
             mb="18px"
             placeholder="Search Token or Address"
             border={"solid 1px #dfe4ee"}
+            value={searchToken}
+            focusBorderColor={!validAddress ? "#FF0000" : ""}
+            onChange={(e: any) => setSearchToken(e.target.value)}
           ></Input>
           {tokensFromAPI.map((token: any, index: number) => (
             <TokenComp
@@ -167,8 +208,6 @@ const {setToken} = props;
               name={token.token.symbol}
               address={token.tokenAddress}
               key={index}
-
-              
             />
           ))}
         </Flex>
