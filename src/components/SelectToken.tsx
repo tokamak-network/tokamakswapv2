@@ -6,6 +6,7 @@ import {
   Input,
   Box,
   Button,
+  Avatar,
   useDisclosure,
 } from "@chakra-ui/react";
 import icon_arrow from "../assets/icon_arrow.png";
@@ -16,6 +17,10 @@ import { ImportTokenModal } from "./ImportTokenModal";
 import { useAppDispatch } from "../hooks/useRedux";
 import { openModal } from "../store/modal.reducer";
 import { ethers } from "ethers";
+import * as TONABI from "../services/abis/TON.json";
+import { Contract } from "@ethersproject/contracts";
+import { useWeb3React } from "@web3-react/core";
+import { getSigner } from "../utils/contract";
 
 export const SelectToken = (props: {
   setToken: Dispatch<SetStateAction<any>>;
@@ -25,8 +30,15 @@ export const SelectToken = (props: {
   const wrapperRef = useRef(null);
   const [expanded, setExpanded] = useState<boolean>(false);
   const [tokensFromAPI, setTokensFromAPI] = useState<any>([]);
-  const [searchToken, setSearchToken] = useState<string>("");
+  const [searchToken, setSearchToken] = useState({
+    name: "",
+    address: "",
+    symbol: "",
+  });
   const [validAddress, setValidAddress] = useState<boolean>(false);
+  const [searchString, setSearchString] = useState<string>("");
+  const { account, library } = useWeb3React();
+  const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
   const dispatch = useAppDispatch();
 
@@ -71,9 +83,36 @@ export const SelectToken = (props: {
   ];
 
   useEffect(() => {
-    const isAddress = ethers.utils.isAddress(searchToken);
+    const isAddress = ethers.utils.isAddress(searchString);
+    console.log(isAddress);
+
     setValidAddress(isAddress);
-  }, [searchToken]);
+  }, [searchString]);
+
+  useEffect(() => {
+    async function getToken() {
+      if (account === null || account === undefined || library === undefined) {
+        return;
+      } else {
+        const signer = getSigner(library, account);
+        try {
+          const contract = new Contract(searchString, TONABI.abi, library);
+          const symbolContract = await contract.connect(signer).symbol();
+          const decimalContract = await contract.connect(signer).decimals();
+          const nameContract = await contract.connect(signer).name();
+          // setDecimal(decimalContract);
+          // setSymbol(symbolContract);
+          // setName(nameContract);
+          setSearchToken({
+            name: nameContract,
+            address: searchString,
+            symbol: symbolContract,
+          });
+        } catch (err) {}
+      }
+    }
+    getToken();
+  }, [searchString, validAddress]);
 
   const TokenComp = (props: { img: any; name: string; address: string }) => {
     const { img, name, address } = props;
@@ -90,7 +129,7 @@ export const SelectToken = (props: {
         }}
         _hover={{ cursor: "pointer" }}
       >
-        <Flex>
+        <Flex alignItems={"center"}>
           <Image
             src={img !== undefined ? img : ETH_symbol}
             h="32px"
@@ -98,7 +137,25 @@ export const SelectToken = (props: {
             mr="9px"
             borderRadius={"50%"}
           />
+
           <Text>{name}</Text>
+        </Flex>
+      </Flex>
+    );
+  };
+
+  const NewTokenComp = (props: { symbol: string; address: string }) => {
+    const { symbol, address } = props;
+    return (
+      <Flex
+        h="44px"
+        alignItems={"center"}
+        zIndex={1000}
+        justifyContent="space-between"
+      >
+        <Flex alignItems={"center"}>
+          <Avatar name={symbol} h="32px" w="32px" mr="9px" />
+          <Text>{symbol}</Text>
         </Flex>
         <Button
           h="24px"
@@ -116,6 +173,9 @@ export const SelectToken = (props: {
                 type: "import_tokens",
                 data: {
                   tokenAddress: address,
+                  setSelected,
+                  setToken,
+                  setSearchString
                 },
               })
             );
@@ -126,6 +186,7 @@ export const SelectToken = (props: {
       </Flex>
     );
   };
+
   return (
     <Flex w={"310px"} flexDir="column" ref={wrapperRef}>
       <Flex
@@ -152,12 +213,17 @@ export const SelectToken = (props: {
             </Flex>
           ) : (
             <Flex alignItems="center">
-              <Image
-                w="40px"
-                h="40px"
-                borderRadius={"50%"}
-                src={selected.img}
-              ></Image>
+              {selected.img === "" ? (
+                <Avatar name={selected.name} w="40px" h="40px" />
+              ) : (
+                <Image
+                  w="40px"
+                  h="40px"
+                  borderRadius={"50%"}
+                  src={selected.img}
+                ></Image>
+              )}
+
               <Text
                 color={"#3d495d"}
                 fontSize="18px"
@@ -198,18 +264,27 @@ export const SelectToken = (props: {
             mb="18px"
             placeholder="Search Token or Address"
             border={"solid 1px #dfe4ee"}
-            value={searchToken}
+            value={searchString}
             focusBorderColor={!validAddress ? "#FF0000" : ""}
-            onChange={(e: any) => setSearchToken(e.target.value)}
+            onChange={(e: any) => setSearchString(e.target.value)}
           ></Input>
-          {tokensFromAPI.map((token: any, index: number) => (
-            <TokenComp
-              img={token.tokenImage}
-              name={token.token.symbol}
-              address={token.tokenAddress}
-              key={index}
+          {searchString === "" ? (
+            tokensFromAPI.map((token: any, index: number) => (
+              <TokenComp
+                img={token.tokenImage}
+                name={token.token.symbol}
+                address={token.tokenAddress}
+                key={index}
+              />
+            ))
+          ) : validAddress && searchToken.symbol !== "" ? (
+            <NewTokenComp
+              symbol={searchToken.symbol}
+              address={searchToken.address}
             />
-          ))}
+          ) : (
+            <Text>Not found</Text>
+          )}
         </Flex>
       )}
     </Flex>

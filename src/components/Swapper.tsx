@@ -21,10 +21,9 @@ import { ConversionComponent } from "./ConversionComponent";
 import { SettingsComponent } from "./SettingsComponent";
 
 import {
-  getUserWtonBalance,
-  getUserTonBalance,
   swapWtonToTon,
   swapTonToWton,
+  getUserTokenBalance
 } from "../actions/contractActions";
 
 export const Swapper = () => {
@@ -41,7 +40,8 @@ export const Swapper = () => {
   const [invalidInput, setInvalidInput] = useState<boolean>(false);
   const [selectedToken0, setSelectedToken0] = useState('')
   const [selectedToken1, setSelectedToken1] = useState('')
-
+  const [token0Balance, setToken0Balance] = useState<string>("0");
+  const [token1Balance, setToken1Balance] = useState<string>("0");
   
   useEffect(() => {
     if (chainId !== Number(DEFAULT_NETWORK) && chainId !== undefined) {
@@ -58,20 +58,26 @@ export const Swapper = () => {
 
   useEffect(() => {
     const getBalances = async () => {
-      if (!account || !library) {
+      if (!account || !library  ) {
         return;
       }
-      const tempTonBalance = await getUserTonBalance({ account, library });
-      if (tempTonBalance) {
-        setTonBalance(tempTonBalance);
+
+      if (selectedToken0 !== '' ) {
+        const tempToken0Balance = await getUserTokenBalance(account, library, '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6');
+        if (tempToken0Balance) {
+          setToken0Balance(tempToken0Balance);
+        }
       }
-      const tempWtonBalance = await getUserWtonBalance({ account, library });
-      if (tempWtonBalance) {
-        setWtonBalance(tempWtonBalance);
-      }
+      if (selectedToken1 !== '' ) {
+        const tempToken1Balance = await getUserTokenBalance(account, library, selectedToken1 );
+        if (tempToken1Balance) {
+          setToken1Balance(tempToken1Balance);
+        }
+       }
+     
     };
     getBalances();
-  }, [account, library, transactionType, blockNumber]);
+  }, [account, library, transactionType, blockNumber,selectedToken0,selectedToken1]);
 
   const formatNumberWithCommas = (num: string) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -95,7 +101,7 @@ export const Swapper = () => {
     >
       <SelectToken  setToken={setSelectedToken0}/>
       <Text mt="18px" mb="8px" textAlign={"left"}>
-        Balance: {formatNumberWithCommas(tonBalance)}
+        Balance: {formatNumberWithCommas(token0Balance)}
       </Text>
       <Flex
         position={"relative"}
@@ -164,7 +170,7 @@ export const Swapper = () => {
       </Flex>
       <SelectToken setToken={setSelectedToken1}/>
       <Text mt="18px" mb="8px" textAlign={"left"}>
-        Balance: {formatNumberWithCommas(tonBalance)}
+        Balance: {formatNumberWithCommas(token1Balance)}
       </Text>
       <Flex
         position={"relative"}
@@ -232,9 +238,12 @@ export const Swapper = () => {
           backgroundColor: "#e9edf1",
           color: "#8f96a1",
         }}
+
+        _hover={{}}
+        _active={{}}
         disabled={selectedToken0 === ''|| selectedToken1 === ''}
       >
-        <Text>{account ? "Select Tokens" : "Connect Wallet"} </Text>
+        <Text>{account ?  selectedToken0 === ''|| selectedToken1 === ''? "Select Tokens" : 'Swap' : "Connect Wallet"} </Text>
       </Button>
     </Flex>
   );

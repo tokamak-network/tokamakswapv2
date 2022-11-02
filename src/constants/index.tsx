@@ -13,7 +13,7 @@ export const BASE_PROVIDER =
     ? ethers.getDefaultProvider("goerli")
     : ethers.getDefaultProvider("mainnet");
 export const NetworkContextName = `${new Date().getTime()}-NETWORK`;
-export const fetchTokensURL = `${API_SERVER}/tokens?chainId=1`;
+export const fetchTokensURL = `${API_SERVER}/tokens?chainId=${DEFAULT_NETWORK}`;
 const MAINNET_DEPLOYED = {
   TON_ADDRESS: "0x2be5e8c109e2197D077D13A82dAead6a9b3433C5",
   TOS_ADDRESS: "0x409c4D8cd5d2924b9bc5509230d16a61289c8153",

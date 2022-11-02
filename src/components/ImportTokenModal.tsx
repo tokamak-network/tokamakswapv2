@@ -10,11 +10,12 @@ import {
   ModalCloseButton,
   useTheme,
   Image,
+  Avatar,
 } from "@chakra-ui/react";
 import { closeModal, selectModalType, openModal } from "../store/modal.reducer";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import ETH_symbol from "../assets/ETH_symbol.png";
-import * as TONABI from '../services/abis/TON.json';
+import * as TONABI from "../services/abis/TON.json";
 import { Contract } from "@ethersproject/contracts";
 import { useWeb3React } from "@web3-react/core";
 import { getSigner } from "../utils/contract";
@@ -46,10 +47,8 @@ export const ImportTokenModal = () => {
       } else {
         const signer = getSigner(library, account);
         try {
-          const contract = new Contract('0x68c1F9620aeC7F2913430aD6daC1bb16D8444F00', TONABI.abi, library);
-          console.log("contract", contract);
+          const contract = new Contract(address, TONABI.abi, library);
           const symbolContract = await contract.connect(signer).symbol();
-          console.log("symbolContract", symbolContract);
 
           const decimalContract = await contract.connect(signer).decimals();
           const nameContract = await contract.connect(signer).name();
@@ -79,18 +78,61 @@ export const ImportTokenModal = () => {
           fontFamily={theme.fonts.roboto}
           flexDir="column"
         >
-          <Text fontWeight={"bold"} fontSize={"18px"} lineHeight={'normal'}>
+          <Text fontWeight={"bold"} fontSize={"18px"} lineHeight={"normal"}>
             IMPORT TOKEN
           </Text>
-          <Text mx="25px" textAlign={"center"} mt={"44px"} fontSize={"16px"} lineHeight={'normal'}>
+          <Text
+            mx="25px"
+            textAlign={"center"}
+            mt={"44px"}
+            fontSize={"16px"}
+            lineHeight={"normal"}
+          >
             This Token doesn’t appear on TONSwapper, would you like to import
             it?
           </Text>
-          <Image mt={"45px"} src={ETH_symbol} h={"52px"} borderRadius={"50%"} />
-          <Text mt={'8px'} fontSize={'18px'} fontWeight={'bold'} lineHeight={'normal'}>{symbol}</Text>
-          <Text mt={'4px'} fontSize={'14px'} fontWeight={'normal'}>{name}</Text>
-          <Text mt={'8px'} wordBreak={'break-all'} fontSize={'14px'} color={'#257eee'}>{address}</Text>
-          <Button mt={'58px'} h={'56px'} w={'280px'} bg={'#257eee'} color={'#fff'} borderRadius={'28px'}>Import</Button>
+          <Avatar
+            mt={"45px"}
+            name={symbol}
+            h={"52px"}
+            w={"52px"}
+            borderRadius={"50%"}
+          />
+          <Text
+            mt={"8px"}
+            fontSize={"18px"}
+            fontWeight={"bold"}
+            lineHeight={"normal"}
+          >
+            {symbol}
+          </Text>
+          <Text mt={"4px"} fontSize={"14px"} fontWeight={"normal"}>
+            {name}
+          </Text>
+          <Text
+            mt={"8px"}
+            wordBreak={"break-all"}
+            fontSize={"14px"}
+            color={"#257eee"}
+          >
+            {address}
+          </Text>
+          <Button
+            mt={"58px"}
+            h={"56px"}
+            w={"280px"}
+            bg={"#257eee"}
+            color={"#fff"}
+            borderRadius={"28px"}
+            onClick={() => {
+              data?.data?.setToken(address);
+              data?.data?.setSearchString('');
+              data?.data?.setSelected({name:name, img:''})
+              handleCloseModal()
+            }}
+          >
+            Import
+          </Button>
         </ModalBody>
       </ModalContent>
     </Modal>

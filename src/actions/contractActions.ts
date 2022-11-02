@@ -15,33 +15,29 @@ import { openToast } from "../store/app/toast.reducer";
 
 const { TON_ADDRESS, WTON_ADDRESS, SwapProxy } = DEPLOYED;
 
-export const getUserTonBalance = async ({
-  account,
-  library,
-  localeString,
-}: any) => {
-  const contract = new Contract(TON_ADDRESS, ERC20.abi, library);
-  const contractUserBalance = await contract.balanceOf(account);
-  const balance = convertNumber({
-    amount: String(contractUserBalance),
-    localeString: localeString || false,
-  });
-  return balance;
-};
 
-export const getUserWtonBalance = async ({
-  account,
-  library,
-  localeString,
-}: any) => {
-  const contract = new Contract(WTON_ADDRESS, WTONABI.abi, library);
-  const contractUserBalance = await contract.balanceOf(account);
-  const convertedRes = convertNumber({
-    amount: contractUserBalance,
-    type: "ray",
-  });
-  return convertedRes;
-};
+export const getUserTokenBalance = async ( account:string,
+  library:any, tokenAddress:string ) => {
+    if (tokenAddress.toLowerCase() === WTON_ADDRESS.toLowerCase()) {
+      const contract = new Contract(WTON_ADDRESS, WTONABI.abi, library);
+      const contractUserBalance = await contract.balanceOf(account);
+      const convertedRes = convertNumber({
+        amount: contractUserBalance,
+        type: "ray",
+      });
+      return convertedRes;
+    }
+    else {
+      const contract = new Contract(tokenAddress, ERC20.abi, library);
+      const contractUserBalance = await contract.balanceOf(account);
+      const balance = convertNumber({
+        amount: String(contractUserBalance),
+    
+      });
+      return balance;
+    }
+}
+
 
 export const swapWtonToTon = async ({ account, library, amount }: any) => {
   if (library && account) {
