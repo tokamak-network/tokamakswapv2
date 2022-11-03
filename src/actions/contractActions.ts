@@ -1,5 +1,4 @@
 import { Contract } from "@ethersproject/contracts";
-import { getSigner } from "../utils/contract";
 import { DEPLOYED } from "../constants/index";
 import WTONABI from "../services/abis/WTON.json";
 import TONABI from "../services/abis/TON.json";
@@ -12,30 +11,41 @@ import store from "../store";
 import { setTxPending } from "../store/tx.reducer";
 import { toastWithReceipt } from "../utils/toast";
 import { openToast } from "../store/app/toast.reducer";
+import { getSigner,getProviderOrSigner } from "../utils/contract";
 
 const { TON_ADDRESS, WTON_ADDRESS, SwapProxy } = DEPLOYED;
 
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-export const getUserTokenBalance = async ( account:string,
-  library:any, tokenAddress:string ) => {
-    if (tokenAddress.toLowerCase() === WTON_ADDRESS.toLowerCase()) {
-      const contract = new Contract(WTON_ADDRESS, WTONABI.abi, library);
-      const contractUserBalance = await contract.balanceOf(account);
-      const convertedRes = convertNumber({
-        amount: contractUserBalance,
-        type: "ray",
-      });
-      return convertedRes;
-    }
-    else {
-      const contract = new Contract(tokenAddress, ERC20.abi, library);
-      const contractUserBalance = await contract.balanceOf(account);
-      const balance = convertNumber({
-        amount: String(contractUserBalance),
-    
-      });
-      return balance;
-    }
+export const getUserTokenBalance = async (account: string, library: any, tokenAddress: string) => {
+ 
+  if (tokenAddress.toLowerCase() === WTON_ADDRESS.toLowerCase()) {
+    const contract = new Contract(WTON_ADDRESS, WTONABI.abi, library);
+    const contractUserBalance = await contract.balanceOf(account);
+    const convertedRes = convertNumber({
+      amount: contractUserBalance,
+      type: "ray",
+    });
+    return convertedRes;
+  }
+
+  else if (tokenAddress === ZERO_ADDRESS) {
+    const ethBalance = await library.getBalance(account)
+    const balance = convertNumber({
+      amount: String(ethBalance),
+
+    });
+    return balance;
+  }
+  else {
+    const contract = new Contract(tokenAddress, ERC20.abi, library);
+    const contractUserBalance = await contract.balanceOf(account);
+    const balance = convertNumber({
+      amount: String(contractUserBalance),
+
+    });
+    return balance;
+  }
 }
 
 

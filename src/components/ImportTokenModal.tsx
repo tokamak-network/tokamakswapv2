@@ -45,13 +45,12 @@ export const ImportTokenModal = () => {
         setDecimal(18);
         setSymbol("ETH");
       } else {
-        const signer = getSigner(library, account);
+        const signer = getSigner(library, account);        
         try {
           const contract = new Contract(address, TONABI.abi, library);
-          const symbolContract = await contract.connect(signer).symbol();
-
-          const decimalContract = await contract.connect(signer).decimals();
-          const nameContract = await contract.connect(signer).name();
+          const symbolContract = await contract.symbol();
+          const decimalContract = await contract.decimals();
+          const nameContract = await contract.name();
           setDecimal(decimalContract);
           setSymbol(symbolContract);
           setName(nameContract);
@@ -93,7 +92,7 @@ export const ImportTokenModal = () => {
           </Text>
           <Avatar
             mt={"45px"}
-            name={symbol}
+            name={name}
             h={"52px"}
             w={"52px"}
             borderRadius={"50%"}
@@ -125,7 +124,7 @@ export const ImportTokenModal = () => {
             color={"#fff"}
             borderRadius={"28px"}
             onClick={() => {
-              data?.data?.setToken(address);
+              data?.data?.setToken({name:name,address:address, img:''});
               data?.data?.setSearchString('');
               data?.data?.setSelected({name:name, img:''})
               handleCloseModal()

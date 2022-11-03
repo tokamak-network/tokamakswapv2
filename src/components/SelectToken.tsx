@@ -22,10 +22,16 @@ import { Contract } from "@ethersproject/contracts";
 import { useWeb3React } from "@web3-react/core";
 import { getSigner } from "../utils/contract";
 
+type selectedToken = {
+  name: string;
+  address: string;
+  img: string;
+};
 export const SelectToken = (props: {
   setToken: Dispatch<SetStateAction<any>>;
+  selectedToken: selectedToken;
 }) => {
-  const { setToken } = props;
+  const { setToken, selectedToken } = props;
   const [selected, setSelected] = useState({ name: "", img: "" });
   const wrapperRef = useRef(null);
   const [expanded, setExpanded] = useState<boolean>(false);
@@ -43,12 +49,24 @@ export const SelectToken = (props: {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    
     async function getTokens() {
-      const tokens = await getTokensData();
-      setTokensFromAPI(tokens);
+      const tokens: any = await getTokensData();
+      const allTokens = tokens.concat({
+        token: {
+          address: ZERO_ADDRESS,
+          symbol: "ETH",
+          name: "Ether",
+        },
+        tokenAddress: ZERO_ADDRESS,
+        tokenImage: "",
+      });
+      setTokensFromAPI(allTokens);
+    
+        setSelected({ name: selectedToken.name, img: selectedToken.img });
     }
     getTokens();
-  }, []);
+  }, [selectedToken]);
 
   function useOutsideAlerter(ref: any) {
     useEffect(() => {
@@ -67,25 +85,9 @@ export const SelectToken = (props: {
   }
 
   useOutsideAlerter(wrapperRef);
-  const tokens = [
-    { img: TON_symbol, name: "TON" },
-    { img: TON_symbol, name: "TON" },
-    { img: TON_symbol, name: "TON" },
-    { img: TON_symbol, name: "TON" },
-    { img: TON_symbol, name: "TON" },
-    { img: TON_symbol, name: "TON" },
-    { img: TON_symbol, name: "TON" },
-    { img: TON_symbol, name: "TON" },
-    { img: TON_symbol, name: "TON" },
-    { img: TON_symbol, name: "TON" },
-    { img: TON_symbol, name: "TON" },
-    { img: TON_symbol, name: "TON" },
-  ];
 
   useEffect(() => {
     const isAddress = ethers.utils.isAddress(searchString);
-    console.log(isAddress);
-
     setValidAddress(isAddress);
   }, [searchString]);
 
@@ -116,6 +118,7 @@ export const SelectToken = (props: {
 
   const TokenComp = (props: { img: any; name: string; address: string }) => {
     const { img, name, address } = props;
+
     return (
       <Flex
         h="44px"
@@ -125,13 +128,13 @@ export const SelectToken = (props: {
         onClick={() => {
           setSelected({ name: name, img: img });
           setExpanded(false);
-          setToken(address);
+          setToken({ name: name, address: address, img: img });
         }}
         _hover={{ cursor: "pointer" }}
       >
         <Flex alignItems={"center"}>
           <Image
-            src={img !== undefined ? img : ETH_symbol}
+            src={img !== undefined && img !== "" ? img : ETH_symbol}
             h="32px"
             w="32px"
             mr="9px"
@@ -175,7 +178,7 @@ export const SelectToken = (props: {
                   tokenAddress: address,
                   setSelected,
                   setToken,
-                  setSearchString
+                  setSearchString,
                 },
               })
             );

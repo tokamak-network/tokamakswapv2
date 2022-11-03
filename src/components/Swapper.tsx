@@ -23,7 +23,7 @@ import { SettingsComponent } from "./SettingsComponent";
 import {
   swapWtonToTon,
   swapTonToWton,
-  getUserTokenBalance
+  getUserTokenBalance,
 } from "../actions/contractActions";
 
 export const Swapper = () => {
@@ -38,15 +38,22 @@ export const Swapper = () => {
   const [wtonBalance, setWtonBalance] = useState<string>("0");
   const [swapFromAmt, setSwapFromAmt] = useState<string>("0");
   const [invalidInput, setInvalidInput] = useState<boolean>(false);
-  const [selectedToken0, setSelectedToken0] = useState('')
-  const [selectedToken1, setSelectedToken1] = useState('')
+  const [selectedToken0, setSelectedToken0] = useState({
+    name: "",
+    address: "",
+   img:''
+  });
+  const [selectedToken1, setSelectedToken1] = useState({
+    name: "",
+    address: "",
+    img:''
+  });
   const [token0Balance, setToken0Balance] = useState<string>("0");
   const [token1Balance, setToken1Balance] = useState<string>("0");
-  
+
   useEffect(() => {
     if (chainId !== Number(DEFAULT_NETWORK) && chainId !== undefined) {
-      const netType =
-        DEFAULT_NETWORK === 1 ? "mainnet" : "Goerli Test Network";
+      const netType = DEFAULT_NETWORK === 1 ? "mainnet" : "Goerli Test Network";
       //@ts-ignore
       // dispatch(fetchUserInfo({reset: true}));
       setTonBalance("0");
@@ -58,48 +65,68 @@ export const Swapper = () => {
 
   useEffect(() => {
     const getBalances = async () => {
-      if (!account || !library  ) {
+      if (!account || !library) {
         return;
       }
 
-      if (selectedToken0 !== '' ) {
-        const tempToken0Balance = await getUserTokenBalance(account, library, '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6');
+      if (selectedToken0.address !== "") {
+        const tempToken0Balance = await getUserTokenBalance(
+          account,
+          library,
+          selectedToken0.address
+        );
         if (tempToken0Balance) {
           setToken0Balance(tempToken0Balance);
         }
       }
-      if (selectedToken1 !== '' ) {
-        const tempToken1Balance = await getUserTokenBalance(account, library, selectedToken1 );
+      if (selectedToken1.address !== "") {
+        const tempToken1Balance = await getUserTokenBalance(
+          account,
+          library,
+          selectedToken1.address
+        );
         if (tempToken1Balance) {
           setToken1Balance(tempToken1Balance);
         }
-       }
-     
+      }
     };
     getBalances();
-  }, [account, library, transactionType, blockNumber,selectedToken0,selectedToken1]);
+  }, [
+    account,
+    library,
+    transactionType,
+    blockNumber,
+    selectedToken0,
+    selectedToken1,
+  ]);
 
   const formatNumberWithCommas = (num: string) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  const switchTokens = () => {
+    const token0 = selectedToken1;
+    const token1 = selectedToken0;
+    setSelectedToken0(token0);
+    setSelectedToken1(token1);
   };
 
   return (
     <Flex
       width={"350px"}
       //   alignItems={"center"}
-      mt={'54px'}
-      mx={'auto'}
+      mt={"54px"}
+      mx={"auto"}
       borderRadius={"10px"}
       // height="606px"
       position={"relative"}
       boxShadow={"0px 1px 1px 0px rgba(0,0,0,0.16)"}
       backgroundColor={"#fff"}
       flexDirection={"column"}
-     
       p="20px"
       fontFamily={theme.fonts.roboto}
     >
-      <SelectToken  setToken={setSelectedToken0}/>
+      <SelectToken setToken={setSelectedToken0} selectedToken={selectedToken0} />
       <Text mt="18px" mb="8px" textAlign={"left"}>
         Balance: {formatNumberWithCommas(token0Balance)}
       </Text>
@@ -165,10 +192,15 @@ export const Swapper = () => {
           borderRadius={"50%"}
           //   onClick={switchTokens}
         >
-          <Image src={swap} maxWidth={17} w={17} />
+          <Image
+            src={swap}
+            maxWidth={17}
+            w={17}
+            onClick={() => switchTokens()}
+          />
         </Button>
       </Flex>
-      <SelectToken setToken={setSelectedToken1}/>
+      <SelectToken setToken={setSelectedToken1}  selectedToken={selectedToken1}/>
       <Text mt="18px" mb="8px" textAlign={"left"}>
         Balance: {formatNumberWithCommas(token1Balance)}
       </Text>
@@ -218,7 +250,7 @@ export const Swapper = () => {
           />
         </NumberInput>
       </Flex>
-      <ConversionComponent/>
+      <ConversionComponent />
       <SettingsComponent />
       <Button
         borderRadius={"28px"}
@@ -238,12 +270,19 @@ export const Swapper = () => {
           backgroundColor: "#e9edf1",
           color: "#8f96a1",
         }}
-
         _hover={{}}
         _active={{}}
-        disabled={selectedToken0 === ''|| selectedToken1 === ''}
+        disabled={
+          selectedToken0.address === "" || selectedToken1.address === ""
+        }
       >
-        <Text>{account ?  selectedToken0 === ''|| selectedToken1 === ''? "Select Tokens" : 'Swap' : "Connect Wallet"} </Text>
+        <Text>
+          {account
+            ? selectedToken0.address === "" || selectedToken1.address === ""
+              ? "Select Tokens"
+              : "Swap"
+            : "Connect Wallet"}{" "}
+        </Text>
       </Button>
     </Flex>
   );

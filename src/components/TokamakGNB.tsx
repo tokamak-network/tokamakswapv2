@@ -11,8 +11,8 @@ function TokamakGNB() {
         lineHeight={'45px'}
         textAlign={'center'}
         cursor={'pointer'}
-        bg={props.active ? '#FFFFFF' : ''}
-        color={props.active ? '#353C48' : ''}
+        bg={props.activetab ? '#FFFFFF' : ''}
+        color={props.activetab ? '#353C48' : ''}
         fontFamily={'Titillium Web, sans-serif'}
         fontWeight="bold"
         {...props}>
@@ -62,7 +62,7 @@ function TokamakGNB() {
       <Menu
         title={'Swap'}
         w={'76px'}
-        active={true}
+        activetab='true'
         url={'https://tonswapper.vercel.app/'}></Menu>
     </Flex>
   );
