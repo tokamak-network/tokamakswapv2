@@ -25,7 +25,6 @@ export const ConversionComponent = () => {
     <Flex
       w="100%"
       border="1px solid #dfe4ee"
-      mt="8px"
       borderRadius={"18px"}
       px="15px"
       mb="8px"

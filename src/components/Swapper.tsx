@@ -41,12 +41,12 @@ export const Swapper = () => {
   const [selectedToken0, setSelectedToken0] = useState({
     name: "",
     address: "",
-   img:''
+    img: "",
   });
   const [selectedToken1, setSelectedToken1] = useState({
     name: "",
     address: "",
-    img:''
+    img: "",
   });
   const [token0Balance, setToken0Balance] = useState<string>("0");
   const [token1Balance, setToken1Balance] = useState<string>("0");
@@ -126,10 +126,25 @@ export const Swapper = () => {
       p="20px"
       fontFamily={theme.fonts.roboto}
     >
-      <SelectToken setToken={setSelectedToken0} selectedToken={selectedToken0} />
-      <Text mt="18px" mb="8px" textAlign={"left"}>
-        Balance: {formatNumberWithCommas(token0Balance)}
-      </Text>
+      <SelectToken
+        setToken={setSelectedToken0}
+        selectedToken={selectedToken0}
+      />
+      <Flex justifyContent={"space-between"} alignItems="center">
+        <Text mt="18px" mb="8px" textAlign={"left"}>
+          Balance: {formatNumberWithCommas(token0Balance)}
+        </Text>
+        <Text
+          fontSize={"14px"}
+          color={"#3d495d"}
+          fontWeight="bold"
+          onClick={() => setSwapFromAmt(token0Balance)}
+          _hover={{ cursor: "pointer" }}
+        >
+          MAX
+        </Text>
+      </Flex>
+
       <Flex
         position={"relative"}
         border={invalidInput ? "solid 1px #e53e3e" : "solid 1px #dfe4ee"}
@@ -200,7 +215,10 @@ export const Swapper = () => {
           />
         </Button>
       </Flex>
-      <SelectToken setToken={setSelectedToken1}  selectedToken={selectedToken1}/>
+      <SelectToken
+        setToken={setSelectedToken1}
+        selectedToken={selectedToken1}
+      />
       <Text mt="18px" mb="8px" textAlign={"left"}>
         Balance: {formatNumberWithCommas(token1Balance)}
       </Text>
@@ -249,6 +267,31 @@ export const Swapper = () => {
             pl={"0px"}
           />
         </NumberInput>
+      </Flex>
+      <Flex alignItems={'center'} justifyContent='space-between' h={'24px'} my={"12px"}>
+        <Text fontSize={"10px"}>
+          Tokamak Swap Protocol wants to use your ETH
+        </Text>
+        <Button
+          backgroundColor={selectedToken0.address !== '' && account ? "#007aff" : "#e9edf1"}
+          color={"#fff"}
+          h={"24px"}
+          w={"72px"}
+          fontSize={"14px"}
+          fontWeight="normal"
+          borderRadius={"12px"}
+          _disabled={{
+            backgroundColor: "#e9edf1",
+            color: "#8f96a1",
+          }}
+          _hover={{}}
+          _active={{}}
+          disabled={
+            selectedToken0.address === '' || !account 
+          }
+        >
+          Approve
+        </Button>
       </Flex>
       <ConversionComponent />
       <SettingsComponent />
