@@ -4,4 +4,6 @@ export type DEPLOYED_TYPE = {
   LockTOS_ADDRESS: string;
   WTON_ADDRESS: string;
   SwapProxy: string;
+  SwapperV2Logic: string;
+  SwapperV2Proxy:string;
 };

@@ -24,6 +24,8 @@ import {
   swapWtonToTon,
   swapTonToWton,
   getUserTokenBalance,
+  approve,
+  checkApproved
 } from "../actions/contractActions";
 
 export const Swapper = () => {
@@ -38,6 +40,7 @@ export const Swapper = () => {
   const [wtonBalance, setWtonBalance] = useState<string>("0");
   const [swapFromAmt, setSwapFromAmt] = useState<string>("0");
   const [invalidInput, setInvalidInput] = useState<boolean>(false);
+  const [allowed, setAllowed] = useState<number>(0)
   const [selectedToken0, setSelectedToken0] = useState({
     name: "",
     address: "",
@@ -51,6 +54,8 @@ export const Swapper = () => {
   const [token0Balance, setToken0Balance] = useState<string>("0");
   const [token1Balance, setToken1Balance] = useState<string>("0");
 
+  console.log(allowed, Number(swapFromAmt));
+  
   useEffect(() => {
     if (chainId !== Number(DEFAULT_NETWORK) && chainId !== undefined) {
       const netType = DEFAULT_NETWORK === 1 ? "mainnet" : "Goerli Test Network";
@@ -91,6 +96,7 @@ export const Swapper = () => {
       }
     };
     getBalances();
+    checkApproved(library,account,setAllowed, selectedToken0.address)
   }, [
     account,
     library,
@@ -110,7 +116,7 @@ export const Swapper = () => {
     setSelectedToken0(token0);
     setSelectedToken1(token1);
   };
-
+  
   return (
     <Flex
       width={"350px"}
@@ -273,7 +279,7 @@ export const Swapper = () => {
           Tokamak Swap Protocol wants to use your ETH
         </Text>
         <Button
-          backgroundColor={selectedToken0.address !== '' && account ? "#007aff" : "#e9edf1"}
+          backgroundColor={ "#007aff" }
           color={"#fff"}
           h={"24px"}
           w={"72px"}
@@ -287,8 +293,9 @@ export const Swapper = () => {
           _hover={{}}
           _active={{}}
           disabled={
-            selectedToken0.address === '' || !account 
+            selectedToken0.address === '' || !account || swapFromAmt === '0' || Number(swapFromAmt) <= allowed
           }
+          onClick={()=> approve(account, library,selectedToken0.address,swapFromAmt,setAllowed )}
         >
           Approve
         </Button>
@@ -316,7 +323,7 @@ export const Swapper = () => {
         _hover={{}}
         _active={{}}
         disabled={
-          selectedToken0.address === "" || selectedToken1.address === ""
+          selectedToken0.address === "" || selectedToken1.address === "" ||Number(swapFromAmt) > allowed
         }
       >
         <Text>

@@ -1,5 +1,13 @@
 import { FC, useEffect, useRef, useState } from "react";
-import { Text, Flex, useTheme, Image, Button, Box } from "@chakra-ui/react";
+import {
+  Text,
+  Flex,
+  useTheme,
+  Image,
+  Button,
+  Box,
+  CircularProgress,
+} from "@chakra-ui/react";
 import { shortenAddress } from "../utils";
 import { useActiveWeb3React } from "../hooks/useWeb3";
 import Tonswapper from "../assets/TokamakSwapLogo.svg";
@@ -8,8 +16,8 @@ import { useAppSelector } from "../hooks/useRedux";
 import { selectTxType } from "../store/tx.reducer";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { useWindowDimensions } from "../hooks/useWindowDimentions";
-import {TokamakSwapLogoMobile} from '../icons/TokamakSwapLogoMobile'
-import tokamakSwapLogo from '../assets/tokamakSwapLogo.png'
+import { TokamakSwapLogoMobile } from "../icons/TokamakSwapLogoMobile";
+import tokamakSwapLogo from "../assets/tokamakSwapLogo.png";
 import { DEFAULT_NETWORK } from "../constants";
 type HeaderProps = {
   walletOpen: () => void;
@@ -20,31 +28,28 @@ export const Header: FC<HeaderProps> = ({ walletOpen }) => {
   const { tx } = useAppSelector(selectTxType);
   const { chainId, account, library } = useActiveWeb3React();
   const { width } = useWindowDimensions();
-  const [network, setNetwork] = useState('Mainnet')
-    
-useEffect(() => {
-  if (chainId !== Number(DEFAULT_NETWORK) && chainId !== undefined) {
-    const netType =
-      DEFAULT_NETWORK === 1 ? "Mainnet" : "Goerli Test Network";
-      setNetwork(netType)
-    //@ts-ignore
-    // dispatch(fetchUserInfo({reset: true}));
-  }
-  /*eslint-disable*/
-}, [chainId]);
+  const [network, setNetwork] = useState("Mainnet");
+
+  useEffect(() => {
+    if (chainId !== Number(DEFAULT_NETWORK) && chainId !== undefined) {
+      const netType = DEFAULT_NETWORK === 1 ? "Mainnet" : "Goerli Test Network";
+      setNetwork(netType);
+      //@ts-ignore
+      // dispatch(fetchUserInfo({reset: true}));
+    }
+    /*eslint-disable*/
+  }, [chainId]);
   if (width < 480) {
     return (
       <Flex flexDir={"column"} alignItems={"center"}>
         <Flex
           justifyContent={"space-between"}
           fontFamily={theme.fonts.roboto}
-          width={'320px'}
-       
-          alignItems={'center'}
+          width={"320px"}
+          alignItems={"center"}
           pt={"20px"}
-         
         >
-       <TokamakSwapLogoMobile/>
+          <TokamakSwapLogoMobile />
           {account ? (
             <Button
               border={"solid 1px #dfe4ee"}
@@ -93,25 +98,39 @@ useEffect(() => {
   }
 
   return (
-    <Flex justifyContent={"space-between"} alignItems={"center"} w='100%' px='7.3%' mt='20px'>
+    <Flex
+      justifyContent={"space-between"}
+      alignItems={"center"}
+      w="100%"
+      px="7.3%"
+      mt="20px"
+    >
       <Flex width={"350px"}>
-    <Image src={tokamakSwapLogo} />
+        <Image src={tokamakSwapLogo} />
       </Flex>
       <Flex alignItems={"center"}>
         <Flex
           width={"182px"}
           height={"35px"}
           borderRadius={"17.5px"}
-          border={DEFAULT_NETWORK === chainId? "solid 1px #dfe4ee" : 'solid 1px red'}
+          border={
+            DEFAULT_NETWORK === chainId ? "solid 1px #dfe4ee" : "solid 1px red"
+          }
           backgroundColor={"#fff"}
           justifyContent={"center"}
           alignItems={"center"}
-          mr='25px'
+          mr="25px"
         >
           <Box
             width={"12px"}
             height={"12px"}
-            backgroundColor={chainId === 1 ? "#5ab1ac" :chainId === undefined? "red" : "#2f99f2"}
+            backgroundColor={
+              chainId === 1
+                ? "#5ab1ac"
+                : chainId === undefined
+                ? "red"
+                : "#2f99f2"
+            }
             borderRadius={"50%"}
             mr={"6px"}
           />
@@ -120,10 +139,46 @@ useEffect(() => {
             color={"#3e495c"}
             fontFamily={theme.fonts.roboto}
           >
-            {chainId === 1 ? "Ethereum Mainnet":chainId === undefined? "Undefined Network" : "Goerli Network"}
+            {chainId === 1
+              ? "Ethereum Mainnet"
+              : chainId === undefined
+              ? "Undefined Network"
+              : "Goerli Network"}
           </Text>
         </Flex>
-        {account ? (
+        {tx === true ? (
+          <Button
+            border={"solid 1px #2a72e5"}
+            color={theme.colors.gray[225]}
+            borderRadius={"18px"}
+            w={"151px"}
+            h={"35px"}
+            pl={"6px"}
+            onClick={walletOpen}
+            bg={"white.100"}
+            _hover={{}}
+            cursor={"pointer"}
+          >
+            <CircularProgress
+              isIndeterminate
+              size={4}
+              zIndex={100}
+              color="blue.500"
+              pos="absolute"
+              left={"14px"}
+            ></CircularProgress>
+            <Text
+              color={"#2a72e5"}
+              fontSize="14px"
+              fontFamily={theme.fonts.roboto}
+              ml="12px"
+              fontWeight={"normal"}
+            >
+              {" "}
+              Tx PENDING
+            </Text>
+          </Button>
+        ) : account ? (
           <Button
             border={"solid 1px #dfe4ee"}
             color={theme.colors.gray[225]}
