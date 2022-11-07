@@ -6,4 +6,9 @@ export type DEPLOYED_TYPE = {
   SwapProxy: string;
   SwapperV2Logic: string;
   SwapperV2Proxy:string;
+  Quoter_ADDRESS:string;
+  AURA_ADDRESS: string;
+  DOC_ADDRESS: string;
+  LYDA_ADDRESS: string;
+  WETH_ADDRESS:string
 };

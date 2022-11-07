@@ -21,11 +21,10 @@ import { ConversionComponent } from "./ConversionComponent";
 import { SettingsComponent } from "./SettingsComponent";
 
 import {
-  swapWtonToTon,
-  swapTonToWton,
   getUserTokenBalance,
   approve,
-  checkApproved
+  checkApproved,
+  swapExactInputSingle
 } from "../actions/contractActions";
 
 export const Swapper = () => {
@@ -36,11 +35,11 @@ export const Swapper = () => {
     selectTransactionType
   );
 
-  const [tonBalance, setTonBalance] = useState<string>("0");
-  const [wtonBalance, setWtonBalance] = useState<string>("0");
+  const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+
   const [swapFromAmt, setSwapFromAmt] = useState<string>("0");
   const [invalidInput, setInvalidInput] = useState<boolean>(false);
-  const [allowed, setAllowed] = useState<number>(0)
+  const [allowed, setAllowed] = useState<number>(0);
   const [selectedToken0, setSelectedToken0] = useState({
     name: "",
     address: "",
@@ -54,15 +53,12 @@ export const Swapper = () => {
   const [token0Balance, setToken0Balance] = useState<string>("0");
   const [token1Balance, setToken1Balance] = useState<string>("0");
 
-  console.log(allowed, Number(swapFromAmt));
-  
   useEffect(() => {
     if (chainId !== Number(DEFAULT_NETWORK) && chainId !== undefined) {
       const netType = DEFAULT_NETWORK === 1 ? "mainnet" : "Goerli Test Network";
       //@ts-ignore
       // dispatch(fetchUserInfo({reset: true}));
-      setTonBalance("0");
-      setWtonBalance("0");
+    
       return alert(`Please use ${netType}`);
     }
     /*eslint-disable*/
@@ -71,6 +67,10 @@ export const Swapper = () => {
   useEffect(() => {
     const getBalances = async () => {
       if (!account || !library) {
+        // setToken0Balance("0");
+        // setToken1Balance("0");
+        // setSelectedToken0({ name: "", address: "", img: "" });
+        // setSelectedToken1({ name: "", address: "", img: "" });
         return;
       }
 
@@ -95,8 +95,27 @@ export const Swapper = () => {
         }
       }
     };
+
+    const checkAllowed = async () => {
+      if (account === null || account === undefined || library === undefined || selectedToken0.address === '') {
+        return;
+      }
+      if (selectedToken0.address === ZERO_ADDRESS) {
+       const balance = await getUserTokenBalance(
+        account,
+        library,
+        selectedToken0.address
+      );
+      setAllowed(Number(balance))
+      }
+      else {
+        checkApproved(library, account, setAllowed, selectedToken0.address);
+      }
+    }
     getBalances();
-    checkApproved(library,account,setAllowed, selectedToken0.address)
+    checkAllowed()
+    
+   
   }, [
     account,
     library,
@@ -274,12 +293,17 @@ export const Swapper = () => {
           />
         </NumberInput>
       </Flex>
-      <Flex alignItems={'center'} justifyContent='space-between' h={'24px'} my={"12px"}>
+      <Flex
+        alignItems={"center"}
+        justifyContent="space-between"
+        h={"24px"}
+        my={"12px"}
+      >
         <Text fontSize={"10px"}>
           Tokamak Swap Protocol wants to use your ETH
         </Text>
         <Button
-          backgroundColor={ "#007aff" }
+          backgroundColor={"#007aff"}
           color={"#fff"}
           h={"24px"}
           w={"72px"}
@@ -293,9 +317,20 @@ export const Swapper = () => {
           _hover={{}}
           _active={{}}
           disabled={
-            selectedToken0.address === '' || !account || swapFromAmt === '0' || Number(swapFromAmt) <= allowed
+            selectedToken0.address === "" ||
+            !account ||
+            swapFromAmt === "0" ||
+            Number(swapFromAmt) <= allowed
           }
-          onClick={()=> approve(account, library,selectedToken0.address,swapFromAmt,setAllowed )}
+          onClick={() =>
+            approve(
+              account,
+              library,
+              selectedToken0.address,
+              swapFromAmt,
+              setAllowed
+            )
+          }
         >
           Approve
         </Button>
@@ -323,8 +358,11 @@ export const Swapper = () => {
         _hover={{}}
         _active={{}}
         disabled={
-          selectedToken0.address === "" || selectedToken1.address === "" ||Number(swapFromAmt) > allowed
+          selectedToken0.address === "" ||
+          selectedToken1.address === "" ||
+          Number(swapFromAmt) > allowed
         }
+        onClick={()=>swapExactInputSingle(library,account,selectedToken0.address,selectedToken1.address, swapFromAmt)}
       >
         <Text>
           {account
