@@ -19,7 +19,8 @@ import {
   Box,
 } from "@chakra-ui/react";
 import expand from "../assets/expand.png";
-export const ConversionComponent = () => {
+export const ConversionComponent = (props:{expectedAmnt: string, symbol:string}) => {
+  const {expectedAmnt,symbol} = props
   const [expanded, setExpanded] = useState<boolean>(false);
   return (
     <Flex
@@ -62,7 +63,7 @@ export const ConversionComponent = () => {
               Expected Output
             </Text>
             <Text color="#3d495d" fontSize={"14px"} fontWeight="normal">
-              3.57112 ETH
+            {expectedAmnt} {symbol}
             </Text>
           </Flex>
           <Flex justifyContent={"space-between"} w={"100%"} mt="11px">
@@ -77,7 +78,7 @@ export const ConversionComponent = () => {
           <Flex  justifyContent={"space-between"}>
             <Flex flexDir={"column"} alignItems='start' fontSize={'12px'}>
               <Text>Minimum received after slippage</Text>
-              <Text>(25.0%)</Text>
+              <Text>(1.0%)</Text>
             </Flex>
             <Flex flexDir={"column"} fontSize={'12px'} color='#86929d'>
                 <Text>3.49</Text>

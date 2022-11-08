@@ -397,7 +397,7 @@ export const Footer = () => {
         px='40px'
     //  bottom={'0px'}
     //  position='relative'
-     mt='46px'
+    //  mt='46px'
       >
         <Flex
           flexGrow={2}

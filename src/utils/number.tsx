@@ -27,10 +27,7 @@ export const parseFromRayToWei = (num: BigNumber) => {
 };
 
 export const convertFromRayToWei = (num: string) => {
-  console.log("num: ", num);
-  console.log(BigNumber.from(num));
   const numAmount = BigNumber.from(num).div(10 ** 9);
-  console.log("numAmount: ", numAmount);
   return numAmount;
 };
 

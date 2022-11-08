@@ -19,12 +19,14 @@ import { SelectToken } from "./SelectToken";
 import swap from "../assets/swap.png";
 import { ConversionComponent } from "./ConversionComponent";
 import { SettingsComponent } from "./SettingsComponent";
+import { DEPLOYED } from "../constants";
 
 import {
   getUserTokenBalance,
   approve,
   checkApproved,
-  swapExactInputSingle
+  swapExactInput,
+  getExpectedOutput
 } from "../actions/contractActions";
 
 export const Swapper = () => {
@@ -36,10 +38,11 @@ export const Swapper = () => {
   );
 
   const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-
+  const { WETH_ADDRESS } = DEPLOYED;
   const [swapFromAmt, setSwapFromAmt] = useState<string>("0");
   const [invalidInput, setInvalidInput] = useState<boolean>(false);
   const [allowed, setAllowed] = useState<number>(0);
+  const [expected, setExpected] = useState<string>('0')
   const [selectedToken0, setSelectedToken0] = useState({
     name: "",
     address: "",
@@ -58,7 +61,7 @@ export const Swapper = () => {
       const netType = DEFAULT_NETWORK === 1 ? "mainnet" : "Goerli Test Network";
       //@ts-ignore
       // dispatch(fetchUserInfo({reset: true}));
-    
+
       return alert(`Please use ${netType}`);
     }
     /*eslint-disable*/
@@ -97,25 +100,27 @@ export const Swapper = () => {
     };
 
     const checkAllowed = async () => {
-      if (account === null || account === undefined || library === undefined || selectedToken0.address === '') {
+      if (
+        account === null ||
+        account === undefined ||
+        library === undefined ||
+        selectedToken0.address === ""
+      ) {
         return;
       }
       if (selectedToken0.address === ZERO_ADDRESS) {
-       const balance = await getUserTokenBalance(
-        account,
-        library,
-        selectedToken0.address
-      );
-      setAllowed(Number(balance))
-      }
-      else {
+        const balance = await getUserTokenBalance(
+          account,
+          library,
+          selectedToken0.address
+        );
+        setAllowed(Number(balance));
+      } else {
         checkApproved(library, account, setAllowed, selectedToken0.address);
       }
-    }
+    };
     getBalances();
-    checkAllowed()
-    
-   
+    checkAllowed();
   }, [
     account,
     library,
@@ -124,6 +129,22 @@ export const Swapper = () => {
     selectedToken0,
     selectedToken1,
   ]);
+
+  useEffect (() => {
+    const getExpected = async() => {
+      if (selectedToken0.address && selectedToken1.address && swapFromAmt !== '') {
+        const tempAmount = await getExpectedOutput(library, account, selectedToken0.address, selectedToken1.address, swapFromAmt)
+
+       setExpected(tempAmount? tempAmount.slice(0, tempAmount.indexOf('.')+3): '0')
+      }
+      else {
+        setExpected('0')
+      }
+    }
+    getExpected()
+   
+  },[swapFromAmt, selectedToken0.address, selectedToken1.address])
+
 
   const formatNumberWithCommas = (num: string) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -135,7 +156,7 @@ export const Swapper = () => {
     setSelectedToken0(token0);
     setSelectedToken1(token1);
   };
-  
+
   return (
     <Flex
       width={"350px"}
@@ -260,7 +281,7 @@ export const Swapper = () => {
       >
         <NumberInput
           height={"56px"}
-          w={"230px"}
+          w={"310px"}
           color={"#86929d"}
           pl={"24px"}
           border={"none"}
@@ -278,7 +299,7 @@ export const Swapper = () => {
             borderColor: "transparent",
           }}
           defaultValue={0}
-          value={swapFromAmt}
+          value={expected}
           onChange={(e) => {
             const valueNum = e;
             setSwapFromAmt(valueNum);
@@ -300,7 +321,8 @@ export const Swapper = () => {
         my={"12px"}
       >
         <Text fontSize={"10px"}>
-          Tokamak Swap Protocol wants to use your ETH
+          Tokamak Swap Protocol wants to use your{" "}
+          {selectedToken0.name ? selectedToken0.name : "tokens"}
         </Text>
         <Button
           backgroundColor={"#007aff"}
@@ -320,7 +342,8 @@ export const Swapper = () => {
             selectedToken0.address === "" ||
             !account ||
             swapFromAmt === "0" ||
-            Number(swapFromAmt) <= allowed
+            Number(swapFromAmt) <= allowed || 
+            selectedToken0.address === ZERO_ADDRESS
           }
           onClick={() =>
             approve(
@@ -335,7 +358,7 @@ export const Swapper = () => {
           Approve
         </Button>
       </Flex>
-      <ConversionComponent />
+      <ConversionComponent expectedAmnt={expected} symbol={selectedToken1.name}/>
       <SettingsComponent />
       <Button
         borderRadius={"28px"}
@@ -360,9 +383,23 @@ export const Swapper = () => {
         disabled={
           selectedToken0.address === "" ||
           selectedToken1.address === "" ||
-          Number(swapFromAmt) > allowed
+          Number(swapFromAmt) > allowed ||
+          Number(swapFromAmt) === 0 ||
+          selectedToken0.address === selectedToken1.address ||
+          (selectedToken0.address === ZERO_ADDRESS &&
+            selectedToken1.address === WETH_ADDRESS) || 
+            (selectedToken0.address === WETH_ADDRESS &&
+              selectedToken1.address === ZERO_ADDRESS)
         }
-        onClick={()=>swapExactInputSingle(library,account,selectedToken0.address,selectedToken1.address, swapFromAmt)}
+        onClick={() =>
+          swapExactInput(
+            library,
+            account,
+            selectedToken0.address,
+            selectedToken1.address,
+            swapFromAmt
+          )
+        }
       >
         <Text>
           {account
