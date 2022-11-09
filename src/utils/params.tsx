@@ -10,7 +10,7 @@ const FeeAmount = {
   };
   const FEE_SIZE = 3;
   const encodePath = (path: any, fees: any) => {
-    if (path.length != fees.length + 1) {
+    if (path.length !== fees.length + 1) {
       throw new Error("path/fee lengths do not match");
     }
     let encoded = "0x";

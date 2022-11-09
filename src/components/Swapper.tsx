@@ -26,7 +26,8 @@ import {
   approve,
   checkApproved,
   swapExactInput,
-  getExpectedOutput
+  getExpectedOutput,
+  swapExactOutput,
 } from "../actions/contractActions";
 
 export const Swapper = () => {
@@ -40,9 +41,12 @@ export const Swapper = () => {
   const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
   const { WETH_ADDRESS } = DEPLOYED;
   const [swapFromAmt, setSwapFromAmt] = useState<string>("0");
+  const [swapFromAmt2, setSwapFromAmt2] = useState<string>("0");
+
   const [invalidInput, setInvalidInput] = useState<boolean>(false);
   const [allowed, setAllowed] = useState<number>(0);
-  const [expected, setExpected] = useState<string>('0')
+  const [expected, setExpected] = useState<string>("0");
+  const [focused, setFocused] = useState<string>("");
   const [selectedToken0, setSelectedToken0] = useState({
     name: "",
     address: "",
@@ -130,21 +134,31 @@ export const Swapper = () => {
     selectedToken1,
   ]);
 
-  useEffect (() => {
-    const getExpected = async() => {
-      if (selectedToken0.address && selectedToken1.address && swapFromAmt !== '') {
-        const tempAmount = await getExpectedOutput(library, account, selectedToken0.address, selectedToken1.address, swapFromAmt)
-
-       setExpected(tempAmount? tempAmount.slice(0, tempAmount.indexOf('.')+3): '0')
+  useEffect(() => {
+    const getExpected = async () => {
+      if (
+        selectedToken0.address &&
+        selectedToken1.address &&
+        swapFromAmt !== ""
+      ) {
+        const tempAmount = await getExpectedOutput(
+          library,
+          account,
+          selectedToken0.address,
+          selectedToken1.address,
+          swapFromAmt
+        );
+        if (tempAmount) {
+          setExpected(tempAmount.slice(0, tempAmount.indexOf(".") + 3) );
+          focused === 'input1'? setSwapFromAmt2(tempAmount.slice(0, tempAmount.indexOf(".") + 3) ) : setSwapFromAmt(tempAmount.slice(0, tempAmount.indexOf(".") + 3) )
+        }
+       
+      } else {
+        setExpected("0");
       }
-      else {
-        setExpected('0')
-      }
-    }
-    getExpected()
-   
-  },[swapFromAmt, selectedToken0.address, selectedToken1.address])
-
+    };
+    getExpected();
+  }, [swapFromAmt, selectedToken0.address, selectedToken1.address]);
 
   const formatNumberWithCommas = (num: string) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -153,6 +167,11 @@ export const Swapper = () => {
   const switchTokens = () => {
     const token0 = selectedToken1;
     const token1 = selectedToken0;
+
+    const input1 = swapFromAmt;
+    const input2 = swapFromAmt2;
+    setSwapFromAmt(input2);
+    setSwapFromAmt2(input1);
     setSelectedToken0(token0);
     setSelectedToken1(token1);
   };
@@ -221,6 +240,7 @@ export const Swapper = () => {
           _hover={{
             borderColor: "transparent",
           }}
+          onClick={() => setFocused("input1")}
           defaultValue={0}
           value={swapFromAmt}
           onChange={(e) => {
@@ -299,10 +319,11 @@ export const Swapper = () => {
             borderColor: "transparent",
           }}
           defaultValue={0}
-          value={expected}
+          value={focused === "input2" ? swapFromAmt2 : expected}
+          onClick={() => setFocused("input2")}
           onChange={(e) => {
             const valueNum = e;
-            setSwapFromAmt(valueNum);
+            setSwapFromAmt2(valueNum);
           }}
         >
           <NumberInputField
@@ -342,7 +363,7 @@ export const Swapper = () => {
             selectedToken0.address === "" ||
             !account ||
             swapFromAmt === "0" ||
-            Number(swapFromAmt) <= allowed || 
+            Number(swapFromAmt) <= allowed ||
             selectedToken0.address === ZERO_ADDRESS
           }
           onClick={() =>
@@ -358,7 +379,10 @@ export const Swapper = () => {
           Approve
         </Button>
       </Flex>
-      <ConversionComponent expectedAmnt={expected} symbol={selectedToken1.name}/>
+      <ConversionComponent
+        expectedAmnt={expected}
+        symbol={selectedToken1.name}
+      />
       <SettingsComponent />
       <Button
         borderRadius={"28px"}
@@ -384,21 +408,31 @@ export const Swapper = () => {
           selectedToken0.address === "" ||
           selectedToken1.address === "" ||
           Number(swapFromAmt) > allowed ||
-          Number(swapFromAmt) === 0 ||
+          (Number(swapFromAmt) === 0 && Number(swapFromAmt2) === 0) ||
           selectedToken0.address === selectedToken1.address ||
           (selectedToken0.address === ZERO_ADDRESS &&
-            selectedToken1.address === WETH_ADDRESS) || 
-            (selectedToken0.address === WETH_ADDRESS &&
-              selectedToken1.address === ZERO_ADDRESS)
+            selectedToken1.address === WETH_ADDRESS) ||
+          (selectedToken0.address === WETH_ADDRESS &&
+            selectedToken1.address === ZERO_ADDRESS)
         }
-        onClick={() =>
-          swapExactInput(
-            library,
-            account,
-            selectedToken0.address,
-            selectedToken1.address,
-            swapFromAmt
-          )
+        onClick={
+          focused === "input1"
+            ? () =>
+                swapExactInput(
+                  library,
+                  account,
+                  selectedToken0.address,
+                  selectedToken1.address,
+                  swapFromAmt
+                )
+            : () =>
+                swapExactOutput(
+                  library,
+                  account,
+                  selectedToken1.address,
+                  selectedToken0.address,
+                  swapFromAmt2
+                )
         }
       >
         <Text>
