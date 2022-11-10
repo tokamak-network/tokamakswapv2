@@ -192,6 +192,8 @@ export const getExpectedOutput = async (library: any, userAddress: string | null
         0,
         converted?.indexOf(".") + 3
       ) : converted
+
+
       const convertedAmountOut = convertNumber({
         amount: amountOut,
         type: "ray",
@@ -257,16 +259,59 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
 
   if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase()) {
     amountOut = ethers.utils.parseUnits(amount, '27');
+    console.log('amountOutW',amountOut);
+    
   }
   else {
     amountOut = ethers.utils.parseEther(amount)
+    console.log('amountOut',amountOut);
+    
   }
   if (library && userAddress && params && Number(amount) !== 0) {
     const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
     const amountIn = await quoteContract.callStatic.quoteExactOutput(params.path, amountOut);
     const maximumAmountIn = amountIn.mul(numerator).div(denominator); // ray
 
-    return { maximumAmountIn, amountIn, amountOut }
+    if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() || params.inputWrapWTON) {
+      const converted = convertNumber({
+        amount: maximumAmountIn,
+        type: "ray",
+      });
+
+      const formatted = converted && converted.indexOf(".") > -1 ? converted?.slice(
+        0,
+        converted?.indexOf(".") + 3
+      ) : converted
+
+      const convertedAmountOut = convertNumber({
+        amount: amountIn,
+        type: "ray",
+      });
+
+      const formattedAmountOut = convertedAmountOut && convertedAmountOut.indexOf(".") > -1 ? convertedAmountOut?.slice(
+        0,
+        convertedAmountOut?.indexOf(".") + 3
+      ) : convertedAmountOut
+
+      return { maximumAmountIn, amountIn, amountOut, formatted, formattedAmountOut }
+    }
+
+    else {
+      const converted = ethers.utils.formatEther(maximumAmountIn)
+      const formatted = converted && converted.indexOf(".") > -1 ? converted?.slice(
+        0,
+        converted?.indexOf(".") + 3
+      ) : converted
+      const convertedAmountOut = ethers.utils.formatEther(amountIn)
+      const formattedAmountOut = convertedAmountOut && convertedAmountOut.indexOf(".") > -1 ? convertedAmountOut?.slice(
+        0,
+        convertedAmountOut?.indexOf(".") + 3
+      ) : convertedAmountOut
+
+      return { maximumAmountIn, amountIn, amountOut, formatted, formattedAmountOut }
+    }
+
+
   }
 
   else if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() && address1.toLowerCase() === TON_ADDRESS.toLowerCase() || address1.toLowerCase() === WTON_ADDRESS.toLowerCase() && address0.toLowerCase() === TON_ADDRESS.toLowerCase()) {
@@ -331,7 +376,7 @@ export const swapExactInput = async (library: any, userAddress: string | null | 
 
 export const swapExactOutput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string, slippage: string) => {
   const params = getParams(address0, address1);
-  
+
   if (library && userAddress && params) {
     const amounts = await getExpectedInput(library, userAddress, address0, address1, amount, slippage)
     const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);

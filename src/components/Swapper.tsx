@@ -28,6 +28,7 @@ import {
   checkApproved,
   swapExactInput,
   getExpectedOutput,
+  getExpectedInput,
   swapExactOutput,
 } from "../actions/contractActions";
 
@@ -134,7 +135,7 @@ export const Swapper = () => {
   ]);
 
   useEffect(() => {
-    const getExpected = async () => {
+    const getExpectedOut = async () => {
       if (
         selectedToken0.address &&
         selectedToken1.address &&
@@ -160,8 +161,41 @@ export const Swapper = () => {
         setExpected("0");
       }
     };
-    getExpected();
-  }, [swapFromAmt, selectedToken0.address, selectedToken1.address, slippage]);
+
+    const getExpectedIn = async () => {
+      if (
+        selectedToken0.address &&
+        selectedToken1.address &&
+        swapFromAmt2 !== ""
+      ) {
+        const tempAmount: any = await getExpectedInput(
+          library,
+          account,
+          selectedToken0.address,
+          selectedToken1.address,
+          swapFromAmt2,
+          slippage
+        );
+
+        if (tempAmount) {
+          setExpected(tempAmount.formatted);
+          focused === "input2"
+            ? setSwapFromAmt(tempAmount.formatted)
+            : setSwapFromAmt2(tempAmount.formatted);
+        }
+      } else {
+        setExpected("0");
+      }
+    };
+    focused && focused === "input1" ? getExpectedOut() : getExpectedIn();
+  }, [
+    swapFromAmt,
+    swapFromAmt2,
+    selectedToken0.address,
+    selectedToken1.address,
+    slippage,
+    focused,
+  ]);
 
   const formatNumberWithCommas = (num: string) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -245,7 +279,7 @@ export const Swapper = () => {
           }}
           onClick={() => setFocused("input1")}
           defaultValue={0}
-          value={swapFromAmt}
+          value={focused === "input1" ? swapFromAmt : expected}
           onChange={(e) => {
             const valueNum = e;
             setSwapFromAmt(valueNum);
@@ -394,6 +428,7 @@ export const Swapper = () => {
         border={"none"}
         padding={"16px 118px"}
         mb={"10px"}
+        ml="15px"
         // cursor={
         //   !Number(swapFromAmt) || !account || invalidInput ? "not-allowed" : "pointer"
         // }

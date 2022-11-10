@@ -109,43 +109,7 @@ export const Header: FC<HeaderProps> = ({ walletOpen }) => {
         <Image src={tokamakSwapLogo} />
       </Flex>
       <Flex alignItems={"center"}>
-        <Flex
-          width={"182px"}
-          height={"35px"}
-          borderRadius={"17.5px"}
-          border={
-            DEFAULT_NETWORK === chainId ? "solid 1px #dfe4ee" : "solid 1px red"
-          }
-          backgroundColor={"#fff"}
-          justifyContent={"center"}
-          alignItems={"center"}
-          mr="25px"
-        >
-          <Box
-            width={"12px"}
-            height={"12px"}
-            backgroundColor={
-              chainId === 1
-                ? "#5ab1ac"
-                : chainId === undefined
-                ? "red"
-                : "#2f99f2"
-            }
-            borderRadius={"50%"}
-            mr={"6px"}
-          />
-          <Text
-            fontSize={"16px"}
-            color={"#3e495c"}
-            fontFamily={theme.fonts.roboto}
-          >
-            {chainId === 1
-              ? "Ethereum Mainnet"
-              : chainId === undefined
-              ? "Undefined Network"
-              : "Goerli Network"}
-          </Text>
-        </Flex>
+        
         {tx === true  && data? (
           <Button
             border={"solid 1px #2a72e5"}
