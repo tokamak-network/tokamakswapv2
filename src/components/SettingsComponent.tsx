@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,Dispatch, SetStateAction} from "react";
 import {
   Text,
   Flex,
@@ -18,7 +18,10 @@ import expand from "../assets/expand.png";
 import gear from "../assets/gear.png";
 import icon_arrow from "../assets/icon_arrow.png";
 import { QuestionOutlineIcon } from '@chakra-ui/icons'
-export const SettingsComponent = () => {
+
+
+export const SettingsComponent = (props:{setSlippage:Dispatch<SetStateAction<any>>}) => {
+  const {setSlippage} = props;
   const [expanded, setExpanded] = useState<boolean>(false);
   const [slippageAmnt, setSlippageAmnt] = useState<string>("0");
   const [invalidInput, setInvalidInput] = useState<boolean>(false);
@@ -27,7 +30,7 @@ export const SettingsComponent = () => {
   return (
     <Flex
       border="1px solid #dfe4ee"
-      h={expanded ? "211px" : "36px"}
+      h={expanded ? "185px" : "36px"}
       borderRadius={"18px"}
       mb="30px"
       px="15px"
@@ -66,7 +69,7 @@ export const SettingsComponent = () => {
             pr={"18px"}
             mb="17px"
           >
-            {/* <NumberInput
+            <NumberInput
               height={"56px"}
               w={"fit-content"}
               color={"#86929d"}
@@ -89,7 +92,8 @@ export const SettingsComponent = () => {
               value={`${slippageAmnt} %`}
               onChange={(e) => {
                 const valueNum = e;
-                setSlippageAmnt(valueNum);
+                setSlippageAmnt(valueNum)
+                setSlippage(valueNum);
               }}
             >
               <NumberInputField
@@ -99,27 +103,8 @@ export const SettingsComponent = () => {
                 borderColor={"transparent"}
                 pl={"0px"}
               />
-            </NumberInput> */}
-            <Input  height={"56px"}
-              w={"fit-content"}
-              color={"#86929d"}
-              pl={"24px"}
-              border={"none"}
-              fontSize={"18px"}
-              borderRadius={"4px"}
-              borderColor={"transparent"}
-              type='number'
-              _focus={{
-                borderColor: "transparent",
-              }}
-              _active={{
-                borderColor: "transparent",
-              }}
-              focusBorderColor="transparent"
-              _hover={{
-                borderColor: "transparent",
-              }}>
-            </Input>
+            </NumberInput>
+          
 
             <Button
               h="24px"

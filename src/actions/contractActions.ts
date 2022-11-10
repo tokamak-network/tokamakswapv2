@@ -74,7 +74,7 @@ export const approve = async (account: any, library: any, tokenAddress: string, 
       const receipt = await contract
         .connect(signer)
         .approve(SwapperV2Proxy, convertedAmount);
-      store.dispatch(setTxPending({ tx: true, data:{name:'approve'} }));
+      store.dispatch(setTxPending({ tx: true, data: { name: 'approve' } }));
 
       if (receipt) {
         toastWithReceipt(receipt, setTxPending, 'Swapper');
@@ -82,7 +82,7 @@ export const approve = async (account: any, library: any, tokenAddress: string, 
         checkApproved(library, account, setAllowed, tokenAddress);
       }
     } catch (err) {
-      store.dispatch(setTxPending({ tx: false , data:{name:'approve'}}));
+      store.dispatch(setTxPending({ tx: false, data: { name: 'approve' } }));
       store.dispatch(
         //@ts-ignore
         openToast({
@@ -143,7 +143,33 @@ const exactOutputEth = async (signer: any, swapperV2: any, exactOutputParams: an
   return receipt
 }
 
-export const getExpectedOutput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string) => {
+//getExpectedOutput function predicts the output the user will get for exact input (swapExpectedInput)
+
+export const getExpectedOutput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string, slippage: string) => {
+  let denominator;
+  let numerator;
+  const int = Number.isInteger(Number(slippage));
+
+
+  if (slippage !== '' && Number(slippage) > 0 && Number(slippage) < 100) {
+    if (int) {
+      denominator = BigNumber.from("100")
+      const slippageCalc = 100 - Number(slippage)
+      numerator = BigNumber.from(slippageCalc.toString());
+    }
+    else {
+      const countDecimals = slippage.split('.')[1].length;
+      const denom = 100 * (10 ** countDecimals);
+      const slippageCalc = denom - (Number(slippage) * (10 ** countDecimals))
+      denominator = BigNumber.from(denom.toString());
+      numerator = BigNumber.from(slippageCalc.toString())
+    }
+  }
+  else {
+    denominator = BigNumber.from("100")
+    numerator = BigNumber.from("99")
+  }
+
   let amountIn
 
   if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase()) {
@@ -154,28 +180,88 @@ export const getExpectedOutput = async (library: any, userAddress: string | null
   }
 
   const params = getParams(address0, address1);
+
   if (library && userAddress && params && Number(amount) !== 0) {
     const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
 
     const amountOut = await quoteContract.callStatic.quoteExactInput(params.path, amountIn)
-    const denominator = BigNumber.from("100")
-    const numerator = BigNumber.from("99")
     const minimumAmountOut = amountOut.mul(numerator).div(denominator);
+
     if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase() || params.outputUnwrapTON) {
-      const convertedRes = convertNumber({
+      const formatted = convertNumber({
         amount: minimumAmountOut,
         type: "ray",
       });
-      return convertedRes
+      return { formatted, minimumAmountOut, amountIn }
     }
     else {
       const formatted = ethers.utils.formatEther(minimumAmountOut)
-      return formatted
+      return { formatted, minimumAmountOut, amountIn }
     }
+  }
+
+
+  else if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() && address1.toLowerCase() === TON_ADDRESS.toLowerCase() || address1.toLowerCase() === WTON_ADDRESS.toLowerCase() && address0.toLowerCase() === TON_ADDRESS.toLowerCase()) {
+  const formatted = amount  
+    return {formatted}
+    
   }
 }
 
-export const getExpectedInput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string) => {
+export const swapExactInput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string, slippage: string) => {
+  const params = getParams(address0, address1);
+  if (library && userAddress && params) {
+    const amounts = await getExpectedOutput(library, userAddress, address0, address1, amount, slippage)
+    const signer = getSigner(library, userAddress);
+    const swapperV2 = new Contract(SwapperV2Proxy, SwapperV2.abi, library);
+    const getExactInputParams = {
+      recipient: userAddress,
+      path: params?.path,
+      amountIn: amounts?.amountIn,
+      amountOutMinimum: amounts?.minimumAmountOut,
+      deadline: 0
+    }
+
+    try {
+      const tx = address0 !== ZERO_ADDRESS ? await exactInput(signer, swapperV2, getExactInputParams, params.wrapEth, params.outputUnwrapEth, params.inputWrapWTON, params.outputUnwrapTON) :
+        await exactInputEth(signer, swapperV2, getExactInputParams, params.wrapEth, params.outputUnwrapEth, params.inputWrapWTON, params.outputUnwrapTON, {
+          value: amounts?.amountIn,
+        });
+      store.dispatch(setTxPending({ tx: true }));
+      if (tx) {
+        toastWithReceipt(tx, setTxPending, "Swapper");
+      }
+    }
+    catch (err) {
+      store.dispatch(setTxPending({ tx: false }));
+      store.dispatch(
+        //@ts-ignore
+        openToast({
+          payload: {
+            status: "error",
+            title: "Tx fail to send",
+            description: `something went wrong`,
+            duration: 5000,
+            isClosable: true,
+          },
+        })
+      );
+    }
+  }
+  else {
+    let amountIn
+    if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase()) {
+      amountIn = ethers.utils.parseUnits(amount, '27');
+    }
+    else {
+      amountIn = ethers.utils.parseEther(amount)
+    }
+    exactInputWtonTon(library, userAddress, address0, amountIn)
+  }
+}
+
+// getExpectedInput function predicts the input the user will spend for exact output (swapExpectedOutput)
+export const getExpectedInput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string, slippage: string) => {
   const params = getParams(address0, address1);
   let amountOut
 
@@ -197,7 +283,7 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
   }
 }
 
-export const swapExactOutput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string) => {
+export const swapExactOutput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string, slippage: string) => {
   const params = getParams(address0, address1);
   let amountOut
 
@@ -231,13 +317,13 @@ export const swapExactOutput = async (library: any, userAddress: string | null |
         await exactOutputEth(signer, swapperV2, getExactOutputParams, params.wrapEth, params.outputUnwrapEth, params.inputWrapWTON, params.outputUnwrapTON, {
           value: maximumAmountIn,
         });
-      store.dispatch(setTxPending({ tx: true , data:{name:'swap'}}));
+      store.dispatch(setTxPending({ tx: true, data: { name: 'swap' } }));
       if (tx) {
         toastWithReceipt(tx, setTxPending, "Swapper");
       }
     }
     catch (err) {
-      store.dispatch(setTxPending({ tx: false, data:{name:'swap'} }));
+      store.dispatch(setTxPending({ tx: false, data: { name: 'swap' } }));
       store.dispatch(
         //@ts-ignore
         openToast({
@@ -255,57 +341,26 @@ export const swapExactOutput = async (library: any, userAddress: string | null |
   }
 
   else {
-    exactOutputWtonTon (library, userAddress, address0, amount)
+    exactOutputWtonTon(library, userAddress, address0, amount)
   }
 }
 
-const exactOutputWtonTon = async (library: any, userAddress: string|null | undefined, address0: string, amount: any)  => {
+const exactOutputWtonTon = async (library: any, userAddress: string | null | undefined, address0: string, amount: any) => {
   if (library && userAddress) {
     const signer = getSigner(library, userAddress);
     const swapperV2 = new Contract(SwapperV2Proxy, SwapperV2.abi, library);
-    if (address0 === WTON_ADDRESS) {   
+    if (address0 === WTON_ADDRESS) {
       const amnt = ethers.utils.parseEther(amount)
-        try {
-        const tx =  await swapperV2.connect(signer).tonToWton(amnt)
-          
-        store.dispatch(setTxPending({ tx: true, data:{name:'swap'} }));
-        if (tx) {
-          toastWithReceipt(tx, setTxPending, "Swapper");
-        }
-      }
-      catch (err) {
-        store.dispatch(setTxPending({ tx: false, data:{name:'swap'} }));
-        store.dispatch(
-          //@ts-ignore
-          openToast({
-            payload: {
-              status: "error",
-              title: "Tx fail to send",
-              description: `something went wrong`,
-              duration: 5000,
-              isClosable: true,
-            },
-          })
-        );
-      }
-  
-      
-     }
-    else {
-      console.log('ton');
-    
-      const amnt = ethers.utils.parseUnits(amount, '27');
-      console.log(amnt);
       try {
-        const tx =  await swapperV2.connect(signer).wtonToTon(amnt)
-          
-        store.dispatch(setTxPending({ tx: true, data:{name:'swap'} }));
+        const tx = await swapperV2.connect(signer).tonToWton(amnt)
+
+        store.dispatch(setTxPending({ tx: true, data: { name: 'swap' } }));
         if (tx) {
           toastWithReceipt(tx, setTxPending, "Swapper");
         }
       }
       catch (err) {
-        store.dispatch(setTxPending({ tx: false, data:{name:'swap'}}));
+        store.dispatch(setTxPending({ tx: false, data: { name: 'swap' } }));
         store.dispatch(
           //@ts-ignore
           openToast({
@@ -319,135 +374,96 @@ const exactOutputWtonTon = async (library: any, userAddress: string|null | undef
           })
         );
       }
-  
+    }
+    else {
+      const amnt = ethers.utils.parseUnits(amount, '27');
+      try {
+        const tx = await swapperV2.connect(signer).wtonToTon(amnt)
+        store.dispatch(setTxPending({ tx: true, data: { name: 'swap' } }));
+        if (tx) {
+          toastWithReceipt(tx, setTxPending, "Swapper");
+        }
+      }
+      catch (err) {
+        store.dispatch(setTxPending({ tx: false, data: { name: 'swap' } }));
+        store.dispatch(
+          //@ts-ignore
+          openToast({
+            payload: {
+              status: "error",
+              title: "Tx fail to send",
+              description: `something went wrong`,
+              duration: 5000,
+              isClosable: true,
+            },
+          })
+        );
+      }
+
     }
   }
 }
 
-const exactInputWtonTon = async (library: any, userAddress: string|null | undefined, address0: string, amount: any)  => {
+const exactInputWtonTon = async (library: any, userAddress: string | null | undefined, address0: string, amount: any) => {
 
   if (library && userAddress) {
     const signer = getSigner(library, userAddress);
     const swapperV2 = new Contract(SwapperV2Proxy, SwapperV2.abi, library);
- //wton to ton
-  if (address0 === WTON_ADDRESS) {    
-    try {
-      const tx =  await swapperV2.connect(signer).wtonToTon(amount)
-        
-      store.dispatch(setTxPending({ tx: true, data:{name:'swap'} }));
-      if (tx) {
-        toastWithReceipt(tx, setTxPending, "Swapper");
+    //wton to ton
+    if (address0 === WTON_ADDRESS) {
+      try {
+        const tx = await swapperV2.connect(signer).wtonToTon(amount)
+
+        store.dispatch(setTxPending({ tx: true, data: { name: 'swap' } }));
+        if (tx) {
+          toastWithReceipt(tx, setTxPending, "Swapper");
+        }
+      }
+      catch (err) {
+        store.dispatch(setTxPending({ tx: false, data: { name: 'swap' } }));
+        store.dispatch(
+          //@ts-ignore
+          openToast({
+            payload: {
+              status: "error",
+              title: "Tx fail to send",
+              description: `something went wrong`,
+              duration: 5000,
+              isClosable: true,
+            },
+          })
+        );
+      }
+
+    }
+
+    else {
+      try {
+        const tx = await swapperV2.connect(signer).tonToWton(amount)
+
+        store.dispatch(setTxPending({ tx: true }));
+        if (tx) {
+          toastWithReceipt(tx, setTxPending, "Swapper");
+        }
+      }
+      catch (err) {
+        store.dispatch(setTxPending({ tx: false }));
+        store.dispatch(
+          //@ts-ignore
+          openToast({
+            payload: {
+              status: "error",
+              title: "Tx fail to send",
+              description: `something went wrong`,
+              duration: 5000,
+              isClosable: true,
+            },
+          })
+        );
       }
     }
-    catch (err) {
-      store.dispatch(setTxPending({ tx: false, data:{name:'swap'} }));
-      store.dispatch(
-        //@ts-ignore
-        openToast({
-          payload: {
-            status: "error",
-            title: "Tx fail to send",
-            description: `something went wrong`,
-            duration: 5000,
-            isClosable: true,
-          },
-        })
-      );
-    }
-
-  }
-
-  else {
-    try {
-      const tx =  await swapperV2.connect(signer).tonToWton(amount)
-        
-      store.dispatch(setTxPending({ tx: true }));
-      if (tx) {
-        toastWithReceipt(tx, setTxPending, "Swapper");
-      }
-    }
-    catch (err) {
-      store.dispatch(setTxPending({ tx: false }));
-      store.dispatch(
-        //@ts-ignore
-        openToast({
-          payload: {
-            status: "error",
-            title: "Tx fail to send",
-            description: `something went wrong`,
-            duration: 5000,
-            isClosable: true,
-          },
-        })
-      );
-    }
-
-    
-  }
   }
 }
 
-export const swapExactInput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string) => {
 
-  const params = getParams(address0, address1);
-  let amountIn
-
-  if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase()) {
-    amountIn = ethers.utils.parseUnits(amount, '27');
-  }
-  else {
-    amountIn = ethers.utils.parseEther(amount)
-  }
-  if (library && userAddress && params) {
-
-    const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
-    const signer = getSigner(library, userAddress);
-    const swapperV2 = new Contract(SwapperV2Proxy, SwapperV2.abi, library);
-    const amountOut = await quoteContract.callStatic.quoteExactInput(params.path, amountIn)
-    const denominator = BigNumber.from("1000")
-    const numerator = BigNumber.from("995")
-    const minimumAmountOut = amountOut.mul(numerator).div(denominator); 
-    const getExactInputParams = {
-      recipient: userAddress,
-      path: params?.path,
-      amountIn: amountIn,
-      amountOutMinimum: minimumAmountOut,
-      deadline: 0
-    }
-
-
-    // if swap from token is Eth, then we add { value: amountIn,} ex: eth to DOC
-
-    try {
-      const tx = address0 !== ZERO_ADDRESS ? await exactInput(signer, swapperV2, getExactInputParams, params.wrapEth, params.outputUnwrapEth, params.inputWrapWTON, params.outputUnwrapTON) :
-        await exactInputEth(signer, swapperV2, getExactInputParams, params.wrapEth, params.outputUnwrapEth, params.inputWrapWTON, params.outputUnwrapTON, {
-          value: amountIn,
-        });
-      store.dispatch(setTxPending({ tx: true }));
-      if (tx) {
-        toastWithReceipt(tx, setTxPending, "Swapper");
-      }
-    }
-    catch (err) {
-      store.dispatch(setTxPending({ tx: false }));
-      store.dispatch(
-        //@ts-ignore
-        openToast({
-          payload: {
-            status: "error",
-            title: "Tx fail to send",
-            description: `something went wrong`,
-            duration: 5000,
-            isClosable: true,
-          },
-        })
-      );
-    }
-  }
-
-  else {
-   
-    exactInputWtonTon(library, userAddress, address0, amountIn)
-  }
-}
 

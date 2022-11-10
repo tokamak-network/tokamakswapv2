@@ -38,9 +38,9 @@ export const Swapper = () => {
   const { transactionType, blockNumber } = useAppSelector(
     selectTransactionType
   );
-  
+
   const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-  const { WETH_ADDRESS } = DEPLOYED;
+  const { WETH_ADDRESS, WTON_ADDRESS, TON_ADDRESS } = DEPLOYED;
   const [swapFromAmt, setSwapFromAmt] = useState<string>("0");
   const [swapFromAmt2, setSwapFromAmt2] = useState<string>("0");
 
@@ -48,6 +48,8 @@ export const Swapper = () => {
   const [allowed, setAllowed] = useState<number>(0);
   const [expected, setExpected] = useState<string>("0");
   const [focused, setFocused] = useState<string>("");
+  const [slippage, setSlippage] = useState<string>("");
+
   const [selectedToken0, setSelectedToken0] = useState({
     name: "",
     address: "",
@@ -75,10 +77,6 @@ export const Swapper = () => {
   useEffect(() => {
     const getBalances = async () => {
       if (!account || !library) {
-        // setToken0Balance("0");
-        // setToken1Balance("0");
-        // setSelectedToken0({ name: "", address: "", img: "" });
-        // setSelectedToken1({ name: "", address: "", img: "" });
         return;
       }
 
@@ -142,25 +140,47 @@ export const Swapper = () => {
         selectedToken1.address &&
         swapFromAmt !== ""
       ) {
-        const tempAmount = await getExpectedOutput(
+        const tempAmount: any = await getExpectedOutput(
           library,
           account,
           selectedToken0.address,
           selectedToken1.address,
-          swapFromAmt
+          swapFromAmt,
+          slippage
         );
         if (tempAmount) {
-          setExpected(tempAmount.slice(0, tempAmount.indexOf(".") + 3));
+          tempAmount.formatted?.indexOf(".") > -1
+            ? setExpected(
+                tempAmount.formatted.slice(
+                  0,
+                  tempAmount.formatted?.indexOf(".") + 3
+                )
+              )
+            : setExpected(tempAmount.formatted);
           focused === "input1"
-            ? setSwapFromAmt2(tempAmount.slice(0, tempAmount.indexOf(".") + 3))
-            : setSwapFromAmt(tempAmount.slice(0, tempAmount.indexOf(".") + 3));
+            ? tempAmount.formatted?.indexOf(".") > -1
+              ? setSwapFromAmt2(
+                  tempAmount.formatted.slice(
+                    0,
+                    tempAmount.formatted?.indexOf(".") + 3
+                  )
+                )
+              : setSwapFromAmt2(tempAmount.formatted)
+            : tempAmount.formatted?.indexOf(".") > -1
+            ? setSwapFromAmt(
+                tempAmount.formatted.slice(
+                  0,
+                  tempAmount.formatted?.indexOf(".") + 3
+                )
+              )
+            : setSwapFromAmt(tempAmount.formatted);
         }
       } else {
         setExpected("0");
       }
     };
     getExpected();
-  }, [swapFromAmt, selectedToken0.address, selectedToken1.address]);
+  }, [swapFromAmt, selectedToken0.address, selectedToken1.address, slippage]);
 
   const formatNumberWithCommas = (num: string) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -385,7 +405,7 @@ export const Swapper = () => {
         expectedAmnt={expected}
         symbol={selectedToken1.name}
       />
-      <SettingsComponent />
+      <SettingsComponent setSlippage={setSlippage} />
       <Button
         borderRadius={"28px"}
         border={"none"}
@@ -425,7 +445,8 @@ export const Swapper = () => {
                   account,
                   selectedToken0.address,
                   selectedToken1.address,
-                  swapFromAmt
+                  swapFromAmt,
+                  slippage
                 )
             : () =>
                 swapExactOutput(
@@ -433,23 +454,34 @@ export const Swapper = () => {
                   account,
                   selectedToken1.address,
                   selectedToken0.address,
-                  swapFromAmt2
+                  swapFromAmt2,
+                  slippage
                 )
         }
       >
         {tx === true && !data ? (
           <CircularProgress
             isIndeterminate
-            size={'32px'}
+            size={"32px"}
             zIndex={100}
             color="blue.500"
-            pos='absolute'
+            pos="absolute"
           ></CircularProgress>
         ) : (
           <Text>
             {account
               ? selectedToken0.address === "" || selectedToken1.address === ""
                 ? "Select Tokens"
+                : selectedToken0.address.toLowerCase() ===
+                    WTON_ADDRESS.toLowerCase() &&
+                  selectedToken1.address.toLowerCase() ===
+                    TON_ADDRESS.toLowerCase()
+                ? "Unwrap"
+                : selectedToken0.address.toLowerCase() ===
+                    TON_ADDRESS.toLowerCase() &&
+                  selectedToken1.address.toLowerCase() ===
+                    WTON_ADDRESS.toLowerCase()
+                ? "Wrap"
                 : "Swap"
               : "Connect Wallet"}{" "}
           </Text>
