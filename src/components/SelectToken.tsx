@@ -125,6 +125,7 @@ export const SelectToken = (props: {
         alignItems={"center"}
         zIndex={1000}
         justifyContent="space-between"
+      
         onClick={() => {
           setSelected({ name: name, img: img });
           setExpanded(false);
@@ -134,6 +135,7 @@ export const SelectToken = (props: {
       >
         <Flex alignItems={"center"}>
           <Image
+            border='1px solid #e7edf3'
             src={img !== undefined && img !== "" ? img : ETH_symbol}
             h="32px"
             w="32px"
@@ -260,8 +262,10 @@ export const SelectToken = (props: {
           borderBottom="solid 1px #dfe4ee"
           borderBottomRadius={"28px"}
           px="15px"
+          pt={'42px'}
+          pb={'10px'}
         >
-          <Input
+          {/* <Input
             mt="42px"
             borderRadius={"4px"}
             mb="18px"
@@ -270,7 +274,7 @@ export const SelectToken = (props: {
             value={searchString}
             focusBorderColor={!validAddress ? "#FF0000" : ""}
             onChange={(e: any) => setSearchString(e.target.value)}
-          ></Input>
+          ></Input> */}
           {searchString === "" ? (
             tokensFromAPI.map((token: any, index: number) => (
               <TokenComp

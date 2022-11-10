@@ -20,7 +20,7 @@ interface IToast {
 const initialState = {
   data: {
     status: "",
-    message: "wow",
+    message: "",
     description: "",
     duration: 3000,
     isClosable: true,

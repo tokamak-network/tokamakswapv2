@@ -25,7 +25,7 @@ type HeaderProps = {
 
 export const Header: FC<HeaderProps> = ({ walletOpen }) => {
   const theme = useTheme();
-  const { tx } = useAppSelector(selectTxType);
+  const { tx , data} = useAppSelector(selectTxType);
   const { chainId, account, library } = useActiveWeb3React();
   const { width } = useWindowDimensions();
   const [network, setNetwork] = useState("Mainnet");
@@ -146,7 +146,7 @@ export const Header: FC<HeaderProps> = ({ walletOpen }) => {
               : "Goerli Network"}
           </Text>
         </Flex>
-        {tx === true ? (
+        {tx === true  && data? (
           <Button
             border={"solid 1px #2a72e5"}
             color={theme.colors.gray[225]}

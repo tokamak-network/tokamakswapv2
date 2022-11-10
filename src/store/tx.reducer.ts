@@ -13,7 +13,7 @@ type ModalPayload = {
 
 const initialState = {
   tx: false,
-  data: {},
+  data: {name:''},
 } as TxType;
 
 export const txReducer = createSlice({

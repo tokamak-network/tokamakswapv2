@@ -74,7 +74,7 @@ export const approve = async (account: any, library: any, tokenAddress: string, 
       const receipt = await contract
         .connect(signer)
         .approve(SwapperV2Proxy, convertedAmount);
-      store.dispatch(setTxPending({ tx: true }));
+      store.dispatch(setTxPending({ tx: true, data:{name:'approve'} }));
 
       if (receipt) {
         toastWithReceipt(receipt, setTxPending, 'Swapper');
@@ -82,7 +82,7 @@ export const approve = async (account: any, library: any, tokenAddress: string, 
         checkApproved(library, account, setAllowed, tokenAddress);
       }
     } catch (err) {
-      store.dispatch(setTxPending({ tx: false }));
+      store.dispatch(setTxPending({ tx: false , data:{name:'approve'}}));
       store.dispatch(
         //@ts-ignore
         openToast({
@@ -175,6 +175,28 @@ export const getExpectedOutput = async (library: any, userAddress: string | null
   }
 }
 
+export const getExpectedInput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string) => {
+  const params = getParams(address0, address1);
+  let amountOut
+
+  if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase()) {
+    amountOut = ethers.utils.parseUnits(amount, '27');
+
+  }
+  else {
+    amountOut = ethers.utils.parseEther(amount)
+  }
+  if (library && userAddress && params && Number(amount) !== 0) {
+    const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
+    const signer = getSigner(library, userAddress);
+    const swapperV2 = new Contract(SwapperV2Proxy, SwapperV2.abi, library);
+    const amountIn = await quoteContract.callStatic.quoteExactOutput(params.path, amountOut);
+    const denominator = BigNumber.from("1000")
+    const numerator = BigNumber.from("1005")
+    const maximumAmountIn = amountIn.mul(numerator).div(denominator); // ray
+  }
+}
+
 export const swapExactOutput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string) => {
   const params = getParams(address0, address1);
   let amountOut
@@ -209,13 +231,13 @@ export const swapExactOutput = async (library: any, userAddress: string | null |
         await exactOutputEth(signer, swapperV2, getExactOutputParams, params.wrapEth, params.outputUnwrapEth, params.inputWrapWTON, params.outputUnwrapTON, {
           value: maximumAmountIn,
         });
-      store.dispatch(setTxPending({ tx: true }));
+      store.dispatch(setTxPending({ tx: true , data:{name:'swap'}}));
       if (tx) {
         toastWithReceipt(tx, setTxPending, "Swapper");
       }
     }
     catch (err) {
-      store.dispatch(setTxPending({ tx: false }));
+      store.dispatch(setTxPending({ tx: false, data:{name:'swap'} }));
       store.dispatch(
         //@ts-ignore
         openToast({
@@ -242,21 +264,17 @@ const exactOutputWtonTon = async (library: any, userAddress: string|null | undef
     const signer = getSigner(library, userAddress);
     const swapperV2 = new Contract(SwapperV2Proxy, SwapperV2.abi, library);
     if (address0 === WTON_ADDRESS) {   
-      console.log('wton');
-     
       const amnt = ethers.utils.parseEther(amount)
-  
-      console.log(amnt);
-      try {
+        try {
         const tx =  await swapperV2.connect(signer).tonToWton(amnt)
           
-        store.dispatch(setTxPending({ tx: true }));
+        store.dispatch(setTxPending({ tx: true, data:{name:'swap'} }));
         if (tx) {
           toastWithReceipt(tx, setTxPending, "Swapper");
         }
       }
       catch (err) {
-        store.dispatch(setTxPending({ tx: false }));
+        store.dispatch(setTxPending({ tx: false, data:{name:'swap'} }));
         store.dispatch(
           //@ts-ignore
           openToast({
@@ -281,13 +299,13 @@ const exactOutputWtonTon = async (library: any, userAddress: string|null | undef
       try {
         const tx =  await swapperV2.connect(signer).wtonToTon(amnt)
           
-        store.dispatch(setTxPending({ tx: true }));
+        store.dispatch(setTxPending({ tx: true, data:{name:'swap'} }));
         if (tx) {
           toastWithReceipt(tx, setTxPending, "Swapper");
         }
       }
       catch (err) {
-        store.dispatch(setTxPending({ tx: false }));
+        store.dispatch(setTxPending({ tx: false, data:{name:'swap'}}));
         store.dispatch(
           //@ts-ignore
           openToast({
@@ -316,13 +334,13 @@ const exactInputWtonTon = async (library: any, userAddress: string|null | undefi
     try {
       const tx =  await swapperV2.connect(signer).wtonToTon(amount)
         
-      store.dispatch(setTxPending({ tx: true }));
+      store.dispatch(setTxPending({ tx: true, data:{name:'swap'} }));
       if (tx) {
         toastWithReceipt(tx, setTxPending, "Swapper");
       }
     }
     catch (err) {
-      store.dispatch(setTxPending({ tx: false }));
+      store.dispatch(setTxPending({ tx: false, data:{name:'swap'} }));
       store.dispatch(
         //@ts-ignore
         openToast({

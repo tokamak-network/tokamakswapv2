@@ -8,6 +8,7 @@ import {
   NumberInputField,
   Box,
   Image,
+  CircularProgress,
 } from "@chakra-ui/react";
 import { useActiveWeb3React } from "../hooks/useWeb3";
 import { DEFAULT_NETWORK } from "../constants";
@@ -33,11 +34,11 @@ import {
 export const Swapper = () => {
   const theme = useTheme();
   const { chainId, account, library } = useActiveWeb3React();
-  const { tx } = useAppSelector(selectTxType);
+  const { tx, data } = useAppSelector(selectTxType);
   const { transactionType, blockNumber } = useAppSelector(
     selectTransactionType
   );
-
+  
   const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
   const { WETH_ADDRESS } = DEPLOYED;
   const [swapFromAmt, setSwapFromAmt] = useState<string>("0");
@@ -149,10 +150,11 @@ export const Swapper = () => {
           swapFromAmt
         );
         if (tempAmount) {
-          setExpected(tempAmount.slice(0, tempAmount.indexOf(".") + 3) );
-          focused === 'input1'? setSwapFromAmt2(tempAmount.slice(0, tempAmount.indexOf(".") + 3) ) : setSwapFromAmt(tempAmount.slice(0, tempAmount.indexOf(".") + 3) )
+          setExpected(tempAmount.slice(0, tempAmount.indexOf(".") + 3));
+          focused === "input1"
+            ? setSwapFromAmt2(tempAmount.slice(0, tempAmount.indexOf(".") + 3))
+            : setSwapFromAmt(tempAmount.slice(0, tempAmount.indexOf(".") + 3));
         }
-       
       } else {
         setExpected("0");
       }
@@ -435,13 +437,23 @@ export const Swapper = () => {
                 )
         }
       >
-        <Text>
-          {account
-            ? selectedToken0.address === "" || selectedToken1.address === ""
-              ? "Select Tokens"
-              : "Swap"
-            : "Connect Wallet"}{" "}
-        </Text>
+        {tx === true && !data ? (
+          <CircularProgress
+            isIndeterminate
+            size={'32px'}
+            zIndex={100}
+            color="blue.500"
+            pos='absolute'
+          ></CircularProgress>
+        ) : (
+          <Text>
+            {account
+              ? selectedToken0.address === "" || selectedToken1.address === ""
+                ? "Select Tokens"
+                : "Swap"
+              : "Connect Wallet"}{" "}
+          </Text>
+        )}
       </Button>
     </Flex>
   );

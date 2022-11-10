@@ -27,7 +27,7 @@ export const SettingsComponent = () => {
   return (
     <Flex
       border="1px solid #dfe4ee"
-      h={expanded ? "511px" : "36px"}
+      h={expanded ? "211px" : "36px"}
       borderRadius={"18px"}
       mb="30px"
       px="15px"
@@ -66,7 +66,7 @@ export const SettingsComponent = () => {
             pr={"18px"}
             mb="17px"
           >
-            <NumberInput
+            {/* <NumberInput
               height={"56px"}
               w={"fit-content"}
               color={"#86929d"}
@@ -99,7 +99,27 @@ export const SettingsComponent = () => {
                 borderColor={"transparent"}
                 pl={"0px"}
               />
-            </NumberInput>
+            </NumberInput> */}
+            <Input  height={"56px"}
+              w={"fit-content"}
+              color={"#86929d"}
+              pl={"24px"}
+              border={"none"}
+              fontSize={"18px"}
+              borderRadius={"4px"}
+              borderColor={"transparent"}
+              type='number'
+              _focus={{
+                borderColor: "transparent",
+              }}
+              _active={{
+                borderColor: "transparent",
+              }}
+              focusBorderColor="transparent"
+              _hover={{
+                borderColor: "transparent",
+              }}>
+            </Input>
 
             <Button
               h="24px"
@@ -113,7 +133,7 @@ export const SettingsComponent = () => {
               Auto
             </Button>
           </Flex>
-          <Text fontSize={"14px"} fontWeight="normal" mb="13px" h='19px'>
+          {/* <Text fontSize={"14px"} fontWeight="normal" mb="13px" h='19px'>
             Transaction Deadline
           </Text>
           <Flex
@@ -128,12 +148,12 @@ export const SettingsComponent = () => {
           >
             <Text>30 minutes</Text>
             <Image src={icon_arrow} h="14px" w="14px" />
-          </Flex>
-          <Box h={"1px"} bg={"#e9edf1"} w="280px" ></Box>
-          <Text fontSize="16px" fontWeight={"bold"} mt={"15.5px"} mb="20px" h='21px'>
+          </Flex> */}
+          {/* <Box h={"1px"} bg={"#e9edf1"} w="280px" ></Box> */}
+          {/* <Text fontSize="16px" fontWeight={"bold"} mt={"15.5px"} mb="20px" h='21px'>
             Auto Router Setting
-          </Text>
-          <Flex alignItems={"center"} mb='10px'>
+          </Text> */}
+          {/* <Flex alignItems={"center"} mb='10px'>
             <Flex
               h="20px"
               w="20px"
@@ -171,8 +191,8 @@ export const SettingsComponent = () => {
               borderRadius="50%"
               position={'relative'}
             ></Flex>
-          </Flex>
-          <Flex alignItems={"center"} mb='19px'>
+          </Flex> */}
+          {/* <Flex alignItems={"center"} mb='19px'>
             <Flex
               h="20px"
               w="20px"
@@ -220,7 +240,7 @@ export const SettingsComponent = () => {
             </Flex>
             <Switch/>
          
-          </Flex>
+          </Flex> */}
         </Flex>
       )}
     </Flex>
