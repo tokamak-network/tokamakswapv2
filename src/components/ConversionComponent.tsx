@@ -19,8 +19,8 @@ import {
   Box,
 } from "@chakra-ui/react";
 import expand from "../assets/expand.png";
-export const ConversionComponent = (props:{expectedAmnt: string, symbol:string}) => {
-  const {expectedAmnt,symbol} = props
+export const ConversionComponent = (props:{expectedAmnt: string, symbol:string, slippage: string, minAmount:string}) => {
+  const {expectedAmnt,symbol,slippage, minAmount} = props
   const [expanded, setExpanded] = useState<boolean>(false);
   return (
     <Flex
@@ -37,7 +37,7 @@ export const ConversionComponent = (props:{expectedAmnt: string, symbol:string})
           alignItems="center"
           w="100%"
         >
-          <Text>Conversion / Gas</Text>
+          <Text fontSize={'14px'}>Conversion</Text>
           <Image
             src={expand}
             w="14px"
@@ -46,10 +46,10 @@ export const ConversionComponent = (props:{expectedAmnt: string, symbol:string})
           />
         </Flex>
       ) : (
-        <Flex h={"191px"} w={"100%"} flexDirection="column">
+        <Flex h={"145px"} w={"100%"} flexDirection="column">
           <Flex mt="10px" justifyContent={"space-between"} w={"100%"}>
-            <Text fontSize={"12px"} color="#3d495d">
-              1 TON = 0.0357112 ETH <span>($350.00)</span>
+            <Text fontSize={"14px"} color="#3d495d">
+            Conversion
             </Text>
             <Image
               src={expand}
@@ -63,32 +63,32 @@ export const ConversionComponent = (props:{expectedAmnt: string, symbol:string})
               Expected Output
             </Text>
             <Text color="#3d495d" fontSize={"14px"} fontWeight="normal">
-            {expectedAmnt} {symbol}
+            {minAmount} {symbol}
             </Text>
           </Flex>
-          <Flex justifyContent={"space-between"} w={"100%"} mt="11px">
+          {/* <Flex justifyContent={"space-between"} w={"100%"} mt="11px">
             <Text color="#3d495d" fontSize={"14px"} fontWeight="bold">
               Price Impact
             </Text>
             <Text color="#3d495d" fontSize={"14px"} fontWeight="normal">
               0.00%
             </Text>
-          </Flex>
-          <Box h={"1px"} bg={"#e9edf1"} w="280px" mt="14.5px"></Box>
+          </Flex> */}
+          <Box h={"1px"} bg={"#e9edf1"} w="280px" mt="14.5px" mb={'12.5px'}></Box>
           <Flex  justifyContent={"space-between"}>
             <Flex flexDir={"column"} alignItems='start' fontSize={'12px'}>
               <Text>Minimum received after slippage</Text>
-              <Text>(1.0%)</Text>
+              <Text>{slippage? `${slippage} %`: `1%`}</Text>
             </Flex>
             <Flex flexDir={"column"} fontSize={'12px'} color='#86929d'>
-                <Text>3.49</Text>
-                <Text>ETH</Text>
+                <Text>{minAmount? expectedAmnt:`0`}</Text>
+                <Text>{symbol}</Text>
             </Flex>
           </Flex>
-          <Flex mt='10px' justifyContent={"space-between"} fontSize='12px'>
+          {/* <Flex mt='10px' justifyContent={"space-between"} fontSize='12px'>
             <Text color='#3d495d'>Gas Fee</Text>
             <Text color='#86929d'>~$7.63</Text>
-          </Flex>
+          </Flex> */}
         </Flex>
       )}
     </Flex>

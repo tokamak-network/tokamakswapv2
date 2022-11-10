@@ -49,7 +49,7 @@ export const Swapper = () => {
   const [expected, setExpected] = useState<string>("0");
   const [focused, setFocused] = useState<string>("");
   const [slippage, setSlippage] = useState<string>("");
-
+  const [minAmount, setMinAmount] = useState<string>("");
   const [selectedToken0, setSelectedToken0] = useState({
     name: "",
     address: "",
@@ -149,31 +149,12 @@ export const Swapper = () => {
           slippage
         );
         if (tempAmount) {
-          tempAmount.formatted?.indexOf(".") > -1
-            ? setExpected(
-                tempAmount.formatted.slice(
-                  0,
-                  tempAmount.formatted?.indexOf(".") + 3
-                )
-              )
-            : setExpected(tempAmount.formatted);
+          setExpected(tempAmount.formatted);
           focused === "input1"
-            ? tempAmount.formatted?.indexOf(".") > -1
-              ? setSwapFromAmt2(
-                  tempAmount.formatted.slice(
-                    0,
-                    tempAmount.formatted?.indexOf(".") + 3
-                  )
-                )
-              : setSwapFromAmt2(tempAmount.formatted)
-            : tempAmount.formatted?.indexOf(".") > -1
-            ? setSwapFromAmt(
-                tempAmount.formatted.slice(
-                  0,
-                  tempAmount.formatted?.indexOf(".") + 3
-                )
-              )
+            ? setSwapFromAmt2(tempAmount.formatted)
             : setSwapFromAmt(tempAmount.formatted);
+
+          setMinAmount(tempAmount.formattedAmountOut);
         }
       } else {
         setExpected("0");
@@ -404,6 +385,8 @@ export const Swapper = () => {
       <ConversionComponent
         expectedAmnt={expected}
         symbol={selectedToken1.name}
+        slippage={slippage}
+        minAmount={minAmount}
       />
       <SettingsComponent setSlippage={setSlippage} />
       <Button

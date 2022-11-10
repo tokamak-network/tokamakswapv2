@@ -143,7 +143,7 @@ const exactOutputEth = async (signer: any, swapperV2: any, exactOutputParams: an
   return receipt
 }
 
-//getExpectedOutput function predicts the output the user will get for exact input (swapExpectedInput)
+//getExpectedOutput function predicts the output the user will get for exact input (swapExactInput)
 
 export const getExpectedOutput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string, slippage: string) => {
   let denominator;
@@ -169,7 +169,6 @@ export const getExpectedOutput = async (library: any, userAddress: string | null
     denominator = BigNumber.from("100")
     numerator = BigNumber.from("99")
   }
-
   let amountIn
 
   if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase()) {
@@ -178,33 +177,53 @@ export const getExpectedOutput = async (library: any, userAddress: string | null
   else {
     amountIn = ethers.utils.parseEther(amount)
   }
-
   const params = getParams(address0, address1);
 
   if (library && userAddress && params && Number(amount) !== 0) {
     const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
-
     const amountOut = await quoteContract.callStatic.quoteExactInput(params.path, amountIn)
-    const minimumAmountOut = amountOut.mul(numerator).div(denominator);
-
+    const minimumAmountOut = amountOut.mul(numerator).div(denominator);    
     if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase() || params.outputUnwrapTON) {
-      const formatted = convertNumber({
+      const converted = convertNumber({
         amount: minimumAmountOut,
         type: "ray",
       });
-      return { formatted, minimumAmountOut, amountIn }
+
+      const formatted = converted && converted.indexOf(".") > -1 ? converted?.slice(
+        0,
+        converted?.indexOf(".") + 3
+      ) : converted
+      const convertedAmountOut  =  convertNumber({
+        amount: amountOut,
+        type: "ray",
+      });
+      
+      const formattedAmountOut = convertedAmountOut && convertedAmountOut.indexOf(".") > -1 ? convertedAmountOut?.slice(
+        0,
+        convertedAmountOut?.indexOf(".") + 3
+      ) : convertedAmountOut
+
+      return { formatted, minimumAmountOut, amountIn,formattedAmountOut }
     }
     else {
-      const formatted = ethers.utils.formatEther(minimumAmountOut)
-      return { formatted, minimumAmountOut, amountIn }
+      const converted = ethers.utils.formatEther(minimumAmountOut)
+      const formatted = converted && converted.indexOf(".") > -1 ? converted?.slice(
+        0,
+        converted?.indexOf(".") + 3
+      ) : converted
+      const convertedAmountOut = ethers.utils.formatEther(amountOut)
+      const formattedAmountOut = convertedAmountOut && convertedAmountOut.indexOf(".") > -1 ? convertedAmountOut?.slice(
+        0,
+        convertedAmountOut?.indexOf(".") + 3
+      ) : convertedAmountOut
+      return { formatted, minimumAmountOut, amountIn,formattedAmountOut }
     }
   }
-
-
   else if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() && address1.toLowerCase() === TON_ADDRESS.toLowerCase() || address1.toLowerCase() === WTON_ADDRESS.toLowerCase() && address0.toLowerCase() === TON_ADDRESS.toLowerCase()) {
-  const formatted = amount  
-    return {formatted}
-    
+  const formatted = amount  ;
+  const minimumAmountOut = amount;
+  const formattedAmountOut= amount
+    return {formatted,minimumAmountOut,formattedAmountOut}
   }
 }
 
@@ -260,7 +279,7 @@ export const swapExactInput = async (library: any, userAddress: string | null | 
   }
 }
 
-// getExpectedInput function predicts the input the user will spend for exact output (swapExpectedOutput)
+// getExpectedInput function predicts the input the user will spend for exact output (swapExactOutput)
 export const getExpectedInput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string, slippage: string) => {
   const params = getParams(address0, address1);
   let amountOut
