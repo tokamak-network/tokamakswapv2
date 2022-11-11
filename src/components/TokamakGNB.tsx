@@ -43,7 +43,7 @@ function TokamakGNB() {
       fontWeight={"bold"}
       justifyContent={"center"}
     >
-      <Menu title={"Vision"} w={"100px"} url={""}></Menu>
+      <Menu title={"Vision"} w={"100px"} url={"https://vision-page.vercel.app/"}></Menu>
       <Menu
         title={"Tokamak Network"}
         w={"158px"}
