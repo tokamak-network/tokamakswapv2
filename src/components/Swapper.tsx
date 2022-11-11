@@ -224,6 +224,7 @@ export const Swapper = () => {
       width={"350px"}
       //   alignItems={"center"}
       mt={"54px"}
+      mb='53px'
       mx={"auto"}
       borderRadius={"10px"}
       // height="606px"
@@ -246,7 +247,7 @@ export const Swapper = () => {
           fontSize={"14px"}
           color={"#3d495d"}
           fontWeight="bold"
-          onClick={() => setSwapFromAmt(token0Balance)}
+          onClick={() => {setSwapFromAmt(token0Balance)}}
           _hover={{ cursor: "pointer" }}
         >
           MAX

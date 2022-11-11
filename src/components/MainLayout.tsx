@@ -23,7 +23,7 @@ export const MainLayout = () => {
       <TokamakGNB/>
         <Header walletOpen={() => handleWalletModalOpen("wallet")}/>
         <Swapper/>
-        <Description/>
+        {/* <Description/> */}
         <Footer/>
         <WalletModal state={walletState} isOpen={isModalOpen} onClose={onClose} />
         <ImportTokenModal />
