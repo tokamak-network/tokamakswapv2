@@ -139,7 +139,8 @@ export const Swapper = () => {
       if (
         selectedToken0.address &&
         selectedToken1.address &&
-        swapFromAmt !== "" && swapFromAmt !== "0" 
+        swapFromAmt !== "" &&
+        swapFromAmt !== "0"
       ) {
         const tempAmount: any = await getExpectedOutput(
           library,
@@ -159,9 +160,9 @@ export const Swapper = () => {
         }
       } else {
         setExpected("0");
-        setSwapFromAmt2('0')
-        setSwapFromAmt('0')
-        setMinAmount('0')
+        setSwapFromAmt2("0");
+        setSwapFromAmt("0");
+        setMinAmount("0");
       }
     };
 
@@ -169,7 +170,8 @@ export const Swapper = () => {
       if (
         selectedToken0.address &&
         selectedToken1.address &&
-        swapFromAmt2 !== "" && swapFromAmt2 !== "0"
+        swapFromAmt2 !== "" &&
+        swapFromAmt2 !== "0"
       ) {
         const tempAmount: any = await getExpectedInput(
           library,
@@ -187,10 +189,9 @@ export const Swapper = () => {
             : setSwapFromAmt2(tempAmount.formatted);
         }
       } else {
-     
         setExpected("0");
-        setSwapFromAmt2('0')
-        setSwapFromAmt('0')
+        setSwapFromAmt2("0");
+        setSwapFromAmt("0");
       }
     };
     focused && focused === "input1" ? getExpectedOut() : getExpectedIn();
@@ -218,13 +219,12 @@ export const Swapper = () => {
     setSelectedToken0(token0);
     setSelectedToken1(token1);
   };
-
   return (
     <Flex
       width={"350px"}
       //   alignItems={"center"}
       mt={"54px"}
-      mb='53px'
+      mb="53px"
       mx={"auto"}
       borderRadius={"10px"}
       // height="606px"
@@ -247,7 +247,10 @@ export const Swapper = () => {
           fontSize={"14px"}
           color={"#3d495d"}
           fontWeight="bold"
-          onClick={() => {setSwapFromAmt(token0Balance)}}
+          onClick={() => {
+            setFocused("input1");
+            setSwapFromAmt(token0Balance);
+          }}
           _hover={{ cursor: "pointer" }}
         >
           MAX
