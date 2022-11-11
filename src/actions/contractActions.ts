@@ -88,8 +88,8 @@ export const approve = async (account: any, library: any, tokenAddress: string, 
         openToast({
           payload: {
             status: 'error',
-            title: 'Tx fail to send',
-            description: `something went wrong`,
+            title: 'Tx failed to send',
+            description: `Something went wrong`,
             duration: 5000,
             isClosable: true,
           },
@@ -177,7 +177,8 @@ export const getExpectedOutput = async (library: any, userAddress: string | null
     amountIn = ethers.utils.parseEther(amount)
   }
   const params = getParams(address0, address1);
-
+  console.log(address0, address1);
+  //address0 => TOS, address11=>DOC
   if (library && userAddress && params && Number(amount) !== 0) {
     const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
     const amountOut = await quoteContract.callStatic.quoteExactInput(params.path, amountIn)
@@ -228,11 +229,14 @@ export const getExpectedOutput = async (library: any, userAddress: string | null
   }
 }
 
-
+// exact input tos to doc path is tosDoc
+// exact output tos to doc path is 
 
 // getExpectedInput function predicts the input the user will spend for exact output (swapExactOutput)
-export const getExpectedInput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string, slippage: string) => {
-  const params = getParams(address0, address1);
+export const getExpectedInput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string, slippage: string) => { 
+  const params = getParams(address1, address0 );
+   // address0 => TOS
+   //address1 => DOC
   let amountOut
   let denominator;
   let numerator;
@@ -254,18 +258,14 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
   }
   else {
     denominator = BigNumber.from("100")
-    numerator = BigNumber.from("99")
+    numerator = BigNumber.from("105")
   }
 
-  if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase()) {
-    amountOut = ethers.utils.parseUnits(amount, '27');
-    console.log('amountOutW',amountOut);
-    
+  if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase()) {
+    amountOut = ethers.utils.parseUnits(amount, '27');    
   }
   else {
-    amountOut = ethers.utils.parseEther(amount)
-    console.log('amountOut',amountOut);
-    
+    amountOut = ethers.utils.parseEther(amount)    
   }
   if (library && userAddress && params && Number(amount) !== 0) {
     const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
@@ -353,8 +353,8 @@ export const swapExactInput = async (library: any, userAddress: string | null | 
         openToast({
           payload: {
             status: "error",
-            title: "Tx fail to send",
-            description: `something went wrong`,
+            title: "Tx failed to send",
+            description: `Something went wrong`,
             duration: 5000,
             isClosable: true,
           },
@@ -407,8 +407,8 @@ export const swapExactOutput = async (library: any, userAddress: string | null |
         openToast({
           payload: {
             status: "error",
-            title: "Tx fail to send",
-            description: `something went wrong`,
+            title: "Tx failed to send",
+            description: `Something went wrong`,
             duration: 5000,
             isClosable: true,
           },
@@ -444,8 +444,8 @@ const exactOutputWtonTon = async (library: any, userAddress: string | null | und
           openToast({
             payload: {
               status: "error",
-              title: "Tx fail to send",
-              description: `something went wrong`,
+              title: "Tx failed to send",
+              description: `Something went wrong`,
               duration: 5000,
               isClosable: true,
             },
@@ -469,8 +469,8 @@ const exactOutputWtonTon = async (library: any, userAddress: string | null | und
           openToast({
             payload: {
               status: "error",
-              title: "Tx fail to send",
-              description: `something went wrong`,
+              title: "Tx failed to send",
+              description: `Something went wrong`,
               duration: 5000,
               isClosable: true,
             },
@@ -504,8 +504,8 @@ const exactInputWtonTon = async (library: any, userAddress: string | null | unde
           openToast({
             payload: {
               status: "error",
-              title: "Tx fail to send",
-              description: `something went wrong`,
+              title: "Tx failed to send",
+              description: `Something went wrong`,
               duration: 5000,
               isClosable: true,
             },
@@ -531,8 +531,8 @@ const exactInputWtonTon = async (library: any, userAddress: string | null | unde
           openToast({
             payload: {
               status: "error",
-              title: "Tx fail to send",
-              description: `something went wrong`,
+              title: "Tx failed to send",
+              description: `Something went wrong`,
               duration: 5000,
               isClosable: true,
             },

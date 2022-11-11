@@ -20,8 +20,8 @@ import icon_arrow from "../assets/icon_arrow.png";
 import { QuestionOutlineIcon } from '@chakra-ui/icons'
 
 
-export const SettingsComponent = (props:{setSlippage:Dispatch<SetStateAction<any>>}) => {
-  const {setSlippage} = props;
+export const SettingsComponent = (props:{setSlippage:Dispatch<SetStateAction<any>>; focused: string}) => {
+  const {setSlippage, focused} = props;
   const [expanded, setExpanded] = useState<boolean>(false);
   const [slippageAmnt, setSlippageAmnt] = useState<string>("0");
   const [invalidInput, setInvalidInput] = useState<boolean>(false);
@@ -106,7 +106,7 @@ export const SettingsComponent = (props:{setSlippage:Dispatch<SetStateAction<any
             </NumberInput>
           
 
-            <Button
+            {/* <Button
               h="24px"
               w="60px"
               borderRadius={"12px"}
@@ -114,9 +114,11 @@ export const SettingsComponent = (props:{setSlippage:Dispatch<SetStateAction<any
               fontWeight={"normal"}
               color="#fff"
               bg="#257eee"
+              onClick={()=> {setSlippage(focused === 'input1'? '1' : '5')
+              setSlippageAmnt(focused === 'input1'? '1' : '5')}}
             >
               Auto
-            </Button>
+            </Button> */}
           </Flex>
           {/* <Text fontSize={"14px"} fontWeight="normal" mb="13px" h='19px'>
             Transaction Deadline

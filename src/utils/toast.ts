@@ -55,7 +55,7 @@ export const toastWithReceipt = async (
       openToast({
         payload: {
           title: "Success",
-          description: `Tx is successfully pending!`,
+          description: `Tx successfully submitted!`,
           status: "success",
           duration: 5000,
           isClosable: true,

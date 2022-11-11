@@ -672,6 +672,7 @@ export const getParams = (address0: string, address1: string) => {
         }
       case getPool(tosDoc, pool):
   
+  console.log('tosDoc');
   
         return {
           path: encodePath(tosDoc, [FeeAmount.MEDIUM]),

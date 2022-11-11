@@ -422,7 +422,7 @@ export const Swapper = () => {
         slippage={slippage}
         minAmount={minAmount}
       />
-      <SettingsComponent setSlippage={setSlippage} />
+      <SettingsComponent setSlippage={setSlippage} focused={focused} />
       <Button
         borderRadius={"28px"}
         border={"none"}
