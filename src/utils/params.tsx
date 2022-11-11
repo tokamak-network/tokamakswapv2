@@ -569,9 +569,7 @@ export const getParams = (address0: string, address1: string) => {
           fee: FeeAmount.MEDIUM,
           quoteExactInputSingle: true
         }
-      case getPool(tonTos, pool):
-  
-  
+      case getPool(tonTos, pool):  
         return {
           path: encodePath([WTON_ADDRESS, TOS_ADDRESS], [FeeAmount.MEDIUM]),
           wrapEth: false,

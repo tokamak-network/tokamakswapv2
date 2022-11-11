@@ -146,6 +146,8 @@ const exactOutputEth = async (signer: any, swapperV2: any, exactOutputParams: an
 //getExpectedOutput function predicts the output the user will get for exact input (swapExactInput)
 
 export const getExpectedOutput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string, slippage: string) => {
+ //address0 = ton 
+ //addres1 = tos
   let denominator;
   let numerator;
   const int = Number.isInteger(Number(slippage));
@@ -170,17 +172,18 @@ export const getExpectedOutput = async (library: any, userAddress: string | null
   }
   let amountIn
 
-  if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase()) {
-    amountIn = ethers.utils.parseUnits(amount, '27');
+  if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() ||address0.toLowerCase() === TON_ADDRESS.toLowerCase() ) {
+    amountIn = ethers.utils.parseUnits(amount, '27');    
   }
   else {
     amountIn = ethers.utils.parseEther(amount)
+    
   }
   const params = getParams(address0, address1);
   //address0 => TOS, address11=>DOC
   if (library && userAddress && params && Number(amount) !== 0) {
     const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
-    const amountOut = await quoteContract.callStatic.quoteExactInput(params.path, amountIn)
+    const amountOut = await quoteContract.callStatic.quoteExactInput(params.path, amountIn)    
     const minimumAmountOut = amountOut.mul(numerator).div(denominator);
     if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase() || params.outputUnwrapTON) {
       const converted = convertNumber({
@@ -271,7 +274,7 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
     const amountIn = await quoteContract.callStatic.quoteExactOutput(params.path, amountOut);
     const maximumAmountIn = amountIn.mul(numerator).div(denominator); // ray
 
-    if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() || params.inputWrapWTON) {
+    if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() ||address0.toLowerCase() === TON_ADDRESS.toLowerCase() || params.inputWrapWTON) {
       const converted = convertNumber({
         amount: maximumAmountIn,
         type: "ray",
