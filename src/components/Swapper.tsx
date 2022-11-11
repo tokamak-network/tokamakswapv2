@@ -139,7 +139,7 @@ export const Swapper = () => {
       if (
         selectedToken0.address &&
         selectedToken1.address &&
-        swapFromAmt !== ""
+        swapFromAmt !== "" && swapFromAmt !== "0" 
       ) {
         const tempAmount: any = await getExpectedOutput(
           library,
@@ -159,6 +159,9 @@ export const Swapper = () => {
         }
       } else {
         setExpected("0");
+        setSwapFromAmt2('0')
+        setSwapFromAmt('0')
+        setMinAmount('0')
       }
     };
 
@@ -166,7 +169,7 @@ export const Swapper = () => {
       if (
         selectedToken0.address &&
         selectedToken1.address &&
-        swapFromAmt2 !== ""
+        swapFromAmt2 !== "" && swapFromAmt2 !== "0"
       ) {
         const tempAmount: any = await getExpectedInput(
           library,
@@ -184,7 +187,10 @@ export const Swapper = () => {
             : setSwapFromAmt2(tempAmount.formatted);
         }
       } else {
+     
         setExpected("0");
+        setSwapFromAmt2('0')
+        setSwapFromAmt('0')
       }
     };
     focused && focused === "input1" ? getExpectedOut() : getExpectedIn();
@@ -418,9 +424,12 @@ export const Swapper = () => {
       </Flex>
       <ConversionComponent
         expectedAmnt={expected}
-        symbol={selectedToken1.name}
+        symbol1={selectedToken1.name}
+        symbol0={selectedToken0.name}
         slippage={slippage}
         minAmount={minAmount}
+        focused={focused}
+        swapFromAmt2={swapFromAmt2}
       />
       <SettingsComponent setSlippage={setSlippage} focused={focused} />
       <Button

@@ -177,7 +177,6 @@ export const getExpectedOutput = async (library: any, userAddress: string | null
     amountIn = ethers.utils.parseEther(amount)
   }
   const params = getParams(address0, address1);
-  console.log(address0, address1);
   //address0 => TOS, address11=>DOC
   if (library && userAddress && params && Number(amount) !== 0) {
     const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
