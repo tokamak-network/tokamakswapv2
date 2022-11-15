@@ -52,7 +52,9 @@ export const SelectToken = (props: {
     
     async function getTokens() {
       const tokens: any = await getTokensData();
-      const allTokens = tokens.concat({
+      const tokensOrdered = [];
+
+      const Eth = {
         token: {
           address: ZERO_ADDRESS,
           symbol: "ETH",
@@ -60,8 +62,11 @@ export const SelectToken = (props: {
         },
         tokenAddress: ZERO_ADDRESS,
         tokenImage: "",
-      });
-      setTokensFromAPI(allTokens);
+      }
+      
+      tokensOrdered.push(Eth,tokens[7], tokens[4], tokens[2], tokens[1], tokens[0], tokens[3], tokens[6])
+
+      setTokensFromAPI(tokensOrdered);
     
         setSelected({ name: selectedToken.name, img: selectedToken.img });
     }
