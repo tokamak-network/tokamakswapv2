@@ -104,6 +104,7 @@ export const Header: FC<HeaderProps> = ({ walletOpen }) => {
       w="100%"
       px="7.3%"
       mt="20px"
+      mb='49px'
     >
       <Flex width={"350px"}>
         <Image src={tokamakSwapLogo} />

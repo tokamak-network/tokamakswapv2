@@ -233,8 +233,7 @@ export const Swapper = () => {
     <Flex
       width={"350px"}
       //   alignItems={"center"}
-      mt={"54px"}
-      mb="53px"
+     my='auto'
       mx={"auto"}
       borderRadius={"10px"}
       // height="606px"

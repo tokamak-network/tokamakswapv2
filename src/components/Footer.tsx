@@ -228,7 +228,7 @@ export const Footer = () => {
 
   const { width } = useWindowDimensions();
 
- if (width < 480) {
+ if (width < 740) {
     return (
       <Flex
         maxW={"full"}
@@ -289,17 +289,18 @@ export const Footer = () => {
     );
   }
 
-  else if ( width > 479 && width < 1270) {
+  else if ( width > 740 && width < 1270) {
     return (
       <Flex
       maxW={"full"}
-      w={"700px"}
+      w={"100%"}
       h={"100%"}
       p={"0px"}
+      mt='49px'
     >
-      <Flex flexDir={"column"} h={"21px"} >
+      <Flex flexDir={"column"} mx='20px'  w={"100%"} >
         <Flex
-         maxW={"full"}
+         maxW={"100%"}
           flexDir={"row"}
           // alignItems={"center"}
           justifyContent={"space-between"}
@@ -323,8 +324,8 @@ export const Footer = () => {
           </Text>
          
         </Flex>
-        <Flex mt={"5px"} justifyContent={"center"}  w={"700px"}>
-        <Flex alignItems={"center"}  w={"700px"}>
+        <Flex mt={"5px"} justifyContent={"center"} mb='10px'   maxW={"100%"}>
+        <Flex justifyContent={"center"} w={"100%"} alignItems='center'>
             <Box mr={"4px"}>
               <EmailIcon color={"#84919e"}></EmailIcon>
             </Box>
@@ -394,6 +395,7 @@ export const Footer = () => {
         justifyContent={"space-between"}
         alignItems={"center"}
         width={"100%"}
+        mt='49px'
         px='40px'
     //  bottom={'0px'}
     //  position='relative'
