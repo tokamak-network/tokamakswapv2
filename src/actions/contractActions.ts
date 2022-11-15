@@ -146,8 +146,8 @@ const exactOutputEth = async (signer: any, swapperV2: any, exactOutputParams: an
 //getExpectedOutput function predicts the output the user will get for exact input (swapExactInput)
 
 export const getExpectedOutput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string, slippage: string) => {
- //address0 = ton 
- //addres1 = tos
+  //address0 = ton 
+  //addres1 = tos
   let denominator;
   let numerator;
   const int = Number.isInteger(Number(slippage));
@@ -172,18 +172,18 @@ export const getExpectedOutput = async (library: any, userAddress: string | null
   }
   let amountIn
 
-  if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() ||address0.toLowerCase() === TON_ADDRESS.toLowerCase() ) {
-    amountIn = ethers.utils.parseUnits(amount, '27');    
+  if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() || address0.toLowerCase() === TON_ADDRESS.toLowerCase()) {
+    amountIn = ethers.utils.parseUnits(amount, '27');
   }
   else {
     amountIn = ethers.utils.parseEther(amount)
-    
+
   }
   const params = getParams(address0, address1);
   //address0 => TOS, address11=>DOC
   if (library && userAddress && params && Number(amount) !== 0) {
     const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
-    const amountOut = await quoteContract.callStatic.quoteExactInput(params.path, amountIn)    
+    const amountOut = await quoteContract.callStatic.quoteExactInput(params.path, amountIn)
     const minimumAmountOut = amountOut.mul(numerator).div(denominator);
     if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase() || params.outputUnwrapTON) {
       const converted = convertNumber({
@@ -235,10 +235,10 @@ export const getExpectedOutput = async (library: any, userAddress: string | null
 // exact output tos to doc path is 
 
 // getExpectedInput function predicts the input the user will spend for exact output (swapExactOutput)
-export const getExpectedInput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string, slippage: string) => { 
-  const params = getParams(address1, address0 );
-   // address0 => TOS
-   //address1 => DOC
+export const getExpectedInput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string, slippage: string) => {
+  const params = getParams(address1, address0);
+  // address0 => TOS
+  //address1 => DOC
   let amountOut
   let denominator;
   let numerator;
@@ -264,54 +264,62 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
   }
 
   if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase()) {
-    amountOut = ethers.utils.parseUnits(amount, '27');    
+    amountOut = ethers.utils.parseUnits(amount, '27');
   }
   else {
-    amountOut = ethers.utils.parseEther(amount)    
+    amountOut = ethers.utils.parseEther(amount)
   }
   if (library && userAddress && params && Number(amount) !== 0) {
     const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
-    const amountIn = await quoteContract.callStatic.quoteExactOutput(params.path, amountOut);
-    const maximumAmountIn = amountIn.mul(numerator).div(denominator); // ray
+    let amountIn;
+    try {
+      amountIn = await quoteContract.callStatic.quoteExactOutput(params.path, amountOut); // ray
+      const maximumAmountIn = amountIn.mul(numerator).div(denominator);
+      if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() || address0.toLowerCase() === TON_ADDRESS.toLowerCase() || params.inputWrapWTON) {
+        const converted = convertNumber({
+          amount: maximumAmountIn,
+          type: "ray",
+        });
 
-    if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() ||address0.toLowerCase() === TON_ADDRESS.toLowerCase() || params.inputWrapWTON) {
-      const converted = convertNumber({
-        amount: maximumAmountIn,
-        type: "ray",
-      });
+        const formatted = converted && converted.indexOf(".") > -1 ? converted?.slice(
+          0,
+          converted?.indexOf(".") + 3
+        ) : converted
 
-      const formatted = converted && converted.indexOf(".") > -1 ? converted?.slice(
-        0,
-        converted?.indexOf(".") + 3
-      ) : converted
+        const convertedAmountOut = convertNumber({
+          amount: amountIn,
+          type: "ray",
+        });
 
-      const convertedAmountOut = convertNumber({
-        amount: amountIn,
-        type: "ray",
-      });
+        const formattedAmountOut = convertedAmountOut && convertedAmountOut.indexOf(".") > -1 ? convertedAmountOut?.slice(
+          0,
+          convertedAmountOut?.indexOf(".") + 3
+        ) : convertedAmountOut
 
-      const formattedAmountOut = convertedAmountOut && convertedAmountOut.indexOf(".") > -1 ? convertedAmountOut?.slice(
-        0,
-        convertedAmountOut?.indexOf(".") + 3
-      ) : convertedAmountOut
+        return { maximumAmountIn, amountIn, amountOut, formatted, formattedAmountOut }
+      }
 
-      return { maximumAmountIn, amountIn, amountOut, formatted, formattedAmountOut }
+      else {
+        const converted = ethers.utils.formatEther(maximumAmountIn)
+        const formatted = converted && converted.indexOf(".") > -1 ? converted?.slice(
+          0,
+          converted?.indexOf(".") + 3
+        ) : converted
+        const convertedAmountOut = ethers.utils.formatEther(amountIn)
+        const formattedAmountOut = convertedAmountOut && convertedAmountOut.indexOf(".") > -1 ? convertedAmountOut?.slice(
+          0,
+          convertedAmountOut?.indexOf(".") + 3
+        ) : convertedAmountOut
+
+        return { maximumAmountIn, amountIn, amountOut, formatted, formattedAmountOut }
+      }
+
     }
-
-    else {
-      const converted = ethers.utils.formatEther(maximumAmountIn)
-      const formatted = converted && converted.indexOf(".") > -1 ? converted?.slice(
-        0,
-        converted?.indexOf(".") + 3
-      ) : converted
-      const convertedAmountOut = ethers.utils.formatEther(amountIn)
-      const formattedAmountOut = convertedAmountOut && convertedAmountOut.indexOf(".") > -1 ? convertedAmountOut?.slice(
-        0,
-        convertedAmountOut?.indexOf(".") + 3
-      ) : convertedAmountOut
-
-      return { maximumAmountIn, amountIn, amountOut, formatted, formattedAmountOut }
+    catch (err) {
+      return {err}
     }
+   
+
 
 
   }

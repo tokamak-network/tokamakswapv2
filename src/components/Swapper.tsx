@@ -51,6 +51,7 @@ export const Swapper = () => {
   const [focused, setFocused] = useState<string>("");
   const [slippage, setSlippage] = useState<string>("");
   const [minAmount, setMinAmount] = useState<string>("");
+  const [maxError, setMaxError] = useState<boolean>(false)
   const [selectedToken0, setSelectedToken0] = useState({
     name: "",
     address: "",
@@ -150,6 +151,8 @@ export const Swapper = () => {
           swapFromAmt,
           slippage
         );
+      
+        
         if (tempAmount) {
           setExpected(tempAmount.formatted);
           focused === "input1"
@@ -181,14 +184,21 @@ export const Swapper = () => {
           swapFromAmt2,
           slippage
         );
-
         if (tempAmount) {
-          setExpected(tempAmount.formatted);
-          focused === "input2"
-            ? setSwapFromAmt(tempAmount.formatted)
-            : setSwapFromAmt2(tempAmount.formatted);
+          if (tempAmount.err) {
+
+            setMaxError(true)
+          }
+          else{
+            setMaxError(false)
+            setExpected(tempAmount.formatted);
+            focused === "input2"
+              ? setSwapFromAmt(tempAmount.formatted)
+              : setSwapFromAmt2(tempAmount.formatted);
+          }
+         
         }
-      } else {
+      } else {        
         setExpected("0");
         setSwapFromAmt2("0");
         setSwapFromAmt("0");
@@ -337,7 +347,7 @@ export const Swapper = () => {
       </Text>
       <Flex
         position={"relative"}
-        border={invalidInput ? "solid 1px #e53e3e" : "solid 1px #dfe4ee"}
+        border={invalidInput || maxError ? "solid 1px #e53e3e" : "solid 1px #dfe4ee"}
         height={"56px"}
         w={"310px"}
         flexDir={"row"}
@@ -382,12 +392,14 @@ export const Swapper = () => {
           />
         </NumberInput>
       </Flex>
+      {maxError && <Text color={'#e53e3e'} textAlign='left' fontSize={"10px"} mt='5px'>Not enough liquidity in the pool</Text>}
       <Flex
         alignItems={"center"}
         justifyContent="space-between"
         h={"24px"}
         my={"12px"}
-      >
+      > 
+     
         <Text fontSize={"10px"}>
           Tokamak Swap Protocol wants to use your{" "}
           {selectedToken0.name ? selectedToken0.name : "tokens"}
@@ -458,7 +470,7 @@ export const Swapper = () => {
         _hover={{}}
         _active={{}}
         disabled={
-          selectedToken0.address === "" ||
+          selectedToken0.address === "" || maxError||
           selectedToken1.address === "" ||
           Number(swapFromAmt) > allowed ||
           (Number(swapFromAmt) === 0 && Number(swapFromAmt2) === 0) ||

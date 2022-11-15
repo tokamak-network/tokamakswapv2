@@ -668,10 +668,7 @@ export const getParams = (address0: string, address1: string) => {
           fee: FeeAmount.MEDIUM,
           quoteExactInputSingle: true
         }
-      case getPool(tosDoc, pool):
-  
-  console.log('tosDoc');
-  
+      case getPool(tosDoc, pool):  
         return {
           path: encodePath(tosDoc, [FeeAmount.MEDIUM]),
           wrapEth: false,

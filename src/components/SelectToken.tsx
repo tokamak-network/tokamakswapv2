@@ -201,6 +201,9 @@ export const SelectToken = (props: {
         borderRadius="28px"
         p="8px"
         alignItems="center"
+        onClick={() => setExpanded(!expanded)}
+        _hover={{ cursor: "pointer" }}
+           
         zIndex={expanded ? 1000 : 0}
       >
         <Flex alignItems="center" justifyContent={"space-between"} w="100%">
@@ -217,7 +220,7 @@ export const SelectToken = (props: {
               </Text>
             </Flex>
           ) : (
-            <Flex alignItems="center">
+            <Flex alignItems="center" >
               {selected.img === "" ? (
                 <Avatar name={selected.name} w="40px" h="40px" />
               ) : (
@@ -245,8 +248,7 @@ export const SelectToken = (props: {
             h="14px"
             w="14px"
             mr="16px"
-            _hover={{ cursor: "pointer" }}
-            onClick={() => setExpanded(!expanded)}
+          
           />
         </Flex>
       </Flex>
