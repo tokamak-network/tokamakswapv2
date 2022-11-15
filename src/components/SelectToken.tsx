@@ -73,9 +73,6 @@ export const SelectToken = (props: {
     }
     getTokens();
   }, [selectedToken]);
-
-
-  console.log(tokensFromAPI);
   
   function useOutsideAlerter(ref: any) {
     useEffect(() => {
