@@ -21,6 +21,7 @@ import * as TONABI from "../services/abis/TON.json";
 import { Contract } from "@ethersproject/contracts";
 import { useWeb3React } from "@web3-react/core";
 import { getSigner } from "../utils/contract";
+import { DEFAULT_NETWORK } from "../constants";
 
 type selectedToken = {
   name: string;
@@ -52,7 +53,7 @@ export const SelectToken = (props: {
     
     async function getTokens() {
       const tokens: any = await getTokensData();
-      const tokensOrdered = [];
+      const tokensOrdered: any[] = [];
 
       const Eth = {
         token: {
@@ -63,8 +64,8 @@ export const SelectToken = (props: {
         tokenAddress: ZERO_ADDRESS,
         tokenImage: "",
       }
-      
-      tokensOrdered.push(Eth,tokens[7], tokens[4], tokens[2], tokens[1], tokens[0], tokens[3], tokens[6])
+
+      DEFAULT_NETWORK === 1 ? tokensOrdered.push(Eth,tokens[7], tokens[4], tokens[2], tokens[1], tokens[0], tokens[3], tokens[6]) : tokensOrdered.push(Eth,tokens[5], tokens[6], tokens[0], tokens[2], tokens[1], tokens[3], tokens[4])
 
       setTokensFromAPI(tokensOrdered);
     
@@ -73,6 +74,9 @@ export const SelectToken = (props: {
     getTokens();
   }, [selectedToken]);
 
+
+  console.log(tokensFromAPI);
+  
   function useOutsideAlerter(ref: any) {
     useEffect(() => {
       function handleClickOutside(event: any) {
