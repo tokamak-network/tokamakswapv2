@@ -51,7 +51,7 @@ export const Swapper = () => {
   const [focused, setFocused] = useState<string>("");
   const [slippage, setSlippage] = useState<string>("");
   const [minAmount, setMinAmount] = useState<string>("");
-  const [maxError, setMaxError] = useState<boolean>(false)
+  const [maxError, setMaxError] = useState<boolean>(false);
   const [selectedToken0, setSelectedToken0] = useState({
     name: "",
     address: "",
@@ -66,8 +66,8 @@ export const Swapper = () => {
   const [token1Balance, setToken1Balance] = useState<string>("0");
 
   useEffect(() => {
-    if (chainId !== Number(DEFAULT_NETWORK) && chainId !== undefined) {
-      const netType = DEFAULT_NETWORK === 1 ? "mainnet" : "Goerli Test Network";
+    if (chainId !== Number(DEFAULT_NETWORK)) {
+      const netType = DEFAULT_NETWORK === 1 ? "mainnet" : "Göerli Test Network";
       //@ts-ignore
       // dispatch(fetchUserInfo({reset: true}));
 
@@ -137,13 +137,7 @@ export const Swapper = () => {
 
   useEffect(() => {
     const getExpectedOut = async () => {
-      if (
-        selectedToken0.address &&
-       
-        swapFromAmt !== "" &&
-        swapFromAmt !== "0"
-      ) {
-        
+      if (selectedToken0.address && swapFromAmt !== "" && swapFromAmt !== "0") {
         const tempAmount: any = await getExpectedOutput(
           library,
           account,
@@ -152,8 +146,7 @@ export const Swapper = () => {
           swapFromAmt,
           slippage
         );
-      
-        
+
         if (tempAmount) {
           setExpected(tempAmount.formatted);
           focused === "input1"
@@ -163,7 +156,6 @@ export const Swapper = () => {
           setMinAmount(tempAmount.formattedAmountOut);
         }
       } else {
-        
         setExpected("0");
         setSwapFromAmt2("0");
         setSwapFromAmt("0");
@@ -173,7 +165,6 @@ export const Swapper = () => {
 
     const getExpectedIn = async () => {
       if (
-      
         selectedToken1.address &&
         swapFromAmt2 !== "" &&
         swapFromAmt2 !== "0"
@@ -188,19 +179,16 @@ export const Swapper = () => {
         );
         if (tempAmount) {
           if (tempAmount.err) {
-
-            setMaxError(true)
-          }
-          else{
-            setMaxError(false)
+            setMaxError(true);
+          } else {
+            setMaxError(false);
             setExpected(tempAmount.formatted);
             focused === "input2"
               ? setSwapFromAmt(tempAmount.formatted)
               : setSwapFromAmt2(tempAmount.formatted);
           }
-         
         }
-      } else {        
+      } else {
         setExpected("0");
         setSwapFromAmt2("0");
         setSwapFromAmt("0");
@@ -235,7 +223,7 @@ export const Swapper = () => {
     <Flex
       width={"350px"}
       //   alignItems={"center"}
-     my='auto'
+      my="auto"
       mx={"auto"}
       borderRadius={"10px"}
       // height="606px"
@@ -301,7 +289,7 @@ export const Swapper = () => {
           onClick={() => setFocused("input1")}
           defaultValue={0}
           value={focused === "input1" ? swapFromAmt : expected}
-          onChange={(e) => {            
+          onChange={(e) => {
             const valueNum = e;
             setSwapFromAmt(valueNum);
           }}
@@ -348,7 +336,9 @@ export const Swapper = () => {
       </Text>
       <Flex
         position={"relative"}
-        border={invalidInput || maxError ? "solid 1px #e53e3e" : "solid 1px #dfe4ee"}
+        border={
+          invalidInput || maxError ? "solid 1px #e53e3e" : "solid 1px #dfe4ee"
+        }
         height={"56px"}
         w={"310px"}
         flexDir={"row"}
@@ -393,14 +383,17 @@ export const Swapper = () => {
           />
         </NumberInput>
       </Flex>
-      {maxError && <Text color={'#e53e3e'} textAlign='left' fontSize={"10px"} mt='5px'>Not enough liquidity in the pool</Text>}
+      {maxError && (
+        <Text color={"#e53e3e"} textAlign="left" fontSize={"10px"} mt="5px">
+          Not enough liquidity in the pool
+        </Text>
+      )}
       <Flex
         alignItems={"center"}
         justifyContent="space-between"
         h={"24px"}
         my={"12px"}
-      > 
-     
+      >
         <Text fontSize={"10px"}>
           Tokamak Swap Protocol wants to use your{" "}
           {selectedToken0.name ? selectedToken0.name : "tokens"}
@@ -421,6 +414,8 @@ export const Swapper = () => {
           _active={{}}
           disabled={
             selectedToken0.address === "" ||
+            selectedToken0.address === selectedToken1.address ||
+            tx === true ||
             !account ||
             swapFromAmt === "0" ||
             Number(swapFromAmt) <= allowed ||
@@ -431,12 +426,21 @@ export const Swapper = () => {
               account,
               library,
               selectedToken0.address,
-              swapFromAmt,
               setAllowed
             )
           }
         >
-          Approve
+          {tx === true && data ? (
+            <CircularProgress
+              isIndeterminate
+              size={4}
+              zIndex={100}
+              color="blue.500"
+              pos="absolute"
+            />
+          ) : (
+            "Approve"
+          )}
         </Button>
       </Flex>
       <ConversionComponent
@@ -471,7 +475,8 @@ export const Swapper = () => {
         _hover={{}}
         _active={{}}
         disabled={
-          selectedToken0.address === "" || maxError||
+          selectedToken0.address === "" ||
+          maxError ||
           selectedToken1.address === "" ||
           Number(swapFromAmt) > allowed ||
           (Number(swapFromAmt) === 0 && Number(swapFromAmt2) === 0) ||

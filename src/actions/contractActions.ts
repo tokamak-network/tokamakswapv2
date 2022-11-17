@@ -52,28 +52,25 @@ export const getUserTokenBalance = async (account: string, library: any, tokenAd
   }
 }
 
-export const approve = async (account: any, library: any, tokenAddress: string, amount: string, setAllowed: any) => {
+export const approve = async (account: any, library: any, tokenAddress: string, setAllowed: any) => {
   if (library && account) {
     const signer = getSigner(library, account);
     let convertedAmount;
     let contract;
     if (ethers.utils.getAddress(tokenAddress) === ethers.utils.getAddress(WTON_ADDRESS)) {
-      const rayAllocated = ethers.utils.parseUnits(amount, '27');
       const contractCreated = new Contract(tokenAddress, WTONABI.abi, library);
-      convertedAmount = rayAllocated;
       contract = contractCreated
     }
     else {
-      const weiAllocated = ethers.utils.parseEther(amount);
       const contractCreated = new Contract(tokenAddress, TONABI.abi, library);
-      convertedAmount = weiAllocated;
       contract = contractCreated
     }
 
     try {
+      const totalSupply = await contract.totalSupply();
       const receipt = await contract
         .connect(signer)
-        .approve(SwapperV2Proxy, convertedAmount);
+        .approve(SwapperV2Proxy, totalSupply);
       store.dispatch(setTxPending({ tx: true, data: { name: 'approve' } }));
 
       if (receipt) {
@@ -316,9 +313,9 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
 
     }
     catch (err) {
-      return {err}
+      return { err }
     }
-   
+
 
 
 
