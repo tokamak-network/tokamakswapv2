@@ -65,8 +65,8 @@ export const Swapper = () => {
   const [token0Balance, setToken0Balance] = useState<string>("0");
   const [token1Balance, setToken1Balance] = useState<string>("0");
 
-  useEffect(() => {
-    if (chainId !== Number(DEFAULT_NETWORK)) {
+  useEffect(() => {    
+    if (chainId !== Number(DEFAULT_NETWORK ) && chainId !== undefined) {
       const netType = DEFAULT_NETWORK === 1 ? "mainnet" : "Göerli Test Network";
       //@ts-ignore
       // dispatch(fetchUserInfo({reset: true}));
@@ -286,8 +286,9 @@ export const Swapper = () => {
           _hover={{
             borderColor: "transparent",
           }}
+        
           onClick={() => setFocused("input1")}
-          defaultValue={0}
+          // defaultValue={0}
           value={focused === "input1" ? swapFromAmt : expected}
           onChange={(e) => {
             const valueNum = e;

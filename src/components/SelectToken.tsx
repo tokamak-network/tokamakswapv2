@@ -7,7 +7,7 @@ import {
   Box,
   Button,
   Avatar,
-  useDisclosure,
+  Link,
 } from "@chakra-ui/react";
 import icon_arrow from "../assets/icon_arrow.png";
 import TON_symbol from "../assets/TON_symbol.svg";
@@ -21,8 +21,7 @@ import * as TONABI from "../services/abis/TON.json";
 import { Contract } from "@ethersproject/contracts";
 import { useWeb3React } from "@web3-react/core";
 import { getSigner } from "../utils/contract";
-import { DEFAULT_NETWORK } from "../constants";
-
+import { DEFAULT_NETWORK,ETHERSCAN_URL } from "../constants";
 type selectedToken = {
   name: string;
   address: string;
@@ -46,7 +45,7 @@ export const SelectToken = (props: {
   const [searchString, setSearchString] = useState<string>("");
   const { account, library } = useWeb3React();
   const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-
+  
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -151,6 +150,8 @@ export const SelectToken = (props: {
 
           <Text>{name}</Text>
         </Flex>
+      <Link   isExternal href={`${ETHERSCAN_URL}/address/${address}`}>
+      <Text fontSize={'10px'}>View on Etherscan</Text></Link> 
       </Flex>
     );
   };
