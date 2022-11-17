@@ -21,12 +21,14 @@ import { QuestionOutlineIcon } from '@chakra-ui/icons'
 
 
 export const SettingsComponent = (props:{setSlippage:Dispatch<SetStateAction<any>>; focused: string}) => {
-  const {setSlippage, focused} = props;
+  const {setSlippage, focused} = props;  
   const [expanded, setExpanded] = useState<boolean>(false);
-  const [slippageAmnt, setSlippageAmnt] = useState<string>("0");
+  const [slippageAmnt, setSlippageAmnt] = useState<string>('0');
   const [invalidInput, setInvalidInput] = useState<boolean>(false);
 
-
+useEffect(() => {
+  setSlippageAmnt(focused === 'input1' ? '1':'3')
+},[focused])
   return (
     <Flex
       border="1px solid #dfe4ee"

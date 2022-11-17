@@ -92,7 +92,7 @@ export const ConversionComponent = (props: {
           <Flex justifyContent={"space-between"}>
             <Flex flexDir={"column"} alignItems="start" fontSize={"12px"}>
               <Text>{focused === 'input1'? 'Minimum received after slippage':'Maximum spent after slippage'}</Text>
-              <Text>{slippage ? `${slippage} %` : `1%`}</Text>
+              <Text>{symbol1 === 'WTON' && symbol0 === 'TON' || symbol1 === 'TON' && symbol0 === 'WTON' ? `0%`: slippage ? `${slippage} %` :focused === 'input1'?  `1%`: `3%`}</Text>
             </Flex>
             <Flex flexDir={"column"} fontSize={"12px"} color="#86929d">
               <Text>{minAmount ? expectedAmnt : `0`}</Text>

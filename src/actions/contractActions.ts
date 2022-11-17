@@ -148,7 +148,6 @@ export const getExpectedOutput = async (library: any, userAddress: string | null
   let denominator;
   let numerator;
   const int = Number.isInteger(Number(slippage));
-
   if (slippage !== '' && Number(slippage) > 0 && Number(slippage) < 100) {
     if (int) {
       denominator = BigNumber.from("100")
@@ -181,7 +180,7 @@ export const getExpectedOutput = async (library: any, userAddress: string | null
   if (library && userAddress && params && Number(amount) !== 0) {
     const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
     const amountOut = await quoteContract.callStatic.quoteExactInput(params.path, amountIn)
-    const minimumAmountOut = amountOut.mul(numerator).div(denominator);
+    const minimumAmountOut = amountOut.mul(numerator).div(denominator);    
     if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase() || params.outputUnwrapTON) {
       const converted = convertNumber({
         amount: minimumAmountOut,
@@ -239,6 +238,7 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
   let amountOut
   let denominator;
   let numerator;
+  
   const int = Number.isInteger(Number(slippage));
 
   if (slippage !== '' && Number(slippage) > 0 && Number(slippage) < 100) {
@@ -250,14 +250,14 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
     else {
       const countDecimals = slippage.split('.')[1].length;
       const denom = 100 * (10 ** countDecimals);
-      const slippageCalc = denom + (Number(slippage) * (10 ** countDecimals))
+      const slippageCalc = denom + (Number(slippage) * (10 ** countDecimals))      
       denominator = BigNumber.from(denom.toString());
       numerator = BigNumber.from(slippageCalc.toString())
     }
   }
   else {
     denominator = BigNumber.from("100")
-    numerator = BigNumber.from("105")
+    numerator = BigNumber.from("103")
   }
 
   if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase()) {
@@ -270,8 +270,8 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
     const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
     let amountIn;
     try {
-      amountIn = await quoteContract.callStatic.quoteExactOutput(params.path, amountOut); // ray
-      const maximumAmountIn = amountIn.mul(numerator).div(denominator);
+      amountIn = await quoteContract.callStatic.quoteExactOutput(params.path, amountOut); // ray      
+      const maximumAmountIn = amountIn.mul(numerator).div(denominator);      
       if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() || address0.toLowerCase() === TON_ADDRESS.toLowerCase() || params.inputWrapWTON) {
         const converted = convertNumber({
           amount: maximumAmountIn,
