@@ -139,10 +139,11 @@ export const Swapper = () => {
     const getExpectedOut = async () => {
       if (
         selectedToken0.address &&
-        selectedToken1.address &&
+       
         swapFromAmt !== "" &&
         swapFromAmt !== "0"
       ) {
+        
         const tempAmount: any = await getExpectedOutput(
           library,
           account,
@@ -162,6 +163,7 @@ export const Swapper = () => {
           setMinAmount(tempAmount.formattedAmountOut);
         }
       } else {
+        
         setExpected("0");
         setSwapFromAmt2("0");
         setSwapFromAmt("0");
@@ -171,7 +173,7 @@ export const Swapper = () => {
 
     const getExpectedIn = async () => {
       if (
-        selectedToken0.address &&
+      
         selectedToken1.address &&
         swapFromAmt2 !== "" &&
         swapFromAmt2 !== "0"
@@ -299,7 +301,7 @@ export const Swapper = () => {
           onClick={() => setFocused("input1")}
           defaultValue={0}
           value={focused === "input1" ? swapFromAmt : expected}
-          onChange={(e) => {
+          onChange={(e) => {            
             const valueNum = e;
             setSwapFromAmt(valueNum);
           }}

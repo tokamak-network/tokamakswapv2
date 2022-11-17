@@ -33,7 +33,7 @@ export const SelectToken = (props: {
   selectedToken: selectedToken;
 }) => {
   const { setToken, selectedToken } = props;
-  const [selected, setSelected] = useState({ name: "", img: "" });
+  const [selected, setSelected] = useState({ name: "", img: ""});
   const wrapperRef = useRef(null);
   const [expanded, setExpanded] = useState<boolean>(false);
   const [tokensFromAPI, setTokensFromAPI] = useState<any>([]);
@@ -227,13 +227,19 @@ export const SelectToken = (props: {
             </Flex>
           ) : (
             <Flex alignItems="center" >
-              {selected.img === "" ? (
+              {selected.img === "" ? selected.name === 'ETH' || selected.name === 'WETH'?  <Image
+                  w="40px"
+                  h="40px"
+                  borderRadius={"50%"}
+                  src={ETH_symbol}
+                ></Image>: (
                 <Avatar name={selected.name} w="40px" h="40px" />
               ) : (
                 <Image
                   w="40px"
                   h="40px"
                   borderRadius={"50%"}
+                  border={'1px solid #e7edf3'}
                   src={selected.img}
                 ></Image>
               )}
