@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Dispatch, SetStateAction  } from "react";
 import {
   Text,
   Flex,
@@ -32,7 +32,8 @@ import {
   swapExactOutput,
 } from "../actions/contractActions";
 
-export const Swapper = () => {
+export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advanced:boolean}) => {
+  const {setAdvanced,advanced} = props
   const theme = useTheme();
   const { chainId, account, library } = useActiveWeb3React();
   const { tx, data } = useAppSelector(selectTxType);
@@ -68,7 +69,7 @@ export const Swapper = () => {
   useEffect(() => {
     if (chainId !== Number(DEFAULT_NETWORK) && chainId !== undefined) {
       const netType = DEFAULT_NETWORK === 1 ? "mainnet" : "Goerli Test Network";
-      //@ts-ignore
+      //@ts-ignoreinput111111111
       // dispatch(fetchUserInfo({reset: true}));
 
       return alert(`Please use ${netType}`);
@@ -446,7 +447,7 @@ export const Swapper = () => {
         focused={focused}
         swapFromAmt2={swapFromAmt2}
       />
-      <SettingsComponent setSlippage={setSlippage} focused={focused} />
+      <SettingsComponent setSlippage={setSlippage} focused={focused} setAdvanced={setAdvanced} advanced={advanced}/>
       <Button
         borderRadius={"28px"}
         border={"none"}

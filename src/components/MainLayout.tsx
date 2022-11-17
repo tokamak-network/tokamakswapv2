@@ -8,24 +8,30 @@ import { Footer } from "./Footer";
 import { Description } from "./Description";
 import TokamakGNB from "./TokamakGNB";
 import { ImportTokenModal } from "./ImportTokenModal";
-
+import {AdvanceModeModal} from './AdvanceModeModal'
+import {AdvancedSwapper} from './AdvancedSwapper'
 export const MainLayout = () => {
   const [walletState, setWalletState] = useState<string>("");
   const { onOpen, isOpen: isModalOpen, onClose } = useDisclosure();
-
+  const [advanced, setAdvanced] = useState(false)
   const handleWalletModalOpen = (state: string) => {
     setWalletState(state);
     onOpen();
   };
+
+  console.log('advanced',advanced);
+  
   return(
     
     <Flex flexDir={'column'} justifyContent='space-between' minH='100vh'>
       <TokamakGNB/>
         <Header walletOpen={() => handleWalletModalOpen("wallet")}/>
-        <Swapper/>
+        {advanced? <AdvancedSwapper setAdvanced={setAdvanced}/>:   <Swapper setAdvanced={setAdvanced}  advanced={advanced}/> }
+     
         {/* <Description/> */}
         <Footer/>
         <WalletModal state={walletState} isOpen={isModalOpen} onClose={onClose} />
         <ImportTokenModal />
+        <AdvanceModeModal/>
     </Flex>);
 };

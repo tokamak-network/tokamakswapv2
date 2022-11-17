@@ -1,4 +1,4 @@
-import { useState, useEffect,Dispatch, SetStateAction} from "react";
+import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import {
   Text,
   Flex,
@@ -17,31 +17,36 @@ import {
 import expand from "../assets/expand.png";
 import gear from "../assets/gear.png";
 import icon_arrow from "../assets/icon_arrow.png";
-import { QuestionOutlineIcon } from '@chakra-ui/icons'
+import { QuestionOutlineIcon } from "@chakra-ui/icons";
+import { useAppDispatch } from "../hooks/useRedux";
+import { openModal } from "../store/modal.reducer";
 
-
-export const SettingsComponent = (props:{setSlippage:Dispatch<SetStateAction<any>>; focused: string}) => {
-  const {setSlippage, focused} = props;
+export const SettingsComponent = (props: {
+  setSlippage: Dispatch<SetStateAction<any>>;
+  focused: string;
+  setAdvanced?: Dispatch<SetStateAction<any>>;
+  advanced: boolean;
+}) => {
+  const { setSlippage, focused, setAdvanced, advanced } = props;
   const [expanded, setExpanded] = useState<boolean>(false);
   const [slippageAmnt, setSlippageAmnt] = useState<string>("0");
   const [invalidInput, setInvalidInput] = useState<boolean>(false);
 
+  const dispatch = useAppDispatch();
 
   return (
     <Flex
       border="1px solid #dfe4ee"
-      h={expanded ? "185px" : "36px"}
+      h={expanded ? (advanced ? "172px" : "232px") : "36px"}
       borderRadius={"18px"}
-      mb="30px"
+      mb={ advanced? '12px':"30px"}
       px="15px"
-      alignItems="center"
       flexDir={"column"}
-      pt={expanded? "8px":''}
       fontFamily={""}
-      justifyContent='center'
+      w="310px"
     >
-      <Flex justifyContent={"space-between"} w="100%" h='19px' alignItems={'center'}>
-        <Text  fontSize={'14px'}>Settings</Text>
+      <Flex justifyContent={"space-between"} mt='8px'  w="280px" h="19px" alignItems={'center'}>
+        <Text fontSize={"14px"}>Settings</Text>
         <Image
           src={gear}
           w="14px"
@@ -50,11 +55,11 @@ export const SettingsComponent = (props:{setSlippage:Dispatch<SetStateAction<any
         />
       </Flex>
       {expanded && (
-        <Flex flexDir={"column"} w="100%" mt="11px" textAlign={"left"}>
-          <Text fontSize="16px" fontWeight={"bold"} mb="12px" h='21px'>
+        <Flex flexDir={"column"}   w="310px" mt="11px" textAlign={"left"}>
+          <Text fontSize="16px" fontWeight={"bold"} mb="12px" h="21px">
             Transaction Setting
           </Text>
-          <Text fontSize="14px" fontWeight={"normal"} mb="12px" h='19px'>
+          <Text fontSize="14px" fontWeight={"normal"} mb="12px" h="19px">
             Slippage tolerance
           </Text>
           <Flex
@@ -67,7 +72,7 @@ export const SettingsComponent = (props:{setSlippage:Dispatch<SetStateAction<any
             justifyContent={"space-between"}
             alignItems={"center"}
             pr={"18px"}
-            mb="17px"
+            mb="19.5px"
           >
             <NumberInput
               height={"56px"}
@@ -92,7 +97,7 @@ export const SettingsComponent = (props:{setSlippage:Dispatch<SetStateAction<any
               value={`${slippageAmnt} %`}
               onChange={(e) => {
                 const valueNum = e;
-                setSlippageAmnt(valueNum)
+                setSlippageAmnt(valueNum);
                 setSlippage(valueNum);
               }}
             >
@@ -104,7 +109,6 @@ export const SettingsComponent = (props:{setSlippage:Dispatch<SetStateAction<any
                 pl={"0px"}
               />
             </NumberInput>
-          
 
             {/* <Button
               h="24px"
@@ -136,98 +140,35 @@ export const SettingsComponent = (props:{setSlippage:Dispatch<SetStateAction<any
             <Text>30 minutes</Text>
             <Image src={icon_arrow} h="14px" w="14px" />
           </Flex> */}
-          {/* <Box h={"1px"} bg={"#e9edf1"} w="280px" ></Box> */}
-          {/* <Text fontSize="16px" fontWeight={"bold"} mt={"15.5px"} mb="20px" h='21px'>
-            Auto Router Setting
-          </Text> */}
-          {/* <Flex alignItems={"center"} mb='10px'>
+          {!advanced && <Box h={"1px"} bg={"#e9edf1"} w="280px"></Box>}
+          {!advanced && (
             <Flex
-              h="20px"
-              w="20px"
-              bg={"#e9edf1"}
-              border={"solid 1px #e7edf3"}
-              borderRadius="50%"
-            ></Flex>
-            <Text fontSize={"12px"} ml="8px" color="#354052">
-              70%
-            </Text>{" "}
-            <Flex w="203px" mx='5px'>
-              <svg
-                width="100%"
-                height="20"
-                viewBox="850 0 300 200"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <line
-                  x1="0"
-                  x2="3000"
-                  y1="100"
-                  y2="100"
-                  stroke="#e9edf1"
-                  strokeWidth="20"
-                  strokeLinecap="round"
-                  strokeDasharray="1, 45"
-                />
-              </svg>
+              mt="15.5px"
+              h="21px"
+              alignItems={"center"}
+              width="100%"
+              justifyContent={"space-between"}
+              mb="17px"
+              w={"280px"}
+            >
+              <Flex alignItems={"center"}>
+                <Text fontSize={"16px"} fontWeight="bold">
+                  Advance Mode
+                </Text>
+                <QuestionOutlineIcon ml="9px" />
+              </Flex>
+              <Switch
+                onChange={() => {
+                  dispatch(
+                    openModal({
+                      type: "advance_mode",
+                      data: { setAdvanced },
+                    })
+                  );
+                }}
+              />
             </Flex>
-            <Flex
-              h="20px"
-              w="20px"
-              bg={"#e9edf1"}
-              border={"solid 1px #e7edf3"}
-              borderRadius="50%"
-              position={'relative'}
-            ></Flex>
-          </Flex> */}
-          {/* <Flex alignItems={"center"} mb='19px'>
-            <Flex
-              h="20px"
-              w="20px"
-              bg={"#e9edf1"}
-              border={"solid 1px #e7edf3"}
-              borderRadius="50%"
-            ></Flex>
-            <Text fontSize={"12px"} ml="8px" color="#354052">
-              70%
-            </Text>{" "}
-            <Flex w="203px" mx='5px'>
-              <svg
-                width="100%"
-                height="20"
-                viewBox="850 0 300 200"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <line
-                  x1="0"
-                  x2="3000"
-                  y1="100"
-                  y2="100"
-                  stroke="#e9edf1"
-                  strokeWidth="20"
-                  strokeLinecap="round"
-                  strokeDasharray="1, 45"
-                />
-              </svg>
-            </Flex>
-            <Flex
-              h="20px"
-              w="20px"
-              bg={"#e9edf1"}
-              border={"solid 1px #e7edf3"}
-              borderRadius="50%"
-              position={'relative'}
-            ></Flex>
-          </Flex>
-          <Text mb='19.5px' fontSize={'10px'} color='#8f96a1' h='26px'>This route optimizes your total output by considering split routes, multiple hops, and the gas cost of each step</Text>
-          <Box h={"1px"} bg={"#e9edf1"} w="280px"></Box>
-          <Flex mt='15.5px' h='21px' alignItems={'center'} width='100%' justifyContent={'space-between'}>
-            <Flex>
-            <Text fontSize={'16px'} fontWeight='bold' >Advance Mode</Text>
-            <QuestionOutlineIcon ml='9px'/>
-            </Flex>
-            <Switch/>
-         
-          </Flex> */}
+          )}
         </Flex>
       )}
     </Flex>
