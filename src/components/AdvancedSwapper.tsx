@@ -29,9 +29,8 @@ export const AdvancedSwapper = (props: {
   const [token0Balance, setToken0Balance] = useState<string>("0");
   const [slippage, setSlippage] = useState<string>("");
   const { tx, data } = useAppSelector(selectTxType);
-  const [numPools, setNumPools] = useState(0)
-
-  console.log(numPools);
+  const [pools, setPools] = useState([{address0:'', address1:'', fee:''}])
+  console.log(pools);
   
   return (
     <Flex
@@ -75,14 +74,13 @@ export const AdvancedSwapper = (props: {
           }}
         />
       </Flex>
-      <PoolComponent expanded={true}  deletable={true}/>
-      {(() => {
-            let td = [];
-            for (let i = 1; i <= numPools; i++) {
-              td.push(<PoolComponent expanded={true}  deletable={true}/>);
-            }
-            return td;
-          })()}
+
+          {pools.map((pool:any, index:number) => {
+            return (
+              <PoolComponent expanded={index === 0? true:false}  deletable={index === 0? false:true} key={index} setPools={setPools} pools={pools} poolNum={index}/>
+            )
+          
+          })}
       <Flex
         border={"1px solid #dfe4ee"}
         borderRadius="10px"
@@ -92,7 +90,7 @@ export const AdvancedSwapper = (props: {
         bg="#fff"
         justifyContent={"center"}
         alignItems="center"
-        onClick={() => {setNumPools(numPools+1)}}
+        onClick={() => {setPools(pools.concat([{address0:'', address1:'', fee:''}]))}}
         _hover={{cursor:'pointer'}}
       >
         <Image src={Plus} h="26px" w="26px" />

@@ -14,11 +14,6 @@ import {
 } from "@chakra-ui/react";
 import { closeModal, selectModalType, openModal } from "../store/modal.reducer";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
-import ETH_symbol from "../assets/ETH_symbol.png";
-import * as TONABI from "../services/abis/TON.json";
-import { Contract } from "@ethersproject/contracts";
-import { useWeb3React } from "@web3-react/core";
-import { getSigner } from "../utils/contract";
 
 export const AdvanceModeModal = () => {
   const theme = useTheme();

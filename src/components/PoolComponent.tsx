@@ -16,6 +16,9 @@ import Delete from "../assets/Delete.png";
 import { SelectToken } from "./SelectToken";
 import { useActiveWeb3React } from "../hooks/useWeb3";
 import { useAppSelector } from "../hooks/useRedux";
+import { DEPLOYED } from "../constants";
+import ETH_symbol from "../assets/ETH_symbol.png";
+
 import { selectTransactionType } from "../store/refetch.reducer";
 import {
   getUserTokenBalance,
@@ -29,10 +32,15 @@ import {
 export const PoolComponent = (props: {
   expanded: boolean;
   deletable: boolean;
+  setPools: Dispatch<SetStateAction<any>>;
+  pools: any;
+  poolNum: number
 }) => {
   const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+  const { WETH_ADDRESS } = DEPLOYED;
+
   const FeeAmount = [500, 3000, 10000];
-  const { expanded, deletable } = props;
+  const { expanded, deletable, setPools, pools, poolNum } = props;
   const [open, setOpen] = useState(false);
   const { chainId, account, library } = useActiveWeb3React();
   const [token0Balance, setToken0Balance] = useState<string>("0");
@@ -40,6 +48,7 @@ export const PoolComponent = (props: {
   const [swapFromAmt, setSwapFromAmt] = useState<string>("0");
   const [invalidInput, setInvalidInput] = useState<boolean>(false);
   const [fee, setFee] = useState(0);
+  const [lll, setLll] = useState([0,1,2,3,4,5,6,7])
   const { transactionType, blockNumber } = useAppSelector(
     selectTransactionType
   );
@@ -59,7 +68,7 @@ export const PoolComponent = (props: {
   useEffect(() => {
     setOpen(expanded);
   }, [expanded]);
-
+  
   useEffect(() => {
     const getBalances = async () => {
       if (!account || !library) {
@@ -118,7 +127,7 @@ export const PoolComponent = (props: {
       borderRadius="10px"
       mb="8px"
       width={"350px"}
-      h={!open ? "150px" : "346px"}
+      h={!open ? deletable? '107px': "150px" : deletable? '270px': "346px"}
       bg="#fff"
       p="20px"
       flexDir={"column"}
@@ -134,19 +143,28 @@ export const PoolComponent = (props: {
           {selectedToken1.name ? selectedToken1.name : "Token 2"}
         </Text>
         <Flex>
-            {deletable &&  <Image
-            src={Delete}
-            h="16px"
-            w="16px"
-            mr='16px'
-            onClick={() => setOpen(!open)}
-          />}
+          {open && deletable && (
+            <Image
+              src={Delete}
+              h="16px"
+              w="16px"
+              mr="16px"
+              onClick={() => {
+               pools.splice(poolNum,1)
+               console.log('pools',pools);
+               setPools(pools)
+              
+              }
+               }
+            />
+          )}
           <Image
             src={expand}
             h="16px"
             w="16px"
             onClick={() => setOpen(!open)}
           />
+          <Text>{poolNum}</Text>
         </Flex>
       </Flex>
       {open ? (
@@ -155,61 +173,74 @@ export const PoolComponent = (props: {
             setToken={setSelectedToken0}
             selectedToken={selectedToken0}
           />
-          <Text textAlign={"left"} mt="17px" fontSize="14px" color="#3d495d">
-            Balance: {formatNumberWithCommas(token0Balance)}
-          </Text>
-          <Flex
-            position={"relative"}
-            border={invalidInput ? "solid 1px #e53e3e" : "solid 1px #dfe4ee"}
-            height={"36px"}
-            w={"310px"}
-            mt="5px"
-            flexDir={"row"}
-            borderRadius={"18px"}
-            justifyContent={"space-between"}
-            alignItems={"center"}
-            pr={"18px"}
-            mb="17px"
-          >
-            <NumberInput
-              height={"56px"}
-              w={"230px"}
-              color={"#86929d"}
-              pl={"24px"}
-              border={"none"}
-              fontSize={"18px"}
-              borderRadius={"4px"}
-              borderColor={"transparent"}
-              _focus={{
-                borderColor: "transparent",
-              }}
-              _active={{
-                borderColor: "transparent",
-              }}
-              focusBorderColor="transparent"
-              _hover={{
-                borderColor: "transparent",
-              }}
-              defaultValue={0}
-              value={swapFromAmt}
-              onChange={(e) => {
-                const valueNum = e;
-                setSwapFromAmt(valueNum);
-              }}
-            >
-              <NumberInputField
-                border={"none"}
-                height={"56px"}
-                outline={"none"}
-                borderColor={"transparent"}
-                pl={"0px"}
-              />
-            </NumberInput>
-          </Flex>
+          {!deletable && (
+            <Flex flexDir={"column"}>
+              <Text
+                textAlign={"left"}
+                mt="17px"
+                fontSize="14px"
+                color="#3d495d"
+              >
+                Balance: {formatNumberWithCommas(token0Balance)}
+              </Text>
+              <Flex
+                position={"relative"}
+                border={
+                  invalidInput ? "solid 1px #e53e3e" : "solid 1px #dfe4ee"
+                }
+                height={"36px"}
+                w={"310px"}
+                mt="5px"
+                flexDir={"row"}
+                borderRadius={"18px"}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+                pr={"18px"}
+                mb="17px"
+              >
+                <NumberInput
+                  height={"56px"}
+                  w={"230px"}
+                  color={"#86929d"}
+                  pl={"24px"}
+                  border={"none"}
+                  fontSize={"18px"}
+                  borderRadius={"4px"}
+                  borderColor={"transparent"}
+                  _focus={{
+                    borderColor: "transparent",
+                  }}
+                  _active={{
+                    borderColor: "transparent",
+                  }}
+                  focusBorderColor="transparent"
+                  _hover={{
+                    borderColor: "transparent",
+                  }}
+                  defaultValue={0}
+                  value={swapFromAmt}
+                  onChange={(e) => {
+                    const valueNum = e;
+                    setSwapFromAmt(valueNum);
+                  }}
+                >
+                  <NumberInputField
+                    border={"none"}
+                    height={"56px"}
+                    outline={"none"}
+                    borderColor={"transparent"}
+                    pl={"0px"}
+                  />
+                </NumberInput>
+              </Flex>
+            </Flex>
+          )}
+          <Flex mt={deletable? '17px':''}>
           <SelectToken
             setToken={setSelectedToken1}
             selectedToken={selectedToken1}
           />
+          </Flex>
           <Flex mt="17px" h="35px" justifyContent={"space-between"}>
             {FeeAmount.map((fee: any, index: number) => (
               <Flex
@@ -240,22 +271,45 @@ export const PoolComponent = (props: {
         </Flex>
       ) : (
         <Flex flexDir={"column"} h="35px" mt="11px">
-          <Flex justifyContent={"space-between"} w="310px">
+          <Flex
+            justifyContent={
+              selectedToken0.address && selectedToken1.address
+                ? "space-between"
+                : "left"
+            }
+            w="310px"
+          >
             <Flex
               w="100px"
               border={"1px solid #dfe4ee"}
               h="35px"
               borderRadius={"17.5"}
               px="5px"
+              mr={selectedToken0.address && selectedToken1.address ? "" : "5px"}
               // justifyContent="center"
               alignItems={"center"}
             >
-              <Image
-                src={selectedToken0.img}
-                h="25px"
-                border={"1px solid #dfe4ee"}
-                borderRadius="50%"
-              />
+              {" "}
+              {selectedToken0.address ? (
+                <Image
+                  src={
+                    selectedToken0.address === ZERO_ADDRESS ||
+                    selectedToken0.address === WETH_ADDRESS
+                      ? ETH_symbol
+                      : selectedToken0.img
+                  }
+                  h="25px"
+                  border={"1px solid #dfe4ee"}
+                  borderRadius="50%"
+                />
+              ) : (
+                <Flex
+                  h="25px"
+                  w="25px"
+                  bg="#e7edf3"
+                  borderRadius={"50%"}
+                ></Flex>
+              )}
               <Text
                 ml="8px"
                 color="#3e495c"
@@ -274,12 +328,26 @@ export const PoolComponent = (props: {
               // justifyContent="center"
               alignItems={"center"}
             >
-              <Image
-                src={selectedToken1.img}
-                h="25px"
-                border={"1px solid #dfe4ee"}
-                borderRadius="50%"
-              />
+              {selectedToken1.address ? (
+                <Image
+                  src={
+                    selectedToken1.address === ZERO_ADDRESS ||
+                    selectedToken1.address === WETH_ADDRESS
+                      ? ETH_symbol
+                      : selectedToken1.img
+                  }
+                  h="25px"
+                  border={"1px solid #dfe4ee"}
+                  borderRadius="50%"
+                />
+              ) : (
+                <Flex
+                  h="25px"
+                  w="25px"
+                  bg="#e7edf3"
+                  borderRadius={"50%"}
+                ></Flex>
+              )}
               <Text
                 ml="8px"
                 color="#3e495c"
@@ -289,29 +357,31 @@ export const PoolComponent = (props: {
                 {selectedToken1.name}
               </Text>
             </Flex>
-            <Flex
-              w="100px"
-              border={"1px solid #dfe4ee"}
-              h="35px"
-              borderRadius={"17.5"}
-              px="5px"
-              justifyContent="center"
-              alignItems={"center"}
-            >
-              <Text color="#3d495d" fontSize={"16px"} fontWeight="bold">
-                {fee / 10000}%{" "}
-              </Text>
-              <Text
-                ml="2px"
-                color="#3d495d"
-                fontSize={"10px"}
-                fontWeight="normal"
+            {selectedToken0.address && selectedToken1.address && (
+              <Flex
+                w="100px"
+                border={"1px solid #dfe4ee"}
+                h="35px"
+                borderRadius={"17.5"}
+                px="5px"
+                justifyContent="center"
+                alignItems={"center"}
               >
-                ({Number(fee).toLocaleString()})
-              </Text>
-            </Flex>
+                <Text color="#3d495d" fontSize={"16px"} fontWeight="bold">
+                  {fee / 10000}%{" "}
+                </Text>
+                <Text
+                  ml="2px"
+                  color="#3d495d"
+                  fontSize={"10px"}
+                  fontWeight="normal"
+                >
+                  ({Number(fee).toLocaleString()})
+                </Text>
+              </Flex>
+            )}
           </Flex>
-          <Flex
+        {!deletable &&  <Flex
             w="310px"
             border="1px solid #e7edf3"
             h="34px"
@@ -319,10 +389,16 @@ export const PoolComponent = (props: {
             mt="7px"
             alignItems={"center"}
           >
-            <Text h="24px" my="6px" ml="14px">
+            <Text
+              h="24px"
+              my="6px"
+              ml="14px"
+              fontSize={"14px"}
+              color={"#3e495c"}
+            >
               Amount: 100
             </Text>
-          </Flex>
+          </Flex>}
         </Flex>
       )}
     </Flex>
