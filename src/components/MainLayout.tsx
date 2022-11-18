@@ -20,7 +20,6 @@ export const MainLayout = () => {
   return(
     
     <Flex flexDir={'column'} justifyContent='space-between' minH='100vh'>
-      {/* <TokamakGNB/> */}
         <Header walletOpen={() => handleWalletModalOpen("wallet")}/>
         <Swapper/>
         {/* <Description/> */}
