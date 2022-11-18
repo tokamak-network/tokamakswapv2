@@ -247,7 +247,7 @@ export const SelectToken = (props: {
             </Flex>
           ) : (
             <Flex alignItems="center">
-              {selected.img === "" ? (
+              {selected.img === "" || !selected.img? (
                 selected.name === "ETH" || selected.name === "WETH" ? (
                   <Image
                     w="40px"
