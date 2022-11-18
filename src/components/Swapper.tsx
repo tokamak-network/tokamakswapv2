@@ -67,7 +67,7 @@ export const Swapper = () => {
 
   useEffect(() => {    
     if (chainId !== Number(DEFAULT_NETWORK ) && chainId !== undefined) {
-      const netType = DEFAULT_NETWORK === 1 ? "mainnet" : "Göerli Test Network";
+      const netType = DEFAULT_NETWORK === 1 ? "Mainnet" : "Göerli Test Network";
       //@ts-ignore
       // dispatch(fetchUserInfo({reset: true}));
 
