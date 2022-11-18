@@ -34,7 +34,7 @@ export const PoolComponent = (props: {
   deletable: boolean;
   setPools: Dispatch<SetStateAction<any>>;
   pools: any;
-  poolNum: number
+  poolNum: number;
 }) => {
   const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
   const { WETH_ADDRESS } = DEPLOYED;
@@ -48,7 +48,6 @@ export const PoolComponent = (props: {
   const [swapFromAmt, setSwapFromAmt] = useState<string>("0");
   const [invalidInput, setInvalidInput] = useState<boolean>(false);
   const [fee, setFee] = useState(0);
-  const [lll, setLll] = useState([0,1,2,3,4,5,6,7])
   const { transactionType, blockNumber } = useAppSelector(
     selectTransactionType
   );
@@ -68,7 +67,7 @@ export const PoolComponent = (props: {
   useEffect(() => {
     setOpen(expanded);
   }, [expanded]);
-  
+
   useEffect(() => {
     const getBalances = async () => {
       if (!account || !library) {
@@ -127,7 +126,9 @@ export const PoolComponent = (props: {
       borderRadius="10px"
       mb="8px"
       width={"350px"}
-      h={!open ? deletable? '107px': "150px" : deletable? '270px': "346px"}
+      h={
+        !open ? (deletable ? "107px" : "150px") : deletable ? "270px" : "346px"
+      }
       bg="#fff"
       p="20px"
       flexDir={"column"}
@@ -150,12 +151,13 @@ export const PoolComponent = (props: {
               w="16px"
               mr="16px"
               onClick={() => {
-               pools.splice(poolNum,1)
-               console.log('pools',pools);
-               setPools(pools)
-              
-              }
-               }
+                // setPools(pools.splice(poolNum,1))
+                const temp = [...pools];
+               temp.splice(poolNum-1,1)
+               setPools(temp)
+
+                
+              }}
             />
           )}
           <Image
@@ -235,15 +237,16 @@ export const PoolComponent = (props: {
               </Flex>
             </Flex>
           )}
-          <Flex mt={deletable? '17px':''}>
-          <SelectToken
-            setToken={setSelectedToken1}
-            selectedToken={selectedToken1}
-          />
+          <Flex mt={deletable ? "17px" : ""}>
+            <SelectToken
+              setToken={setSelectedToken1}
+              selectedToken={selectedToken1}
+            />
           </Flex>
           <Flex mt="17px" h="35px" justifyContent={"space-between"}>
             {FeeAmount.map((fee: any, index: number) => (
               <Flex
+                key={index}
                 border={"1px solid #dfe4ee"}
                 w="100px"
                 borderRadius={"17.5"}
@@ -381,24 +384,26 @@ export const PoolComponent = (props: {
               </Flex>
             )}
           </Flex>
-        {!deletable &&  <Flex
-            w="310px"
-            border="1px solid #e7edf3"
-            h="34px"
-            borderRadius={"18px"}
-            mt="7px"
-            alignItems={"center"}
-          >
-            <Text
-              h="24px"
-              my="6px"
-              ml="14px"
-              fontSize={"14px"}
-              color={"#3e495c"}
+          {!deletable && (
+            <Flex
+              w="310px"
+              border="1px solid #e7edf3"
+              h="34px"
+              borderRadius={"18px"}
+              mt="7px"
+              alignItems={"center"}
             >
-              Amount: 100
-            </Text>
-          </Flex>}
+              <Text
+                h="24px"
+                my="6px"
+                ml="14px"
+                fontSize={"14px"}
+                color={"#3e495c"}
+              >
+                Amount: 100
+              </Text>
+            </Flex>
+          )}
         </Flex>
       )}
     </Flex>
