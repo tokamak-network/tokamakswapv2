@@ -415,7 +415,7 @@ export const Swapper = () => {
           _active={{}}
           disabled={
             selectedToken0.address === "" ||
-            selectedToken0.address === selectedToken1.address ||
+          
             tx === true ||
             !account ||
             swapFromAmt === "0" ||
@@ -476,6 +476,7 @@ export const Swapper = () => {
         _hover={{}}
         _active={{}}
         disabled={
+          tx === true ||
           selectedToken0.address === "" ||
           maxError ||
           selectedToken1.address === "" ||
