@@ -76,6 +76,14 @@ export const Swapper = () => {
     /*eslint-disable*/
   }, [chainId]);
 
+  useEffect(() => {    
+    if (tx && !data ) {
+      setSwapFromAmt("0");
+      setSwapFromAmt2("0");
+    }
+   
+  }, [data,tx, transactionType, blockNumber]);
+
   useEffect(() => {
     const getBalances = async () => {
       if (!account || !library) {
@@ -220,7 +228,6 @@ export const Swapper = () => {
     setSelectedToken1(token1);
   };
 
-  
   return (
     <Flex
       width={"350px"}
@@ -288,7 +295,6 @@ export const Swapper = () => {
           _hover={{
             borderColor: "transparent",
           }}
-        
           onClick={() => setFocused("input1")}
           // defaultValue={0}
           value={focused === "input1" ? swapFromAmt : expected}
@@ -417,20 +423,13 @@ export const Swapper = () => {
           _active={{}}
           disabled={
             selectedToken0.address === "" ||
-          
             tx === true ||
             !account ||
-            swapFromAmt === "0" ||
-            Number(swapFromAmt) <= allowed ||
+            allowed !== 0 ||
             selectedToken0.address === ZERO_ADDRESS
           }
           onClick={() =>
-            approve(
-              account,
-              library,
-              selectedToken0.address,
-              setAllowed
-            )
+            approve(account, library, selectedToken0.address, setAllowed)
           }
         >
           {tx === true && data ? (
@@ -479,7 +478,8 @@ export const Swapper = () => {
         _active={{}}
         disabled={
           tx === true ||
-          selectedToken0.address === "" || Number(token0Balance) ===0||
+          selectedToken0.address === "" ||
+          Number(token0Balance) === 0 ||
           maxError ||
           selectedToken1.address === "" ||
           Number(swapFromAmt) > allowed ||

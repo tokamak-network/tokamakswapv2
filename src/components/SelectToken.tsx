@@ -297,16 +297,7 @@ export const SelectToken = (props: {
           pt={"42px"}
           pb={"10px"}
         >
-          {/* <Input
-            mt="42px"
-            borderRadius={"4px"}
-            mb="18px"
-            placeholder="Search Token or Address"
-            border={"solid 1px #dfe4ee"}
-            value={searchString}
-            focusBorderColor={!validAddress ? "#FF0000" : ""}
-            onChange={(e: any) => setSearchString(e.target.value)}
-          ></Input> */}
+         
           {searchString === "" ? (
             tokensFromAPI.map((token: any, index: number) => (
               <TokenComp
