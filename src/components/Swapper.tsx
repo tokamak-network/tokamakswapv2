@@ -219,6 +219,8 @@ export const Swapper = () => {
     setSelectedToken0(token0);
     setSelectedToken1(token1);
   };
+
+  
   return (
     <Flex
       width={"350px"}
@@ -477,7 +479,7 @@ export const Swapper = () => {
         _active={{}}
         disabled={
           tx === true ||
-          selectedToken0.address === "" ||
+          selectedToken0.address === "" || Number(token0Balance) ===0||
           maxError ||
           selectedToken1.address === "" ||
           Number(swapFromAmt) > allowed ||

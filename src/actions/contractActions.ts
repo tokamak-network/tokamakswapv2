@@ -21,6 +21,68 @@ const { TON_ADDRESS, WTON_ADDRESS, SwapProxy, SwapperV2Proxy, Quoter_ADDRESS, } 
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
+export const addToken = async (
+  tokenAddress: string,
+  library: any,
+  tokenImage: string,
+) => {
+
+  if (tokenAddress.toLocaleLowerCase() === WTON_ADDRESS.toLocaleLowerCase()) {
+    const contract = new Contract(WTON_ADDRESS, WTONABI.abi, library);
+    const tokenSymbol = await contract.symbol();
+    const tokenDecimals = await contract.decimals();
+    try {
+      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
+      //@ts-ignore
+      const wasAdded = await window?.ethereum?.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20', // Initially only supports ERC20, but eventually more!
+          options: {
+            address: tokenAddress, // The address that the token is at.
+            symbol: tokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
+            decimals: tokenDecimals, // The number of decimals in the token
+            image: tokenImage, // A string url of the token logo
+          },
+        },
+      });
+      if (wasAdded) {
+      } else {
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+ 
+ else {
+  const contract = new Contract(tokenAddress, TONABI.abi, library);
+  const tokenSymbol = await contract.symbol();
+  const tokenDecimals = await contract.decimals();
+  try {
+    // wasAdded is a boolean. Like any RPC method, an error may be thrown.
+    //@ts-ignore
+    const wasAdded = await window?.ethereum?.request({
+      method: 'wallet_watchAsset',
+      params: {
+        type: 'ERC20', // Initially only supports ERC20, but eventually more!
+        options: {
+          address: tokenAddress, // The address that the token is at.
+          symbol: tokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
+          decimals: tokenDecimals, // The number of decimals in the token
+          image: tokenImage, // A string url of the token logo
+        },
+      },
+    });
+    if (wasAdded) {
+    } else {
+    }
+  } catch (error) {
+    console.log(error);
+  }
+ }
+};
+
+
 export const getUserTokenBalance = async (account: string, library: any, tokenAddress: string) => {
 
   if (tokenAddress.toLowerCase() === WTON_ADDRESS.toLowerCase()) {
