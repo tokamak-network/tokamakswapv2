@@ -112,8 +112,7 @@ export const getParams = (address0: string, address1: string) => {
     const pool = [address0.toLowerCase(), address1.toLowerCase()]
     
     switch (true) {
-      case getPool(ethTon, pool):
-  
+      case getPool(ethTon, pool):  
         return {
           path: encodePath([WETH_ADDRESS, WTON_ADDRESS], [FeeAmount.MEDIUM]),
           wrapEth: true,
@@ -705,8 +704,6 @@ export const getParams = (address0: string, address1: string) => {
         }
       ///////////////////////////////// ////////////////////////////////
       case getPool(ethTos, pool):
-  
-  
         return {
           path: encodePath([WETH_ADDRESS, WTON_ADDRESS, TOS_ADDRESS], [FeeAmount.MEDIUM, FeeAmount.MEDIUM]),
           wrapEth: true,

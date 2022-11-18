@@ -206,17 +206,17 @@ const exactOutputEth = async (signer: any, swapperV2: any, exactOutputParams: an
 
 export const getExpectedOutput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string, slippage: string) => {
   //address0 = ton 
-  //addres1 = tos
+  //addres1 = tos  
   let denominator;
   let numerator;
   const int = Number.isInteger(Number(slippage));
   if (slippage !== '' && Number(slippage) > 0 && Number(slippage) < 100) {
-    if (int) {
+    if (int) {      
       denominator = BigNumber.from("100")
       const slippageCalc = 100 - Number(slippage)
       numerator = BigNumber.from(slippageCalc.toString());
     }
-    else {
+    else {      
       const countDecimals = slippage.split('.')[1].length;
       const denom = 100 * (10 ** countDecimals);
       const slippageCalc = denom - (Number(slippage) * (10 ** countDecimals))
@@ -224,18 +224,17 @@ export const getExpectedOutput = async (library: any, userAddress: string | null
       numerator = BigNumber.from(slippageCalc.toString())
     }
   }
-  else {
+  else {    
     denominator = BigNumber.from("100")
     numerator = BigNumber.from("99")
   }
   let amountIn
 
   if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() || address0.toLowerCase() === TON_ADDRESS.toLowerCase()) {
-    amountIn = ethers.utils.parseUnits(amount, '27');
+    amountIn = ethers.utils.parseUnits(amount, '27');    
   }
   else {
-    amountIn = ethers.utils.parseEther(amount)
-
+    amountIn = ethers.utils.parseEther(amount)    
   }
   const params = getParams(address0, address1);
   //address0 => TOS, address11=>DOC
