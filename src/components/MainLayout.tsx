@@ -10,16 +10,15 @@ import TokamakGNB from "./TokamakGNB";
 import { ImportTokenModal } from "./ImportTokenModal";
 import {AdvanceModeModal} from './AdvanceModeModal'
 import {AdvancedSwapper} from './AdvancedSwapper'
+import { SwapSummaryModal } from "./SwapSummaryModal";
 export const MainLayout = () => {
   const [walletState, setWalletState] = useState<string>("");
   const { onOpen, isOpen: isModalOpen, onClose } = useDisclosure();
-  const [advanced, setAdvanced] = useState(false)
+  const [advanced, setAdvanced] = useState(true)
   const handleWalletModalOpen = (state: string) => {
     setWalletState(state);
     onOpen();
   };
-
-  console.log('advanced',advanced);
   
   return(
     
@@ -31,7 +30,9 @@ export const MainLayout = () => {
         {/* <Description/> */}
         <Footer/>
         <WalletModal state={walletState} isOpen={isModalOpen} onClose={onClose} />
+        <SwapSummaryModal/>
         <ImportTokenModal />
         <AdvanceModeModal/>
+       
     </Flex>);
-};
+};  

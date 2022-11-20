@@ -182,7 +182,7 @@ const MobileLinks = () => {
   return (
     <Flex direction={"row"} mr={4} mt={"12px"}>
       {mobileLinkItems.map((mobileLinkItem: any, index: number) => (
-        <Flex flexDir={"column"} alignItems={"center"} mr={"9px"} w={"60px"}>
+        <Flex flexDir={"column"} alignItems={"center"} mr={"9px"} w={"60px"} key={index}>
           <Link
             w={"60px"}
             h={"60px"}

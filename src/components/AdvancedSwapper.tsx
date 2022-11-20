@@ -19,19 +19,26 @@ import { SettingsComponent } from "./SettingsComponent";
 import { useAppSelector } from "../hooks/useRedux";
 import { selectTransactionType } from "../store/refetch.reducer";
 import { selectTxType } from "../store/tx.reducer";
+import { useAppDispatch } from "../hooks/useRedux";
+import { openModal } from "../store/modal.reducer";
 
+type Token = {
+  name: string;
+  address: string;
+  img: string;
+};
 export const AdvancedSwapper = (props: {
   setAdvanced: Dispatch<SetStateAction<any>>;
 }) => {
   const theme = useTheme();
   const { chainId, account, library } = useActiveWeb3React();
   const { setAdvanced } = props;
-  const [token0Balance, setToken0Balance] = useState<string>("0");
   const [slippage, setSlippage] = useState<string>("");
   const { tx, data } = useAppSelector(selectTxType);
-  const [pools, setPools] = useState([{address0:'', address1:'', fee:''}])
-  console.log(pools);
-  
+  const [pools, setPools] = useState([{ token0: {}, token1: {}, fee: "" }]);
+  const [amount, setAmount] = useState<string>('0')
+  const dispatch = useAppDispatch();
+
   return (
     <Flex
       width={"350px"}
@@ -75,12 +82,20 @@ export const AdvancedSwapper = (props: {
         />
       </Flex>
 
-          {pools.map((pool:any, index:number) => {
-            return (
-              <PoolComponent expanded={index === 0? true:false}  deletable={index === 0? false:true} key={index} setPools={setPools} pools={pools} poolNum={index}/>
-            )
-          
-          })}
+      {pools.map((pool: any, index: number) => {
+        return (
+          <PoolComponent
+            expanded={index === 0 ? true : false}
+            // expanded={true}
+            deletable={index === 0 ? false : true}
+            key={index}
+            setPools={setPools}
+            setAmount={setAmount}
+            pools={pools}
+            poolNum={index}
+          />
+        );
+      })}
       <Flex
         border={"1px solid #dfe4ee"}
         borderRadius="10px"
@@ -90,8 +105,10 @@ export const AdvancedSwapper = (props: {
         bg="#fff"
         justifyContent={"center"}
         alignItems="center"
-        onClick={() => {setPools(pools.concat([{address0:'', address1:'', fee:''}]))}}
-        _hover={{cursor:'pointer'}}
+        onClick={() => {
+          setPools(pools.concat([{ token0: {}, token1: {}, fee: "" }]));
+        }}
+        _hover={{ cursor: "pointer" }}
       >
         <Image src={Plus} h="26px" w="26px" />
         <Text ml="8px">Add another address</Text>
@@ -100,17 +117,18 @@ export const AdvancedSwapper = (props: {
         border={"1px solid #dfe4ee"}
         borderRadius="10px"
         width={"350px"}
-        h={"144px"}
+        h={"100%"}
         bg="#fff"
         p="20px"
         justifyContent={"center"}
-        flexDir='column'
+        flexDir="column"
       >
         <SettingsComponent
           setSlippage={setSlippage}
           focused={"input1"}
           advanced={true}
         />
+       
         <Button
           borderRadius={"28px"}
           border={"none"}
@@ -130,6 +148,14 @@ export const AdvancedSwapper = (props: {
           }}
           _hover={{}}
           _active={{}}
+          onClick={() => {
+            dispatch(
+              openModal({
+                type: "swap_summary",
+                data:{pools, amount}
+              })
+            );
+          }}
         >
           {tx === true && !data ? (
             <CircularProgress

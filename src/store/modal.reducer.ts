@@ -2,7 +2,7 @@ import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {RootState} from './reducers';
 
 
-type SwapModals = 'import_tokens' |'advance_mode'
+type SwapModals = 'import_tokens' |'advance_mode' | 'swap_summary'
 
 export type ModalType = SwapModals;
 

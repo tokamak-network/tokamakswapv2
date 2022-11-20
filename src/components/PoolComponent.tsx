@@ -29,10 +29,18 @@ import {
   getExpectedInput,
   swapExactOutput,
 } from "../actions/contractActions";
+
+type Token = {
+  name: string;
+  address: string;
+  img: string;
+};
+
 export const PoolComponent = (props: {
   expanded: boolean;
   deletable: boolean;
   setPools: Dispatch<SetStateAction<any>>;
+  setAmount: Dispatch<SetStateAction<any>>;
   pools: any;
   poolNum: number;
 }) => {
@@ -40,7 +48,7 @@ export const PoolComponent = (props: {
   const { WETH_ADDRESS } = DEPLOYED;
 
   const FeeAmount = [500, 3000, 10000];
-  const { expanded, deletable, setPools, pools, poolNum } = props;
+  const { expanded, deletable, setPools, pools, poolNum,setAmount } = props;
   const [open, setOpen] = useState(false);
   const { chainId, account, library } = useActiveWeb3React();
   const [token0Balance, setToken0Balance] = useState<string>("0");
@@ -51,6 +59,15 @@ export const PoolComponent = (props: {
   const { transactionType, blockNumber } = useAppSelector(
     selectTransactionType
   );
+  const [adPools, setAdPools] = useState<
+    [{ token0: Token; token1: Token; fee: string }]
+  >([
+    {
+      token0: { name: "", address: "", img: "" },
+      token1: { name: "", address: "", img: "" },
+      fee: "",
+    },
+  ]);
 
   const [selectedToken0, setSelectedToken0] = useState({
     name: "",
@@ -66,7 +83,30 @@ export const PoolComponent = (props: {
 
   useEffect(() => {
     setOpen(expanded);
-  }, [expanded]);
+    setAdPools(pools);
+  }, [expanded, pools]);
+
+  useEffect(() => {
+    setSelectedToken0(
+      poolNum > 0 && pools[poolNum - 1].token1.address
+        ? pools[poolNum - 1].token1
+        : { name: "", address: "", img: "" }
+    );
+    setSelectedToken1(
+      poolNum > 0 && pools[poolNum].token1.address
+        ? pools[poolNum].token1
+        : { name: "", address: "", img: "" }
+    );
+  }, [pools[poolNum]]);
+
+  useEffect(() => {
+    const myPools = [...pools];
+    const mypool = myPools[poolNum];
+    mypool.token0 = selectedToken0;
+    mypool.token1 = selectedToken1;
+    mypool.fee = fee;
+    setPools(myPools);
+  }, [selectedToken0, selectedToken1, fee]);
 
   useEffect(() => {
     const getBalances = async () => {
@@ -140,8 +180,9 @@ export const PoolComponent = (props: {
         w="100%"
       >
         <Text fontSize={"18px"} color="#3d495d" fontWeight={"bold"} h="21px">
-          {selectedToken0.name ? selectedToken0.name : " Token 1"} {`${`>`}`}{" "}
-          {selectedToken1.name ? selectedToken1.name : "Token 2"}
+          {selectedToken0.name ? selectedToken0.name : `Token ${poolNum + 1}`}{" "}
+          {`${`>`}`}{" "}
+          {selectedToken1.name ? selectedToken1.name : `Token ${poolNum + 2}`}
         </Text>
         <Flex>
           {open && deletable && (
@@ -153,10 +194,8 @@ export const PoolComponent = (props: {
               onClick={() => {
                 // setPools(pools.splice(poolNum,1))
                 const temp = [...pools];
-               temp.splice(poolNum-1,1)
-               setPools(temp)
-
-                
+                temp.splice(poolNum, 1);
+                setPools(temp);
               }}
             />
           )}
@@ -166,14 +205,17 @@ export const PoolComponent = (props: {
             w="16px"
             onClick={() => setOpen(!open)}
           />
-          <Text>{poolNum}</Text>
         </Flex>
       </Flex>
       {open ? (
         <Flex mt="24px" flexDir={"column"}>
           <SelectToken
             setToken={setSelectedToken0}
-            selectedToken={selectedToken0}
+            selectedToken={
+              poolNum > 0 && adPools[poolNum - 1].token1.address !== ""
+                ? adPools[poolNum - 1].token1
+                : selectedToken0
+            }
           />
           {!deletable && (
             <Flex flexDir={"column"}>
@@ -224,6 +266,7 @@ export const PoolComponent = (props: {
                   onChange={(e) => {
                     const valueNum = e;
                     setSwapFromAmt(valueNum);
+                    setAmount(valueNum)
                   }}
                 >
                   <NumberInputField
@@ -244,7 +287,7 @@ export const PoolComponent = (props: {
             />
           </Flex>
           <Flex mt="17px" h="35px" justifyContent={"space-between"}>
-            {FeeAmount.map((fee: any, index: number) => (
+            {FeeAmount.map((feeX: any, index: number) => (
               <Flex
                 key={index}
                 border={"1px solid #dfe4ee"}
@@ -252,21 +295,26 @@ export const PoolComponent = (props: {
                 borderRadius={"17.5"}
                 justifyContent="center"
                 alignItems={"center"}
+                bg={feeX === fee ? "#007df6" : ""}
                 onClick={() => {
-                  setFee(fee);
+                  setFee(feeX);
                 }}
-                _hover={{ cursor: "pointer" }}
+                _hover={{ cursor: "pointer", border: "1px solid #257eee" }}
               >
-                <Text color="#3d495d" fontSize={"16px"} fontWeight="bold">
-                  {fee / 10000}%{" "}
+                <Text
+                  color={feeX === fee ? "#fff" : "#3d495d"}
+                  fontSize={"16px"}
+                  fontWeight="bold"
+                >
+                  {feeX / 10000}%{" "}
                 </Text>
                 <Text
                   ml="2px"
-                  color="#3d495d"
+                  color={feeX === fee ? "#fff" : "#3d495d"}
                   fontSize={"10px"}
                   fontWeight="normal"
                 >
-                  ({Number(fee).toLocaleString()})
+                  ({Number(feeX).toLocaleString()})
                 </Text>
               </Flex>
             ))}
@@ -388,19 +436,20 @@ export const PoolComponent = (props: {
             <Flex
               w="310px"
               border="1px solid #e7edf3"
-              h="34px"
+              h="36px"
               borderRadius={"18px"}
               mt="7px"
               alignItems={"center"}
             >
               <Text
-                h="24px"
-                my="6px"
+                h="36px"
+                display={"flex"}
+                alignItems="center"
                 ml="14px"
                 fontSize={"14px"}
                 color={"#3e495c"}
               >
-                Amount: 100
+                Amount: {swapFromAmt}
               </Text>
             </Flex>
           )}
