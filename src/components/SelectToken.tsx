@@ -273,7 +273,7 @@ export const SelectToken = (props: {
           pt={'42px'}
           pb={'10px'}
         >
-          {/* <Input
+          <Input
             mt="42px"
             borderRadius={"4px"}
             mb="18px"
@@ -282,7 +282,7 @@ export const SelectToken = (props: {
             value={searchString}
             focusBorderColor={!validAddress ? "#FF0000" : ""}
             onChange={(e: any) => setSearchString(e.target.value)}
-          ></Input> */}
+          ></Input>
           {searchString === "" ? (
             tokensFromAPI.map((token: any, index: number) => (
               <TokenComp

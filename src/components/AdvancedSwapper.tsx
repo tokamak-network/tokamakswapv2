@@ -85,8 +85,8 @@ export const AdvancedSwapper = (props: {
       {pools.map((pool: any, index: number) => {
         return (
           <PoolComponent
-            expanded={index === 0 ? true : false}
-            // expanded={true}
+            // expanded={index === 0 ? true : false}
+            expanded={true}
             deletable={index === 0 ? false : true}
             key={index}
             setPools={setPools}
