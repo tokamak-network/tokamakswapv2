@@ -9,7 +9,7 @@ import styled from "@emotion/styled";
 const menus = [
   {
     title: "Vision",
-    url: "",
+    url: 'https://vision-page.vercel.app/',
     isFoucsed: false,
   },
   {
