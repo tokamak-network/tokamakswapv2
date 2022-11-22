@@ -234,12 +234,12 @@ export const Footer = () => {
         maxW={"full"}
         mt={"50px"}
         // w={"316px"}
-        h={"100%"}
-        mb={"200px"}
+      h='100%'
+        mb={"20px"}
         p={"0px"}
         justifyContent='center'
       >
-        <Flex flexDir={"column"} h={"21px"}>
+        <Flex flexDir={"column"}>
           <Flex
             flexDir={"row"}
             alignItems={"center"}
@@ -282,9 +282,9 @@ export const Footer = () => {
             {" "}
             <MobileSocialLinks />
           </Flex>
-          <Flex>
+          {/* <Flex>
             <MobileLinks />
-          </Flex>
+          </Flex> */}
         </Flex>
       </Flex>
     );
