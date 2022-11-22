@@ -35,9 +35,21 @@ export const AdvancedSwapper = (props: {
   const { setAdvanced } = props;
   const [slippage, setSlippage] = useState<string>("");
   const { tx, data } = useAppSelector(selectTxType);
-  const [pools, setPools] = useState([{ token0: {}, token1: {}, fee: "" }]);
-  const [amount, setAmount] = useState<string>('0')
+  const [pools, setPools] = useState([{ token0: {}, token1: {}, fee: 0 }]);
+  const [amount, setAmount] = useState<string>("0");
   const dispatch = useAppDispatch();
+  const [disableBtn, setDisableBtn] = useState(true);
+
+  useEffect(() => {
+    const arr = pools.filter(
+      (pool: any) =>
+        pool.fee === 0 ||
+        pool.token0.address === "" ||
+        pool.token1.address === "" ||
+        pool.token0.address === pool.token1.address
+    );
+    setDisableBtn(arr.length !== 0 || pools.length === 10);
+  }, [pools]);
 
   return (
     <Flex
@@ -96,7 +108,7 @@ export const AdvancedSwapper = (props: {
           />
         );
       })}
-      <Flex
+      <Button
         border={"1px solid #dfe4ee"}
         borderRadius="10px"
         mb="8px"
@@ -105,14 +117,17 @@ export const AdvancedSwapper = (props: {
         bg="#fff"
         justifyContent={"center"}
         alignItems="center"
+        disabled={disableBtn}
         onClick={() => {
-          setPools(pools.concat([{ token0: {}, token1: {}, fee: "" }]));
+          setPools(pools.concat([{ token0: {}, token1: {}, fee: 0 }]));
         }}
         _hover={{ cursor: "pointer" }}
       >
         <Image src={Plus} h="26px" w="26px" />
-        <Text ml="8px">Add another address</Text>
-      </Flex>
+        <Text ml="8px" fontWeight={"normal"}>
+          Add another address
+        </Text>
+      </Button>
       <Flex
         border={"1px solid #dfe4ee"}
         borderRadius="10px"
@@ -128,7 +143,7 @@ export const AdvancedSwapper = (props: {
           focused={"input1"}
           advanced={true}
         />
-       
+
         <Button
           borderRadius={"28px"}
           border={"none"}
@@ -146,13 +161,14 @@ export const AdvancedSwapper = (props: {
             backgroundColor: "#e9edf1",
             color: "#8f96a1",
           }}
+          disabled={disableBtn}
           _hover={{}}
           _active={{}}
           onClick={() => {
             dispatch(
               openModal({
                 type: "swap_summary",
-                data:{pools, amount}
+                data: { pools, amount },
               })
             );
           }}

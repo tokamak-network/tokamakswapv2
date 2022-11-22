@@ -274,7 +274,7 @@ export const SelectToken = (props: {
           pb={'10px'}
         >
           <Input
-            mt="42px"
+            // mt="42px"
             borderRadius={"4px"}
             mb="18px"
             placeholder="Search Token or Address"
