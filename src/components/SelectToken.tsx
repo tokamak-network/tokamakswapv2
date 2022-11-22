@@ -170,8 +170,8 @@ export const SelectToken = (props: {
           <Text>{name}</Text>
         </Flex>
       
-          <Text fontSize={"10px"} _hover={{textDecor:'underline'}}  onClick={()=> {addToken(address, library,img)}}>Import</Text>
-      
+         {address.toLocaleLowerCase()  !== ZERO_ADDRESS && <Text fontSize={"10px"} _hover={{textDecor:'underline'}}  onClick={()=> {addToken(address, library,img)}}>Import</Text>
+      }
       </Flex>
     );
   };
@@ -247,7 +247,7 @@ export const SelectToken = (props: {
             </Flex>
           ) : (
             <Flex alignItems="center">
-              {selected.img === "" ? (
+              {selected.img === "" || !selected.img? (
                 selected.name === "ETH" || selected.name === "WETH" ? (
                   <Image
                     w="40px"

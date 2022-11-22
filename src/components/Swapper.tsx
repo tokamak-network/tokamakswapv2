@@ -65,9 +65,9 @@ export const Swapper = () => {
   const [token0Balance, setToken0Balance] = useState<string>("0");
   const [token1Balance, setToken1Balance] = useState<string>("0");
 
-  useEffect(() => {
-    if (chainId !== Number(DEFAULT_NETWORK) && chainId !== undefined) {
-      const netType = DEFAULT_NETWORK === 1 ? "mainnet" : "Göerli Test Network";
+  useEffect(() => {    
+    if (chainId !== Number(DEFAULT_NETWORK ) && chainId !== undefined) {
+      const netType = DEFAULT_NETWORK === 1 ? "Mainnet" : "Göerli Test Network";
       //@ts-ignore
       // dispatch(fetchUserInfo({reset: true}));
 

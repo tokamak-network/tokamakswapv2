@@ -14,10 +14,7 @@ import {
   NumberInputField,
   Box,
 } from "@chakra-ui/react";
-import expand from "../assets/expand.png";
 import gear from "../assets/gear.png";
-import icon_arrow from "../assets/icon_arrow.png";
-import { QuestionOutlineIcon } from '@chakra-ui/icons'
 
 
 export const SettingsComponent = (props:{setSlippage:Dispatch<SetStateAction<any>>; focused: string}) => {
