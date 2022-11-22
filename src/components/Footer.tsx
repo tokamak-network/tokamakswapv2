@@ -233,10 +233,11 @@ export const Footer = () => {
       <Flex
         maxW={"full"}
         mt={"50px"}
-        w={"316px"}
+        // w={"316px"}
         h={"100%"}
         mb={"200px"}
         p={"0px"}
+        justifyContent='center'
       >
         <Flex flexDir={"column"} h={"21px"}>
           <Flex
