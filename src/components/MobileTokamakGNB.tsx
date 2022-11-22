@@ -9,7 +9,7 @@ import styled from "@emotion/styled";
 const menus = [
   {
     title: "Vision",
-    url: 'https://vision-page.vercel.app/',
+    url: "https://vision-page.vercel.app/",
     isFoucsed: false,
   },
   {
@@ -156,6 +156,13 @@ const handleNavigation = (e: any, rightArrow?: boolean) => {
 };
 
 function MobileTokamakGNB() {
+  setTimeout(() => {
+    handleNavigation(undefined, true);
+    handleNavigation(undefined, true);
+    handleNavigation(undefined, true);
+    handleNavigation(undefined, true);
+  }, 1000);
+  
   return (
     <div className="gnb_mobile_header">
       <img
