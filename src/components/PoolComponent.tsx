@@ -48,7 +48,7 @@ export const PoolComponent = (props: {
   const { WETH_ADDRESS } = DEPLOYED;
 
   const FeeAmount = [500, 3000, 10000];
-  const { expanded, deletable, setPools, pools, poolNum,setAmount } = props;
+  const { expanded, deletable, setPools, pools, poolNum, setAmount } = props;
   const [open, setOpen] = useState(false);
   const { chainId, account, library } = useActiveWeb3React();
   const [token0Balance, setToken0Balance] = useState<string>("0");
@@ -60,12 +60,12 @@ export const PoolComponent = (props: {
     selectTransactionType
   );
   const [adPools, setAdPools] = useState<
-    [{ token0: Token; token1: Token; fee: string }]
+    [{ token0: Token; token1: Token; fee: number }]
   >([
     {
       token0: { name: "", address: "", img: "" },
       token1: { name: "", address: "", img: "" },
-      fee: "",
+      fee: 0,
     },
   ]);
 
@@ -266,7 +266,7 @@ export const PoolComponent = (props: {
                   onChange={(e) => {
                     const valueNum = e;
                     setSwapFromAmt(valueNum);
-                    setAmount(valueNum)
+                    setAmount(valueNum);
                   }}
                 >
                   <NumberInputField

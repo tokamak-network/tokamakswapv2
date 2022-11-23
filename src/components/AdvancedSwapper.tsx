@@ -21,6 +21,7 @@ import { selectTransactionType } from "../store/refetch.reducer";
 import { selectTxType } from "../store/tx.reducer";
 import { useAppDispatch } from "../hooks/useRedux";
 import { openModal } from "../store/modal.reducer";
+import { swapAdvance, getExpectedAdvanced } from "../actions/contractActions";
 
 type Token = {
   name: string;
@@ -50,6 +51,16 @@ export const AdvancedSwapper = (props: {
     );
     setDisableBtn(arr.length !== 0 || pools.length === 10);
   }, [pools]);
+
+
+  // useEffect(() => {
+  // const getExpected = async() => {
+  //  const ttt= await getExpectedAdvanced(library,account,pools,amount,slippage)
+  //  console.log(ttt);
+   
+  // }
+  // getExpected()
+  // }, [pools]);
 
   return (
     <Flex
@@ -168,7 +179,7 @@ export const AdvancedSwapper = (props: {
             dispatch(
               openModal({
                 type: "swap_summary",
-                data: { pools, amount },
+                data: { pools, amount, slippage },
               })
             );
           }}

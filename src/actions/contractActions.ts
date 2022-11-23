@@ -17,9 +17,24 @@ import { openToast } from "../store/app/toast.reducer";
 import { getSigner, getProviderOrSigner } from "../utils/contract";
 import { getParams } from "../utils/params";
 
-const { TON_ADDRESS, WTON_ADDRESS, SwapProxy, SwapperV2Proxy, Quoter_ADDRESS, } = DEPLOYED;
+const { TON_ADDRESS, WTON_ADDRESS, SwapProxy, SwapperV2Proxy, Quoter_ADDRESS, WETH_ADDRESS } = DEPLOYED;
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const FEE_SIZE = 3;
+
+const encodePath = (path: any, fees: any) => {
+  if (path.length !== fees.length + 1) {
+    throw new Error("path/fee lengths do not match");
+  }
+  let encoded = "0x";
+  for (let i = 0; i < fees.length; i++) {
+    encoded += path[i].slice(2);
+    encoded += fees[i].toString(16).padStart(2 * FEE_SIZE, "0");
+  }
+  encoded += path[path.length - 1].slice(2);
+  return encoded.toLowerCase();
+};
+
 
 export const getUserTokenBalance = async (account: string, library: any, tokenAddress: string) => {
 
@@ -275,6 +290,7 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
     try {
       amountIn = await quoteContract.callStatic.quoteExactOutput(params.path, amountOut); // ray
       const maximumAmountIn = amountIn.mul(numerator).div(denominator);
+
       if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() || address0.toLowerCase() === TON_ADDRESS.toLowerCase() || params.inputWrapWTON) {
         const converted = convertNumber({
           amount: maximumAmountIn,
@@ -316,12 +332,8 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
 
     }
     catch (err) {
-      return {err}
+      return { err }
     }
-   
-
-
-
   }
 
   else if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() && address1.toLowerCase() === TON_ADDRESS.toLowerCase() || address1.toLowerCase() === WTON_ADDRESS.toLowerCase() && address0.toLowerCase() === TON_ADDRESS.toLowerCase()) {
@@ -330,6 +342,215 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
     const formattedAmountOut = amount
     return { formatted, minimumAmountOut, formattedAmountOut }
   }
+}
+
+export const getExpectedAdvanced = async (library: any, userAddress: string | null | undefined, pools: any, amount: string, slippage: string) => {
+console.log('ggg');
+
+  const fees = pools.map((pool: any) => {
+    return pool.fee
+  })
+
+  const tempTokenPath = pools.map((pool: any) => {
+    // return pool.token0.address
+    if (pool.token0.address.toLowerCase() === TON_ADDRESS.toLowerCase()) {
+      return WTON_ADDRESS
+    }
+    else if (pool.token0.address.toLowerCase() === ZERO_ADDRESS.toLowerCase()) {
+      return WETH_ADDRESS
+    }
+    else {
+      return pool.token0.address
+    }
+  })
+  const address1 = pools[pools.length - 1].token1.address
+  const address0 = pools[0].token0.address
+  tempTokenPath.push(address1)
+  const encoded = encodePath(tempTokenPath, fees);
+
+  let denominator;
+  let numerator;
+  const int = Number.isInteger(Number(slippage));
+
+  if (slippage !== '' && Number(slippage) > 0 && Number(slippage) < 100) {
+    if (int) {
+      denominator = BigNumber.from("100")
+      const slippageCalc = 100 - Number(slippage)
+      numerator = BigNumber.from(slippageCalc.toString());
+    }
+    else {
+      const countDecimals = slippage.split('.')[1].length;
+      const denom = 100 * (10 ** countDecimals);
+      const slippageCalc = denom - (Number(slippage) * (10 ** countDecimals))
+      denominator = BigNumber.from(denom.toString());
+      numerator = BigNumber.from(slippageCalc.toString())
+    }
+  }
+  else {
+    denominator = BigNumber.from("100")
+    numerator = BigNumber.from("99")
+  }
+
+  if (library && userAddress && Number(amount) !== 0) {
+    let amountIn
+    let wrapEth
+    let inputWrapWTON;
+    let outputUnwrapTON;
+    let outputUnwrapEth;
+
+    if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() || address0.toLowerCase() === TON_ADDRESS.toLowerCase()) {
+      amountIn = ethers.utils.parseUnits(amount, '27');
+    }
+    else {
+      amountIn = ethers.utils.parseEther(amount)
+    }
+    wrapEth = address0.toLowerCase() === ZERO_ADDRESS.toLowerCase()
+    inputWrapWTON = address0.toLowerCase() === TON_ADDRESS.toLowerCase();
+    outputUnwrapTON = address1.toLowerCase() === TON_ADDRESS.toLowerCase();
+    outputUnwrapEth = address1.toLowerCase() === ZERO_ADDRESS.toLowerCase();
+    const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
+    const amountOut = await quoteContract.callStatic.quoteExactInput(encoded, amountIn);
+    const minimumAmountOut = amountOut.mul(numerator).div(denominator);
+    if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase() || outputUnwrapTON) {
+      const converted = convertNumber({
+        amount: minimumAmountOut,
+        type: "ray",  
+      });
+
+      const formatted = converted && converted.indexOf(".") > -1 ? converted?.slice(
+        0,
+        converted?.indexOf(".") + 3
+      ) : converted
+
+
+      const convertedAmountOut = convertNumber({
+        amount: amountOut,
+        type: "ray",
+      });
+
+      const formattedAmountOut = convertedAmountOut && convertedAmountOut.indexOf(".") > -1 ? convertedAmountOut?.slice(
+        0,
+        convertedAmountOut?.indexOf(".") + 3
+      ) : convertedAmountOut
+
+      return { formatted, minimumAmountOut, amountIn, formattedAmountOut }
+    }
+    else {
+      const converted = ethers.utils.formatEther(minimumAmountOut)
+      const formatted = converted && converted.indexOf(".") > -1 ? converted?.slice(
+        0,
+        converted?.indexOf(".") + 3
+      ) : converted
+      const convertedAmountOut = ethers.utils.formatEther(amountOut)
+      const formattedAmountOut = convertedAmountOut && convertedAmountOut.indexOf(".") > -1 ? convertedAmountOut?.slice(
+        0,
+        convertedAmountOut?.indexOf(".") + 3
+      ) : convertedAmountOut
+      return { formatted, minimumAmountOut, amountIn, formattedAmountOut }
+    }
+  }
+}
+export const swapAdvance = async (library: any, userAddress: string | null | undefined, pools: any, amount: string, slippage: string) => {
+  const fees = pools.map((pool: any) => {
+    return pool.fee
+  })
+
+  const tempTokenPath = pools.map((pool: any) => {
+    // return pool.token0.address
+    if (pool.token0.address.toLowerCase() === TON_ADDRESS.toLowerCase()) {
+      return WTON_ADDRESS
+    }
+    else if (pool.token0.address.toLowerCase() === ZERO_ADDRESS.toLowerCase()) {
+      return WETH_ADDRESS
+    }
+    else {
+      return pool.token0.address
+    }
+  })
+  const address1 = pools[pools.length - 1].token1.address
+  const address0 = pools[0].token0.address
+  tempTokenPath.push(address1)
+  const encoded = encodePath(tempTokenPath, fees);
+
+  let denominator;
+  let numerator;
+  const int = Number.isInteger(Number(slippage));
+
+  if (slippage !== '' && Number(slippage) > 0 && Number(slippage) < 100) {
+    if (int) {
+      denominator = BigNumber.from("100")
+      const slippageCalc = 100 - Number(slippage)
+      numerator = BigNumber.from(slippageCalc.toString());
+    }
+    else {
+      const countDecimals = slippage.split('.')[1].length;
+      const denom = 100 * (10 ** countDecimals);
+      const slippageCalc = denom - (Number(slippage) * (10 ** countDecimals))
+      denominator = BigNumber.from(denom.toString());
+      numerator = BigNumber.from(slippageCalc.toString())
+    }
+  }
+  else {
+    denominator = BigNumber.from("100")
+    numerator = BigNumber.from("99")
+  }
+
+  if (library && userAddress && Number(amount) !== 0) {
+    let amountIn
+    let wrapEth
+    let inputWrapWTON;
+    let outputUnwrapTON;
+    let outputUnwrapEth;
+
+    if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() || address0.toLowerCase() === TON_ADDRESS.toLowerCase()) {
+      amountIn = ethers.utils.parseUnits(amount, '27');
+    }
+    else {
+      amountIn = ethers.utils.parseEther(amount)
+    }
+    wrapEth = address0.toLowerCase() === ZERO_ADDRESS.toLowerCase()
+    inputWrapWTON = address0.toLowerCase() === TON_ADDRESS.toLowerCase();
+    outputUnwrapTON = address1.toLowerCase() === TON_ADDRESS.toLowerCase();
+    outputUnwrapEth = address1.toLowerCase() === ZERO_ADDRESS.toLowerCase();
+    const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
+    const amountOut = await quoteContract.callStatic.quoteExactInput(encoded, amountIn);
+    const minimumAmountOut = amountOut.mul(numerator).div(denominator);
+    const signer = getSigner(library, userAddress);
+    const swapperV2 = new Contract(SwapperV2Proxy, SwapperV2.abi, library);
+    const getExactInputParams = {
+      recipient: userAddress,
+      path: encoded,
+      amountIn: amountIn,
+      amountOutMinimum: minimumAmountOut,
+      deadline: 0
+    }
+    try {
+      const tx = address0 !== ZERO_ADDRESS ? await exactInput(signer, swapperV2, getExactInputParams, wrapEth, outputUnwrapEth, inputWrapWTON, outputUnwrapTON) :
+        await exactInputEth(signer, swapperV2, getExactInputParams, wrapEth, outputUnwrapEth, inputWrapWTON, outputUnwrapTON, {
+          value: amountIn,
+        });
+      store.dispatch(setTxPending({ tx: true }));
+      if (tx) {
+        toastWithReceipt(tx, setTxPending, "Swapper");
+      }
+    }
+    catch (err) {
+      store.dispatch(setTxPending({ tx: false }));
+      store.dispatch(
+        //@ts-ignore
+        openToast({
+          payload: {
+            status: "error",
+            title: "Tx failed to send",
+            description: `Something went wrong`,
+            duration: 5000,
+            isClosable: true,
+          },
+        })
+      );
+    }
+  }
+
 }
 
 export const swapExactInput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string, slippage: string) => {

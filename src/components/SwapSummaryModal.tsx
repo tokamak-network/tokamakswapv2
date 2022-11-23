@@ -16,19 +16,41 @@ import { closeModal, selectModalType, openModal } from "../store/modal.reducer";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import straightAightArrow from "../assets/straightAightArrow.png";
 import { useActiveWeb3React } from "../hooks/useWeb3";
+import { swapAdvance ,getExpectedAdvanced} from "../actions/contractActions";
 
 export const SwapSummaryModal = () => {
   const theme = useTheme();
   const { data } = useAppSelector(selectModalType);
   const dispatch = useAppDispatch();
   const { chainId, account, library } = useActiveWeb3React();
-
+ const [expected, setExpected] = useState<string| undefined>('0')
   const handleCloseModal = useCallback(() => {
     dispatch(closeModal());
   }, [dispatch]);
 
   const pools = data?.data?.pools;
   const amount = data?.data?.amount;
+  const slippage = data?.data?.slippage;
+
+  useEffect(() => {
+    console.log(slippage);
+    
+    const getExpected = async() => {
+      if (pools && amount) {
+        const ttt= await getExpectedAdvanced(library,account,pools,amount,slippage)
+        if (ttt) {
+          setExpected(ttt.formatted)
+        }
+       
+      }
+     
+     
+    }
+    getExpected()
+    }, [pools]);
+  
+
+
 
   return (
     <Modal
@@ -100,87 +122,81 @@ export const SwapSummaryModal = () => {
                 ))}
               </Flex>
             </Flex>
-{pools && <Flex
-              h="294px"
-              boxShadow={"0 -3px 6px 0 rgba(0, 0, 0, 0.16)"}
-              w="100%"
-              borderRadius={"10px"}
-              position="relative"
-              px="21px"
-              py="30px"
-              flexDir={"column"}
-            justifyContent='center'
-            alignItems={'center'}
-            >
-              <Flex flexWrap={"wrap"} color="#3d495d">
-                <Text mr='5px'>{pools?.length} total swaps: </Text>
-                {pools?.map((pool: any) => (
-                  <Text>
-                    {pool.token0.name} {" > "}
-                  </Text>
-                ))}
-                <Text>
-                  {pools[pools?.length - 1].token1.name}
-                </Text>
-              </Flex>
+            {pools && (
               <Flex
+                h="294px"
+                boxShadow={"0 -3px 6px 0 rgba(0, 0, 0, 0.16)"}
                 w="100%"
-                justifyContent={"space-between"}
-                mt="12px"
-                color="#3d495d"
-                fontSize={"14px"}
+                borderRadius={"10px"}
+                position="relative"
+                px="21px"
+                py="30px"
+                flexDir={"column"}
+                justifyContent="center"
+                alignItems={"center"}
               >
-                <Text fontWeight="bold">Expected Output</Text>
-                <Text>1,234 LYDA</Text>
-              </Flex>
-              <Flex
-                 w="100%"
-                mt="13px"
-                fontSize={"12px"}
-                justifyContent={"space-between"}
-              >
-                <Flex flexDir={"column"} color="#3d495d">
-                  <Text> Minimum received after slippage</Text>
-                  <Text>(25.0%)</Text>
+                <Flex flexWrap={"wrap"} color="#3d495d">
+                  <Text mr="5px">{pools?.length} total swaps: </Text>
+                  {pools?.map((pool: any, index: number) => (
+                    <Text key={index}>
+                      {pool.token0.name} {" > "}
+                    </Text>
+                  ))}
+                  <Text>{pools[pools?.length - 1].token1.name}</Text>
                 </Flex>
-                <Flex flexDir={"column"} color="#86929d">
-                  <Text>1,234</Text>
-                  <Text>LYDA</Text>
+                <Flex
+                  w="100%"
+                  justifyContent={"space-between"}
+                  mt="12px"
+                  color="#3d495d"
+                  fontSize={"14px"}
+                >
+                  <Text fontWeight="bold">Expected Output</Text>
+                  <Text>1,234 LYDA</Text>
                 </Flex>
+                <Flex
+                  w="100%"
+                  mt="13px"
+                  fontSize={"12px"}
+                  justifyContent={"space-between"}
+                >
+                  <Flex flexDir={"column"} color="#3d495d">
+                    <Text> Minimum received after slippage</Text>
+                    <Text>(25.0%)</Text>
+                  </Flex>
+                  <Flex flexDir={"column"} color="#86929d">
+                    <Text>{expected}</Text>
+                    <Text></Text>
+                  </Flex>
+                </Flex>
+                <Button
+                  borderRadius={"28px"}
+                  border={"none"}
+                  padding={"16px 118px"}
+                  mt={"23px"}
+                  // cursor={
+                  //   !Number(swapFromAmt) || !account || invalidInput ? "not-allowed" : "pointer"
+                  // }
+                  w={"280px"}
+                  backgroundColor={account ? "#007aff" : "#e9edf1"}
+                  color={account ? "#fff" : "#8f96a1"}
+                  height={"56px"}
+                  fontSize={"18px"}
+                  fontWeight="normal"
+                  _disabled={{
+                    backgroundColor: "#e9edf1",
+                    color: "#8f96a1",
+                  }}
+                  _hover={{}}
+                  _active={{}}
+                  onClick={() => {
+                    swapAdvance(library, account, pools, amount, slippage)
+                  }}
+                >
+                  <Text>{"Confirm Swap"}</Text>
+                </Button>
               </Flex>
-              <Button
-                borderRadius={"28px"}
-                border={"none"}
-                padding={"16px 118px"}
-                mt={'23px'}
-                // cursor={
-                //   !Number(swapFromAmt) || !account || invalidInput ? "not-allowed" : "pointer"
-                // }
-                w={"280px"}
-                backgroundColor={account ? "#007aff" : "#e9edf1"}
-                color={account ? "#fff" : "#8f96a1"}
-                height={"56px"}
-                fontSize={"18px"}
-                fontWeight="normal"
-                _disabled={{
-                  backgroundColor: "#e9edf1",
-                  color: "#8f96a1",
-                }}
-                _hover={{}}
-                _active={{}}
-                onClick={() => {
-                  dispatch(
-                    openModal({
-                      type: "swap_summary",
-                      data: { pools, amount },
-                    })
-                  );
-                }}
-              >
-                <Text>{"Confirm Swap"}</Text>
-              </Button>
-            </Flex>}
-            
+            )}
           </Flex>
         </ModalBody>
       </ModalContent>
