@@ -28,8 +28,7 @@ const getPool = (array1: string[], array2: string[]) => {
     return equal
   }
 
-export const getParams = (address0: string, address1: string) => {
-
+export const getParams = (address0: string, address1: string) => {  
 
     const wtonTos = [WTON_ADDRESS.toLowerCase(), TOS_ADDRESS.toLowerCase()];
     const tosWton = [TOS_ADDRESS.toLowerCase(), WTON_ADDRESS.toLowerCase()]
@@ -556,9 +555,7 @@ export const getParams = (address0: string, address1: string) => {
           quoteExactInputSingle: false
         }
       /////////////////////
-      case getPool(tosTon, pool):
-  
-  
+      case getPool(tosTon, pool):        
         return {
           path: encodePath([TOS_ADDRESS, WTON_ADDRESS], [FeeAmount.MEDIUM]),
           wrapEth: false,
@@ -568,7 +565,8 @@ export const getParams = (address0: string, address1: string) => {
           fee: FeeAmount.MEDIUM,
           quoteExactInputSingle: true
         }
-      case getPool(tonTos, pool):  
+
+      case getPool(tonTos, pool):        
         return {
           path: encodePath([WTON_ADDRESS, TOS_ADDRESS], [FeeAmount.MEDIUM]),
           wrapEth: false,
