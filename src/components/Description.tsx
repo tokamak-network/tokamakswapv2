@@ -21,7 +21,7 @@ export const Description = () => {
     >
       <Flex ml="-140px" justifyContent={"flex-start"} >
       
-        <Link isExternal href='https://onther.gitbook.io/tokamaknetwork/website-guide/tokamak-network-swap-v2.0' display={'flex'} >
+        <Link isExternal href='https://tokamaknetwork.gitbook.io/home/02-service-guide/tokamak-network-swap-v2.0' display={'flex'} >
           <Image src={User_guide
           }/>
         <Text
