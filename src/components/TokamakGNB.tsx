@@ -57,7 +57,7 @@ function TokamakGNB() {
       <Menu
         title={"Tokamak Network DAO"}
         w={"190px"}
-        url={"https://dao.tokamak.network/#//"}
+        url={"https://dao.tokamak.network/#/"}
       ></Menu>
       <Menu
         title={"Swap"}
