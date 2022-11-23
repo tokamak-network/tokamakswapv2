@@ -3,7 +3,7 @@ export const TokamakSwapLogoMobile = (props: React.SVGProps<SVGSVGElement>) => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="112" height="44" viewBox="0 0 112 44">
     <g data-name="Group 5725">
-        <text transform="translate(54 31)" fontFamily="Roboto-Medium,Roboto" fontSize={'24px'} fontWeight={600} letterSpacing={'.008em'} ><tspan x="0" y="0">swap</tspan></text>
+        <text transform="translate(54 31)" fontFamily="Roboto-Medium,Roboto" fontSize={'24px'} fontWeight={600} letterSpacing={'.008em'} fill={'#2a72e5'} ><tspan x="0" y="0">Swap</tspan></text>
         <path d="M0 0h44v44H0z" fill="none"/>
         <g data-name="tokamak1">
             <g data-name="그룹 331">
