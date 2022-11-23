@@ -294,8 +294,11 @@ export const getExpectedOutput = async (library: any, userAddress: string | null
 // getExpectedInput function predicts the input the user will spend for exact output (swapExactOutput)
 export const getExpectedInput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string, slippage: string) => {
   const params = getParams(address1, address0);
-  // address0 => TOS
-  //address1 => DOC
+// address1 bottom output // tos
+//address0 top input  // ton 
+
+// amount is user input from bottom
+
   let amountOut
   let denominator;
   let numerator;
@@ -320,6 +323,8 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
     denominator = BigNumber.from("100")
     numerator = BigNumber.from("103")
   }
+//user input amount convert to ray ? when address0 == ton/wton or address1 == ton/wton?
+
 
   if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase()) {
     amountOut = ethers.utils.parseUnits(amount, '27');
@@ -331,8 +336,13 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
     const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
     let amountIn;
     try {
-      amountIn = await quoteContract.callStatic.quoteExactOutput(params.path, amountOut); // ray      
-      const maximumAmountIn = amountIn.mul(numerator).div(denominator);      
+      amountIn = await quoteContract.callStatic.quoteExactOutput(params.path, amountOut); // ray  when address0 is ton/wton // wei if address0 is doc/eth/...     
+      const xx = BigNumber.from (1e9.toString())
+     
+      const tempAmountIn = amountIn.mul(numerator).div(denominator);
+      
+      const maximumAmountIn =  address0.toLowerCase() === TON_ADDRESS.toLowerCase() ? (tempAmountIn.div(xx)).mul(xx) :tempAmountIn
+
       if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() || address0.toLowerCase() === TON_ADDRESS.toLowerCase() || params.inputWrapWTON) {
         const converted = convertNumber({
           amount: maximumAmountIn,
@@ -443,11 +453,12 @@ export const swapExactInput = async (library: any, userAddress: string | null | 
 }
 
 export const swapExactOutput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string, slippage: string) => {
+  //address1 = bottom token output token
+  //address0 = top token input token
   const params = getParams(address0, address1);
-
   if (library && userAddress && params) {
-    const amounts = await getExpectedInput(library, userAddress, address0, address1, amount, slippage)
-    const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
+    const amounts = await getExpectedInput(library, userAddress,  address1, address0,amount, slippage)
+    const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);    
     const signer = getSigner(library, userAddress);
     const swapperV2 = new Contract(SwapperV2Proxy, SwapperV2.abi, library);
     const getExactOutputParams = {
@@ -457,11 +468,14 @@ export const swapExactOutput = async (library: any, userAddress: string | null |
       amountInMaximum: amounts?.maximumAmountIn,
       deadline: 0
     }
-
+    const inputWrapWTON = address1.toLowerCase() === TON_ADDRESS.toLowerCase()? true:false;    
+    const outputUnwrapTON = address0.toLowerCase() === TON_ADDRESS.toLowerCase()? true:false
+    const wrapEth = address1.toLowerCase() === ZERO_ADDRESS.toLowerCase()? true:false;
+    const outputUnwrapEth = address0.toLowerCase() === ZERO_ADDRESS.toLowerCase()? true:false
     try {
-      const tx = address1 !== ZERO_ADDRESS ? await exactOutput(signer, swapperV2, getExactOutputParams, params.wrapEth, params.outputUnwrapEth, params.inputWrapWTON, params.outputUnwrapTON) :
-        await exactOutputEth(signer, swapperV2, getExactOutputParams, params.wrapEth, params.outputUnwrapEth, params.inputWrapWTON, params.outputUnwrapTON, {
-          value: amounts?.amountIn,
+      const tx = address1 !== ZERO_ADDRESS ? await exactOutput(signer, swapperV2, getExactOutputParams, wrapEth, outputUnwrapEth, inputWrapWTON, outputUnwrapTON) :
+        await exactOutputEth(signer, swapperV2, getExactOutputParams, wrapEth, outputUnwrapEth, inputWrapWTON, outputUnwrapTON, {
+          value: amounts?.maximumAmountIn,
         });
       store.dispatch(setTxPending({ tx: true, data: { name: 'swap' } }));
       if (tx) {
