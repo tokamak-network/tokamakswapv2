@@ -18,7 +18,7 @@ import { useActiveWeb3React } from "../hooks/useWeb3";
 import { useAppSelector } from "../hooks/useRedux";
 import { DEPLOYED } from "../constants";
 import ETH_symbol from "../assets/ETH_symbol.png";
-
+import {  getExpectedAdvanced } from "../actions/contractActions";
 import { selectTransactionType } from "../store/refetch.reducer";
 import {
   getUserTokenBalance,
@@ -43,12 +43,14 @@ export const PoolComponent = (props: {
   setAmount: Dispatch<SetStateAction<any>>;
   pools: any;
   poolNum: number;
+  amount:string;
+  slippage: string
 }) => {
   const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
   const { WETH_ADDRESS } = DEPLOYED;
 
   const FeeAmount = [500, 3000, 10000];
-  const { expanded, deletable, setPools, pools, poolNum, setAmount } = props;
+  const { expanded, deletable, setPools, pools, poolNum, setAmount , amount,slippage} = props;
   const [open, setOpen] = useState(false);
   const { chainId, account, library } = useActiveWeb3React();
   const [token0Balance, setToken0Balance] = useState<string>("0");
@@ -56,6 +58,7 @@ export const PoolComponent = (props: {
   const [swapFromAmt, setSwapFromAmt] = useState<string>("0");
   const [invalidInput, setInvalidInput] = useState<boolean>(false);
   const [fee, setFee] = useState(0);
+  const [err, setErr] = useState(false)
   const { transactionType, blockNumber } = useAppSelector(
     selectTransactionType
   );
@@ -105,6 +108,7 @@ export const PoolComponent = (props: {
     mypool.token0 = selectedToken0;
     mypool.token1 = selectedToken1;
     mypool.fee = fee;
+    
     setPools(myPools);
   }, [selectedToken0, selectedToken1, fee]);
 
@@ -156,6 +160,32 @@ export const PoolComponent = (props: {
     selectedToken1,
   ]);
 
+
+  useEffect(() => {  
+      
+    const getExpected = async() => {
+
+      if (pools && amount && selectedToken1.address !== '' && selectedToken0.address !== '' && fee !== 0) {
+        console.log('dddd');
+
+        const getExptd= await getExpectedAdvanced(library,account,pools,amount,slippage)
+        if (getExptd) {
+
+          if (getExptd.err) {
+            setErr(true)                        
+          }
+
+          else {
+            setErr(false)             
+          }
+         
+        }
+    }
+    else {}
+  }
+    getExpected()
+    }, [fee,selectedToken1,selectedToken0 ]);
+
   const formatNumberWithCommas = (num: string) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
@@ -167,7 +197,7 @@ export const PoolComponent = (props: {
       mb="8px"
       width={"350px"}
       h={
-        !open ? (deletable ? "107px" : "150px") : deletable ? "270px" : "346px"
+        !open ? (deletable ? "107px" : "150px") : deletable ?  err? '317px': "270px" : err? '393px':"346px"
       }
       bg="#fff"
       p="20px"
@@ -286,6 +316,7 @@ export const PoolComponent = (props: {
               selectedToken={selectedToken1}
             />
           </Flex>
+          {err && <Flex w='100%' h='30px' border='solid 2px #e67878' bg='#f2c2c2' borderRadius={'7px'} mt='18px' justifyContent={'center'} alignItems='center' fontSize={'12px'} color='#3d495d'> Unable to swap {selectedToken0.name} to {selectedToken1.name}, try alternate path.</Flex>}
           <Flex mt="17px" h="35px" justifyContent={"space-between"}>
             {FeeAmount.map((feeX: any, index: number) => (
               <Flex

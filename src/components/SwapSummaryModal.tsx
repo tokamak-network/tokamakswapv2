@@ -16,14 +16,13 @@ import { closeModal, selectModalType, openModal } from "../store/modal.reducer";
 import { useAppDispatch, useAppSelector } from "../hooks/useRedux";
 import straightAightArrow from "../assets/straightAightArrow.png";
 import { useActiveWeb3React } from "../hooks/useWeb3";
-import { swapAdvance ,getExpectedAdvanced} from "../actions/contractActions";
+import { swapAdvance} from "../actions/contractActions";
 
 export const SwapSummaryModal = () => {
   const theme = useTheme();
   const { data } = useAppSelector(selectModalType);
   const dispatch = useAppDispatch();
   const { chainId, account, library } = useActiveWeb3React();
- const [expected, setExpected] = useState<string| undefined>('0')
   const handleCloseModal = useCallback(() => {
     dispatch(closeModal());
   }, [dispatch]);
@@ -31,26 +30,8 @@ export const SwapSummaryModal = () => {
   const pools = data?.data?.pools;
   const amount = data?.data?.amount;
   const slippage = data?.data?.slippage;
-
-  useEffect(() => {
-    console.log(slippage);
-    
-    const getExpected = async() => {
-      if (pools && amount) {
-        const ttt= await getExpectedAdvanced(library,account,pools,amount,slippage)
-        if (ttt) {
-          setExpected(ttt.formatted)
-        }
-       
-      }
-     
-     
-    }
-    getExpected()
-    }, [pools]);
-  
-
-
+  const expected = data?.data?.expected;
+  const minExpected = data?.data?.minExpected
 
   return (
     <Modal

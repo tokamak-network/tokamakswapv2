@@ -21,7 +21,7 @@ import { selectTransactionType } from "../store/refetch.reducer";
 import { selectTxType } from "../store/tx.reducer";
 import { useAppDispatch } from "../hooks/useRedux";
 import { openModal } from "../store/modal.reducer";
-import { swapAdvance, getExpectedAdvanced } from "../actions/contractActions";
+import {  getExpectedAdvanced } from "../actions/contractActions";
 
 type Token = {
   name: string;
@@ -40,7 +40,8 @@ export const AdvancedSwapper = (props: {
   const [amount, setAmount] = useState<string>("0");
   const dispatch = useAppDispatch();
   const [disableBtn, setDisableBtn] = useState(true);
-
+   const [expected, setExpected] = useState<string| undefined>('0')
+   const [err, setErr] = useState(false)
   useEffect(() => {
     const arr = pools.filter(
       (pool: any) =>
@@ -53,14 +54,27 @@ export const AdvancedSwapper = (props: {
   }, [pools]);
 
 
-  // useEffect(() => {
-  // const getExpected = async() => {
-  //  const ttt= await getExpectedAdvanced(library,account,pools,amount,slippage)
-  //  console.log(ttt);
-   
-  // }
-  // getExpected()
-  // }, [pools]);
+    useEffect(() => {    
+    const getExpected = async() => {
+      if (pools && amount) {
+        const getExptd= await getExpectedAdvanced(library,account,pools,amount,slippage)
+        if (getExptd) {
+
+          if (getExptd.err) {
+            setErr(true)                        
+          }
+          else {                     
+            setExpected(getExptd.formatted)
+          }
+        }
+        else {
+          setExpected('0')
+        }
+      }
+     
+    }
+    getExpected()
+    }, [pools]);
 
   return (
     <Flex
@@ -116,6 +130,8 @@ export const AdvancedSwapper = (props: {
             setAmount={setAmount}
             pools={pools}
             poolNum={index}
+            amount={amount}
+            slippage={slippage}
           />
         );
       })}
@@ -179,7 +195,7 @@ export const AdvancedSwapper = (props: {
             dispatch(
               openModal({
                 type: "swap_summary",
-                data: { pools, amount, slippage },
+                data: { pools, amount, slippage,expected },
               })
             );
           }}

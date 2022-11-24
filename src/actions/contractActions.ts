@@ -345,12 +345,9 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
 }
 
 export const getExpectedAdvanced = async (library: any, userAddress: string | null | undefined, pools: any, amount: string, slippage: string) => {
-console.log('ggg');
-
   const fees = pools.map((pool: any) => {
     return pool.fee
-  })
-
+  })  
   const tempTokenPath = pools.map((pool: any) => {
     // return pool.token0.address
     if (pool.token0.address.toLowerCase() === TON_ADDRESS.toLowerCase()) {
@@ -360,12 +357,14 @@ console.log('ggg');
       return WETH_ADDRESS
     }
     else {
-      return pool.token0.address
+       return pool.token0.address
     }
-  })
+  })  
   const address1 = pools[pools.length - 1].token1.address
   const address0 = pools[0].token0.address
-  tempTokenPath.push(address1)
+  const calcToken1 = address1.toLowerCase() === TON_ADDRESS.toLowerCase()? WTON_ADDRESS:address1.toLowerCase() === ZERO_ADDRESS.toLowerCase()?WETH_ADDRESS :address1
+  
+  tempTokenPath.push(calcToken1)
   const encoded = encodePath(tempTokenPath, fees);
 
   let denominator;
@@ -409,45 +408,52 @@ console.log('ggg');
     outputUnwrapTON = address1.toLowerCase() === TON_ADDRESS.toLowerCase();
     outputUnwrapEth = address1.toLowerCase() === ZERO_ADDRESS.toLowerCase();
     const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
-    const amountOut = await quoteContract.callStatic.quoteExactInput(encoded, amountIn);
-    const minimumAmountOut = amountOut.mul(numerator).div(denominator);
-    if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase() || outputUnwrapTON) {
-      const converted = convertNumber({
-        amount: minimumAmountOut,
-        type: "ray",  
-      });
 
-      const formatted = converted && converted.indexOf(".") > -1 ? converted?.slice(
-        0,
-        converted?.indexOf(".") + 3
-      ) : converted
-
-
-      const convertedAmountOut = convertNumber({
-        amount: amountOut,
-        type: "ray",
-      });
-
-      const formattedAmountOut = convertedAmountOut && convertedAmountOut.indexOf(".") > -1 ? convertedAmountOut?.slice(
-        0,
-        convertedAmountOut?.indexOf(".") + 3
-      ) : convertedAmountOut
-
-      return { formatted, minimumAmountOut, amountIn, formattedAmountOut }
+    try {
+      const amountOut = await quoteContract.callStatic.quoteExactInput(encoded, amountIn);            
+      const minimumAmountOut = amountOut.mul(numerator).div(denominator);
+      if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase() || outputUnwrapTON) {
+        const converted = convertNumber({
+          amount: minimumAmountOut,
+          type: "ray",  
+        });
+  
+        const formatted = converted && converted.indexOf(".") > -1 ? converted?.slice(
+          0,
+          converted?.indexOf(".") + 3
+        ) : converted
+  
+  
+        const convertedAmountOut = convertNumber({
+          amount: amountOut,
+          type: "ray",
+        });
+  
+        const formattedAmountOut = convertedAmountOut && convertedAmountOut.indexOf(".") > -1 ? convertedAmountOut?.slice(
+          0,
+          convertedAmountOut?.indexOf(".") + 3
+        ) : convertedAmountOut
+  
+        return { formatted, minimumAmountOut, amountIn, formattedAmountOut }
+      }
+      else {
+        const converted = ethers.utils.formatEther(minimumAmountOut)
+        const formatted = converted && converted.indexOf(".") > -1 ? converted?.slice(
+          0,
+          converted?.indexOf(".") + 3
+        ) : converted
+        const convertedAmountOut = ethers.utils.formatEther(amountOut)
+        const formattedAmountOut = convertedAmountOut && convertedAmountOut.indexOf(".") > -1 ? convertedAmountOut?.slice(
+          0,
+          convertedAmountOut?.indexOf(".") + 3
+        ) : convertedAmountOut
+        return { formatted, minimumAmountOut, amountIn, formattedAmountOut }
+      }
     }
-    else {
-      const converted = ethers.utils.formatEther(minimumAmountOut)
-      const formatted = converted && converted.indexOf(".") > -1 ? converted?.slice(
-        0,
-        converted?.indexOf(".") + 3
-      ) : converted
-      const convertedAmountOut = ethers.utils.formatEther(amountOut)
-      const formattedAmountOut = convertedAmountOut && convertedAmountOut.indexOf(".") > -1 ? convertedAmountOut?.slice(
-        0,
-        convertedAmountOut?.indexOf(".") + 3
-      ) : convertedAmountOut
-      return { formatted, minimumAmountOut, amountIn, formattedAmountOut }
+    catch(err) {
+      return {err}
     }
+   
   }
 }
 export const swapAdvance = async (library: any, userAddress: string | null | undefined, pools: any, amount: string, slippage: string) => {
