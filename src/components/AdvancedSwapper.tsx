@@ -224,7 +224,6 @@ useEffect(()=> {
               account,
               library,
               selectedToken0.address,
-              '00',
               setAllowed
             )
           }

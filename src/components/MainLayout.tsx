@@ -11,16 +11,13 @@ import { ImportTokenModal } from "./ImportTokenModal";
 import {AdvanceModeModal} from './AdvanceModeModal'
 import {AdvancedSwapper} from './AdvancedSwapper'
 import { SwapSummaryModal } from "./SwapSummaryModal";
-export const MainLayout = () => {
-  const [walletState, setWalletState] = useState<string>("");
-  const { onOpen, isOpen: isModalOpen, onClose } = useDisclosure();
-  const [advanced, setAdvanced] = useState(true)
 import { useWindowDimensions } from "../hooks/useWindowDimentions";
 import MobileTokamakGNB from "./MobileTokamakGNB";
 
 export const MainLayout = () => {
   const [walletState, setWalletState] = useState<string>("");
   const { onOpen, isOpen: isModalOpen, onClose } = useDisclosure();
+  const [advanced, setAdvanced] = useState(true)
   const { width } = useWindowDimensions();
 
   const handleWalletModalOpen = (state: string) => {
@@ -45,4 +42,4 @@ export const MainLayout = () => {
         <AdvanceModeModal/>
        
     </Flex>);
-};  
+};
