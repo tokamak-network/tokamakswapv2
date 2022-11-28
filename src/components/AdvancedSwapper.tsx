@@ -41,6 +41,7 @@ export const AdvancedSwapper = (props: {
   const dispatch = useAppDispatch();
   const [disableBtn, setDisableBtn] = useState(true);
    const [expected, setExpected] = useState<string| undefined>('0')
+   const [minExpected, setMinExpected] = useState<string| undefined>('')
    const [err, setErr] = useState(false)
   useEffect(() => {
     const arr = pools.filter(
@@ -65,6 +66,7 @@ export const AdvancedSwapper = (props: {
           }
           else {                     
             setExpected(getExptd.formatted)
+            setMinExpected(getExptd.formattedAmountOut)
           }
         }
         else {
@@ -195,7 +197,7 @@ export const AdvancedSwapper = (props: {
             dispatch(
               openModal({
                 type: "swap_summary",
-                data: { pools, amount, slippage,expected },
+                data: { pools, amount, slippage,expected,minExpected },
               })
             );
           }}

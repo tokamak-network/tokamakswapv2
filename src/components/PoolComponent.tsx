@@ -166,8 +166,6 @@ export const PoolComponent = (props: {
     const getExpected = async() => {
 
       if (pools && amount && selectedToken1.address !== '' && selectedToken0.address !== '' && fee !== 0) {
-        console.log('dddd');
-
         const getExptd= await getExpectedAdvanced(library,account,pools,amount,slippage)
         if (getExptd) {
 

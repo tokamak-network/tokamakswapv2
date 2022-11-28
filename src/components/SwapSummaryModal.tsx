@@ -133,7 +133,7 @@ export const SwapSummaryModal = () => {
                   fontSize={"14px"}
                 >
                   <Text fontWeight="bold">Expected Output</Text>
-                  <Text>1,234 LYDA</Text>
+                  <Text>{minExpected} {pools[pools.length-1].token1.name}</Text>
                 </Flex>
                 <Flex
                   w="100%"
@@ -143,7 +143,7 @@ export const SwapSummaryModal = () => {
                 >
                   <Flex flexDir={"column"} color="#3d495d">
                     <Text> Minimum received after slippage</Text>
-                    <Text>(25.0%)</Text>
+                    <Text>{slippage ? `${slippage} %` : `1%`}</Text>
                   </Flex>
                   <Flex flexDir={"column"} color="#86929d">
                     <Text>{expected}</Text>

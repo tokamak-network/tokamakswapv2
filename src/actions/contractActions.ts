@@ -410,7 +410,7 @@ export const getExpectedAdvanced = async (library: any, userAddress: string | nu
     const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
 
     try {
-      const amountOut = await quoteContract.callStatic.quoteExactInput(encoded, amountIn);            
+      const amountOut = await quoteContract.callStatic.quoteExactInput(encoded, amountIn);                  
       const minimumAmountOut = amountOut.mul(numerator).div(denominator);
       if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase() || outputUnwrapTON) {
         const converted = convertNumber({
