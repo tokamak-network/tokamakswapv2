@@ -53,33 +53,33 @@ export const addToken = async (
       console.log(error);
     }
   }
- 
- else {
-  const contract = new Contract(tokenAddress, TONABI.abi, library);
-  const tokenSymbol = await contract.symbol();
-  const tokenDecimals = await contract.decimals();
-  try {
-    // wasAdded is a boolean. Like any RPC method, an error may be thrown.
-    //@ts-ignore
-    const wasAdded = await window?.ethereum?.request({
-      method: 'wallet_watchAsset',
-      params: {
-        type: 'ERC20', // Initially only supports ERC20, but eventually more!
-        options: {
-          address: tokenAddress, // The address that the token is at.
-          symbol: tokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
-          decimals: tokenDecimals, // The number of decimals in the token
-          image: tokenImage, // A string url of the token logo
+
+  else {
+    const contract = new Contract(tokenAddress, TONABI.abi, library);
+    const tokenSymbol = await contract.symbol();
+    const tokenDecimals = await contract.decimals();
+    try {
+      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
+      //@ts-ignore
+      const wasAdded = await window?.ethereum?.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20', // Initially only supports ERC20, but eventually more!
+          options: {
+            address: tokenAddress, // The address that the token is at.
+            symbol: tokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
+            decimals: tokenDecimals, // The number of decimals in the token
+            image: tokenImage, // A string url of the token logo
+          },
         },
-      },
-    });
-    if (wasAdded) {
-    } else {
+      });
+      if (wasAdded) {
+      } else {
+      }
+    } catch (error) {
+      console.log(error);
     }
-  } catch (error) {
-    console.log(error);
   }
- }
 };
 
 
@@ -211,12 +211,12 @@ export const getExpectedOutput = async (library: any, userAddress: string | null
   let numerator;
   const int = Number.isInteger(Number(slippage));
   if (slippage !== '' && Number(slippage) > 0 && Number(slippage) < 100) {
-    if (int) {      
+    if (int) {
       denominator = BigNumber.from("100")
       const slippageCalc = 100 - Number(slippage)
       numerator = BigNumber.from(slippageCalc.toString());
     }
-    else {      
+    else {
       const countDecimals = slippage.split('.')[1].length;
       const denom = 100 * (10 ** countDecimals);
       const slippageCalc = denom - (Number(slippage) * (10 ** countDecimals))
@@ -224,24 +224,26 @@ export const getExpectedOutput = async (library: any, userAddress: string | null
       numerator = BigNumber.from(slippageCalc.toString())
     }
   }
-  else {    
+  else {
     denominator = BigNumber.from("100")
     numerator = BigNumber.from("99")
   }
   let amountIn
 
   if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() || address0.toLowerCase() === TON_ADDRESS.toLowerCase()) {
-    amountIn = ethers.utils.parseUnits(amount, '27');    
+    const tempAmountIn = ethers.utils.parseUnits(amount, '27');
+    const xx = BigNumber.from(1e9.toString())
+    amountIn = (tempAmountIn.div(xx)).mul(xx)
   }
   else {
-    amountIn = ethers.utils.parseEther(amount)    
+    amountIn = ethers.utils.parseEther(amount)
   }
   const params = getParams(address0, address1);
   //address0 => TOS, address11=>DOC
   if (library && userAddress && params && Number(amount) !== 0) {
     const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
     const amountOut = await quoteContract.callStatic.quoteExactInput(params.path, amountIn)
-    const minimumAmountOut = amountOut.mul(numerator).div(denominator);    
+    const minimumAmountOut = amountOut.mul(numerator).div(denominator);
     if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase() || params.outputUnwrapTON) {
       const converted = convertNumber({
         amount: minimumAmountOut,
@@ -294,15 +296,15 @@ export const getExpectedOutput = async (library: any, userAddress: string | null
 // getExpectedInput function predicts the input the user will spend for exact output (swapExactOutput)
 export const getExpectedInput = async (library: any, userAddress: string | null | undefined, address0: string, address1: string, amount: string, slippage: string) => {
   const params = getParams(address1, address0);
-// address1 bottom output // tos
-//address0 top input  // ton 
+  // address1 bottom output // tos
+  //address0 top input  // ton 
 
-// amount is user input from bottom
+  // amount is user input from bottom
 
   let amountOut
   let denominator;
   let numerator;
-  
+
   const int = Number.isInteger(Number(slippage));
 
   if (slippage !== '' && Number(slippage) > 0 && Number(slippage) < 100) {
@@ -314,7 +316,7 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
     else {
       const countDecimals = slippage.split('.')[1].length;
       const denom = 100 * (10 ** countDecimals);
-      const slippageCalc = denom + (Number(slippage) * (10 ** countDecimals))      
+      const slippageCalc = denom + (Number(slippage) * (10 ** countDecimals))
       denominator = BigNumber.from(denom.toString());
       numerator = BigNumber.from(slippageCalc.toString())
     }
@@ -323,7 +325,7 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
     denominator = BigNumber.from("100")
     numerator = BigNumber.from("103")
   }
-//user input amount convert to ray ? when address0 == ton/wton or address1 == ton/wton?
+  //user input amount convert to ray ? when address0 == ton/wton or address1 == ton/wton?
 
 
   if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase()) {
@@ -337,11 +339,11 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
     let amountIn;
     try {
       amountIn = await quoteContract.callStatic.quoteExactOutput(params.path, amountOut); // ray  when address0 is ton/wton // wei if address0 is doc/eth/...     
-      const xx = BigNumber.from (1e9.toString())
-     
+      const xx = BigNumber.from(1e9.toString())
+
       const tempAmountIn = amountIn.mul(numerator).div(denominator);
-      
-      const maximumAmountIn =  address0.toLowerCase() === TON_ADDRESS.toLowerCase() ? (tempAmountIn.div(xx)).mul(xx) :tempAmountIn
+
+      const maximumAmountIn = address0.toLowerCase() === TON_ADDRESS.toLowerCase() ? (tempAmountIn.div(xx)).mul(xx) : tempAmountIn
 
       if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() || address0.toLowerCase() === TON_ADDRESS.toLowerCase() || params.inputWrapWTON) {
         const converted = convertNumber({
@@ -457,8 +459,8 @@ export const swapExactOutput = async (library: any, userAddress: string | null |
   //address0 = top token input token
   const params = getParams(address0, address1);
   if (library && userAddress && params) {
-    const amounts = await getExpectedInput(library, userAddress,  address1, address0,amount, slippage)
-    const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);    
+    const amounts = await getExpectedInput(library, userAddress, address1, address0, amount, slippage)
+    const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
     const signer = getSigner(library, userAddress);
     const swapperV2 = new Contract(SwapperV2Proxy, SwapperV2.abi, library);
     const getExactOutputParams = {
@@ -468,10 +470,10 @@ export const swapExactOutput = async (library: any, userAddress: string | null |
       amountInMaximum: amounts?.maximumAmountIn,
       deadline: 0
     }
-    const inputWrapWTON = address1.toLowerCase() === TON_ADDRESS.toLowerCase()? true:false;    
-    const outputUnwrapTON = address0.toLowerCase() === TON_ADDRESS.toLowerCase()? true:false
-    const wrapEth = address1.toLowerCase() === ZERO_ADDRESS.toLowerCase()? true:false;
-    const outputUnwrapEth = address0.toLowerCase() === ZERO_ADDRESS.toLowerCase()? true:false
+    const inputWrapWTON = address1.toLowerCase() === TON_ADDRESS.toLowerCase() ? true : false;
+    const outputUnwrapTON = address0.toLowerCase() === TON_ADDRESS.toLowerCase() ? true : false
+    const wrapEth = address1.toLowerCase() === ZERO_ADDRESS.toLowerCase() ? true : false;
+    const outputUnwrapEth = address0.toLowerCase() === ZERO_ADDRESS.toLowerCase() ? true : false
     try {
       const tx = address1 !== ZERO_ADDRESS ? await exactOutput(signer, swapperV2, getExactOutputParams, wrapEth, outputUnwrapEth, inputWrapWTON, outputUnwrapTON) :
         await exactOutputEth(signer, swapperV2, getExactOutputParams, wrapEth, outputUnwrapEth, inputWrapWTON, outputUnwrapTON, {
