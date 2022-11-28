@@ -22,6 +22,11 @@ import { selectTxType } from "../store/tx.reducer";
 import { useAppDispatch } from "../hooks/useRedux";
 import { openModal } from "../store/modal.reducer";
 import {  getExpectedAdvanced } from "../actions/contractActions";
+import {
+ 
+  approve,
+ 
+} from "../actions/contractActions";
 
 type Token = {
   name: string;
@@ -32,28 +37,42 @@ export const AdvancedSwapper = (props: {
   setAdvanced: Dispatch<SetStateAction<any>>;
 }) => {
   const theme = useTheme();
+  const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
   const { chainId, account, library } = useActiveWeb3React();
   const { setAdvanced } = props;
   const [slippage, setSlippage] = useState<string>("");
   const { tx, data } = useAppSelector(selectTxType);
-  const [pools, setPools] = useState([{ token0: {}, token1: {}, fee: 0 }]);
+  const [pools, setPools] = useState([{ token0: { name: "",
+  address: "",
+  img: "",}, token1: {}, fee: 0 }]);
   const [amount, setAmount] = useState<string>("0");
   const dispatch = useAppDispatch();
   const [disableBtn, setDisableBtn] = useState(true);
    const [expected, setExpected] = useState<string| undefined>('0')
    const [minExpected, setMinExpected] = useState<string| undefined>('')
-   const [err, setErr] = useState(false)
+   const [err, setErr] = useState(false)  
+   const [allowed, setAllowed] = useState<number>(0);
+   const [selectedToken0, setSelectedToken0] = useState({
+    name: "",
+    address: "",
+    img: "",
+  });
   useEffect(() => {
     const arr = pools.filter(
       (pool: any) =>
         pool.fee === 0 ||
         pool.token0.address === "" ||
         pool.token1.address === "" ||
-        pool.token0.address === pool.token1.address
+        pool.token0.address === pool.token1.address || allowed === 0
     );
     setDisableBtn(arr.length !== 0 || pools.length === 10);
-  }, [pools]);
+  }, [pools,allowed]);
 
+useEffect(()=> {
+  const token = pools[0].token0
+  setSelectedToken0(token)
+  
+},[pools])
 
     useEffect(() => {    
     const getExpected = async() => {
@@ -77,7 +96,7 @@ export const AdvancedSwapper = (props: {
     }
     getExpected()
     }, [pools]);
-
+    
   return (
     <Flex
       width={"350px"}
@@ -130,6 +149,7 @@ export const AdvancedSwapper = (props: {
             key={index}
             setPools={setPools}
             setAmount={setAmount}
+            setAllowed={setAllowed}
             pools={pools}
             poolNum={index}
             amount={amount}
@@ -148,7 +168,9 @@ export const AdvancedSwapper = (props: {
         alignItems="center"
         disabled={disableBtn}
         onClick={() => {
-          setPools(pools.concat([{ token0: {}, token1: {}, fee: 0 }]));
+          setPools(pools.concat([{ token0: { name: "",
+          address: "",
+          img: "",}, token1: {}, fee: 0 }]));
         }}
         _hover={{ cursor: "pointer" }}
       >
@@ -167,6 +189,49 @@ export const AdvancedSwapper = (props: {
         justifyContent={"center"}
         flexDir="column"
       >
+          <Flex
+        alignItems={"center"}
+        justifyContent="space-between"
+        h={"24px"}
+        my={"12px"}
+      > 
+     
+        <Text fontSize={"10px"}>
+          Tokamak Swap Protocol wants to use your{" "}
+          {selectedToken0.name ? selectedToken0.name : "tokens"}
+        </Text>
+        <Button
+          backgroundColor={"#007aff"}
+          color={"#fff"}
+          h={"24px"}
+          w={"72px"}
+          fontSize={"14px"}
+          fontWeight="normal"
+          borderRadius={"12px"}
+          _disabled={{
+            backgroundColor: "#e9edf1",
+            color: "#8f96a1",
+          }}
+          _hover={{}}
+          _active={{}}
+          disabled={
+            selectedToken0.address === "" ||
+            !account || allowed !== 0||
+            selectedToken0.address === ZERO_ADDRESS
+          }
+          onClick={() =>
+            approve(
+              account,
+              library,
+              selectedToken0.address,
+              '00',
+              setAllowed
+            )
+          }
+        >
+          Approve
+        </Button>
+      </Flex>
         <SettingsComponent
           setSlippage={setSlippage}
           focused={"input1"}

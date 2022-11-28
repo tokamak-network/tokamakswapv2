@@ -22,12 +22,7 @@ import {  getExpectedAdvanced } from "../actions/contractActions";
 import { selectTransactionType } from "../store/refetch.reducer";
 import {
   getUserTokenBalance,
-  approve,
   checkApproved,
-  swapExactInput,
-  getExpectedOutput,
-  getExpectedInput,
-  swapExactOutput,
 } from "../actions/contractActions";
 
 type Token = {
@@ -41,6 +36,7 @@ export const PoolComponent = (props: {
   deletable: boolean;
   setPools: Dispatch<SetStateAction<any>>;
   setAmount: Dispatch<SetStateAction<any>>;
+  setAllowed:Dispatch<SetStateAction<any>>;
   pools: any;
   poolNum: number;
   amount:string;
@@ -50,11 +46,11 @@ export const PoolComponent = (props: {
   const { WETH_ADDRESS } = DEPLOYED;
 
   const FeeAmount = [500, 3000, 10000];
-  const { expanded, deletable, setPools, pools, poolNum, setAmount , amount,slippage} = props;
+  const { expanded, deletable, setPools, pools, poolNum, setAmount , amount,slippage,setAllowed} = props;
   const [open, setOpen] = useState(false);
   const { chainId, account, library } = useActiveWeb3React();
   const [token0Balance, setToken0Balance] = useState<string>("0");
-  const [allowed, setAllowed] = useState<number>(0);
+  // const [allowed, setAllowed] = useState<number>(0);
   const [swapFromAmt, setSwapFromAmt] = useState<string>("0");
   const [invalidInput, setInvalidInput] = useState<boolean>(false);
   const [fee, setFee] = useState(0);
@@ -160,7 +156,6 @@ export const PoolComponent = (props: {
     selectedToken1,
   ]);
 
-
   useEffect(() => {  
       
     const getExpected = async() => {
@@ -187,6 +182,7 @@ export const PoolComponent = (props: {
   const formatNumberWithCommas = (num: string) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
+
 
   return (
     <Flex

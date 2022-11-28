@@ -365,8 +365,7 @@ export const getExpectedAdvanced = async (library: any, userAddress: string | nu
   const calcToken1 = address1.toLowerCase() === TON_ADDRESS.toLowerCase()? WTON_ADDRESS:address1.toLowerCase() === ZERO_ADDRESS.toLowerCase()?WETH_ADDRESS :address1
   
   tempTokenPath.push(calcToken1)
-  const encoded = encodePath(tempTokenPath, fees);
-
+  const encoded = encodePath(tempTokenPath, fees);  
   let denominator;
   let numerator;
   const int = Number.isInteger(Number(slippage));
