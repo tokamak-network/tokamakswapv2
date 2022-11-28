@@ -17,8 +17,10 @@ import { selectTxType } from "../store/tx.reducer";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { useWindowDimensions } from "../hooks/useWindowDimentions";
 import { TokamakSwapLogoMobile } from "../icons/TokamakSwapLogoMobile";
+import Group6303_2 from '../assets/Group6303_2.png';
 import tokamakSwapLogo from "../assets/tokamakSwapLogo.png";
 import { DEFAULT_NETWORK } from "../constants";
+import MobileLogo from '../assets/MobileLogo.svg'
 type HeaderProps = {
   walletOpen: () => void;
 };
@@ -39,17 +41,18 @@ export const Header: FC<HeaderProps> = ({ walletOpen }) => {
     }
     /*eslint-disable*/
   }, [chainId]);
-  if (width < 480) {
+  if (width < 600) {
     return (
-      <Flex flexDir={"column"} alignItems={"center"}>
+      <Flex flexDir={"column"} alignItems={"center"} mb='20px'>
         <Flex
           justifyContent={"space-between"}
           fontFamily={theme.fonts.roboto}
-          width={"320px"}
+          width={"100%"}
           alignItems={"center"}
           pt={"20px"}
+          px='40px'
         >
-          <TokamakSwapLogoMobile />
+      <TokamakSwapLogoMobile/>
           {account ? (
             <Button
               border={"solid 1px #dfe4ee"}
@@ -102,7 +105,7 @@ export const Header: FC<HeaderProps> = ({ walletOpen }) => {
       justifyContent={"space-between"}
       alignItems={"center"}
       w="100%"
-      px="7.3%"
+      px="40px"
       mt="20px"
       mb='49px'
     >

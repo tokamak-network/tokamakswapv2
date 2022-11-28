@@ -1,6 +1,6 @@
 import { DEPLOYED } from "../constants/index";
 
-const { TON_ADDRESS, WTON_ADDRESS, SwapProxy, SwapperV2Logic, SwapperV2Proxy, Quoter_ADDRESS, AURA_ADDRESS, LYDA_ADDRESS, DOC_ADDRESS, TOS_ADDRESS, WETH_ADDRESS } = DEPLOYED;
+const { TON_ADDRESS, WTON_ADDRESS, AURA_ADDRESS, LYDA_ADDRESS, DOC_ADDRESS, TOS_ADDRESS, WETH_ADDRESS } = DEPLOYED;
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 const FeeAmount = {
@@ -28,8 +28,7 @@ const getPool = (array1: string[], array2: string[]) => {
     return equal
   }
 
-export const getParams = (address0: string, address1: string) => {
-
+export const getParams = (address0: string, address1: string) => {  
 
     const wtonTos = [WTON_ADDRESS.toLowerCase(), TOS_ADDRESS.toLowerCase()];
     const tosWton = [TOS_ADDRESS.toLowerCase(), WTON_ADDRESS.toLowerCase()]
@@ -112,8 +111,7 @@ export const getParams = (address0: string, address1: string) => {
     const pool = [address0.toLowerCase(), address1.toLowerCase()]
     
     switch (true) {
-      case getPool(ethTon, pool):
-  
+      case getPool(ethTon, pool):  
         return {
           path: encodePath([WETH_ADDRESS, WTON_ADDRESS], [FeeAmount.MEDIUM]),
           wrapEth: true,
@@ -557,9 +555,7 @@ export const getParams = (address0: string, address1: string) => {
           quoteExactInputSingle: false
         }
       /////////////////////
-      case getPool(tosTon, pool):
-  
-  
+      case getPool(tosTon, pool):        
         return {
           path: encodePath([TOS_ADDRESS, WTON_ADDRESS], [FeeAmount.MEDIUM]),
           wrapEth: false,
@@ -569,7 +565,8 @@ export const getParams = (address0: string, address1: string) => {
           fee: FeeAmount.MEDIUM,
           quoteExactInputSingle: true
         }
-      case getPool(tonTos, pool):  
+
+      case getPool(tonTos, pool):        
         return {
           path: encodePath([WTON_ADDRESS, TOS_ADDRESS], [FeeAmount.MEDIUM]),
           wrapEth: false,
@@ -705,8 +702,6 @@ export const getParams = (address0: string, address1: string) => {
         }
       ///////////////////////////////// ////////////////////////////////
       case getPool(ethTos, pool):
-  
-  
         return {
           path: encodePath([WETH_ADDRESS, WTON_ADDRESS, TOS_ADDRESS], [FeeAmount.MEDIUM, FeeAmount.MEDIUM]),
           wrapEth: true,

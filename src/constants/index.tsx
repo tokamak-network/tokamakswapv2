@@ -7,15 +7,21 @@ export const REACT_APP_MODE = process.env.REACT_APP_MODE as string;
 export const REACT_APP_MAINNET_API = process.env
   .REACT_APP_MAINNET_API as string;
 
+export const REACT_APP_ETHERSCAN_MAINNET  = process.env.REACT_APP_ETHERSCAN_MAINNET as string;
+export const REACT_APP_ETHERSCAN_GOERLI = process.env.REACT_APP_ETHERSCAN_GOERLI as string;
 export const DEFAULT_NETWORK = REACT_APP_MODE === "DEV" ? 5 : 1;
 export const API_SERVER =
   REACT_APP_MODE === "DEV" ? REACT_APP_MAINNET_API : REACT_APP_MAINNET_API;
-export const BASE_PROVIDER =
+  export const ETHERSCAN_URL =
+  REACT_APP_MODE === "DEV" ? REACT_APP_ETHERSCAN_GOERLI : REACT_APP_ETHERSCAN_MAINNET;
+  export const BASE_PROVIDER =
   REACT_APP_MODE === "DEV"
     ? ethers.getDefaultProvider("goerli")
     : ethers.getDefaultProvider("mainnet");
 export const NetworkContextName = `${new Date().getTime()}-NETWORK`;
 export const fetchTokensURL = `${API_SERVER}/tokens?chainId=${DEFAULT_NETWORK}`;
+export const etherscanURL = `` 
+
 const MAINNET_DEPLOYED = {
   TON_ADDRESS: "0x2be5e8c109e2197D077D13A82dAead6a9b3433C5",
   TOS_ADDRESS: "0x409c4D8cd5d2924b9bc5509230d16a61289c8153",

@@ -15,6 +15,14 @@ export const MainLayout = () => {
   const [walletState, setWalletState] = useState<string>("");
   const { onOpen, isOpen: isModalOpen, onClose } = useDisclosure();
   const [advanced, setAdvanced] = useState(true)
+import { useWindowDimensions } from "../hooks/useWindowDimentions";
+import MobileTokamakGNB from "./MobileTokamakGNB";
+
+export const MainLayout = () => {
+  const [walletState, setWalletState] = useState<string>("");
+  const { onOpen, isOpen: isModalOpen, onClose } = useDisclosure();
+  const { width } = useWindowDimensions();
+
   const handleWalletModalOpen = (state: string) => {
     setWalletState(state);
     onOpen();
@@ -23,11 +31,13 @@ export const MainLayout = () => {
   return(
     
     <Flex flexDir={'column'} justifyContent='space-between' minH='100vh'>
-      <TokamakGNB/>
+     { width < 687 ? <MobileTokamakGNB/>: <TokamakGNB/>}
         <Header walletOpen={() => handleWalletModalOpen("wallet")}/>
         {advanced? <AdvancedSwapper setAdvanced={setAdvanced}/>:   <Swapper setAdvanced={setAdvanced}  advanced={advanced}/> }
      
         {/* <Description/> */}
+       
+        <Description/>
         <Footer/>
         <WalletModal state={walletState} isOpen={isModalOpen} onClose={onClose} />
         <SwapSummaryModal/>

@@ -52,7 +52,7 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
   const [focused, setFocused] = useState<string>("");
   const [slippage, setSlippage] = useState<string>("");
   const [minAmount, setMinAmount] = useState<string>("");
-  const [maxError, setMaxError] = useState<boolean>(false)
+  const [maxError, setMaxError] = useState<boolean>(false);
   const [selectedToken0, setSelectedToken0] = useState({
     name: "",
     address: "",
@@ -66,16 +66,24 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
   const [token0Balance, setToken0Balance] = useState<string>("0");
   const [token1Balance, setToken1Balance] = useState<string>("0");
 
-  useEffect(() => {
-    if (chainId !== Number(DEFAULT_NETWORK) && chainId !== undefined) {
-      const netType = DEFAULT_NETWORK === 1 ? "mainnet" : "Goerli Test Network";
-      //@ts-ignoreinput111111111
+  useEffect(() => {    
+    if (chainId !== Number(DEFAULT_NETWORK ) && chainId !== undefined) {
+      const netType = DEFAULT_NETWORK === 1 ? "Mainnet" : "Göerli Test Network";
+      //@ts-ignore
       // dispatch(fetchUserInfo({reset: true}));
 
       return alert(`Please use ${netType}`);
     }
     /*eslint-disable*/
   }, [chainId]);
+
+  useEffect(() => {    
+    if (tx && !data ) {
+      setSwapFromAmt("0");
+      setSwapFromAmt2("0");
+    }
+   
+  }, [data,tx, transactionType, blockNumber]);
 
   useEffect(() => {
     const getBalances = async () => {
@@ -138,12 +146,7 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
 
   useEffect(() => {
     const getExpectedOut = async () => {
-      if (
-        selectedToken0.address &&
-        selectedToken1.address &&
-        swapFromAmt !== "" &&
-        swapFromAmt !== "0"
-      ) {
+      if (selectedToken0.address && swapFromAmt !== "" && swapFromAmt !== "0") {
         const tempAmount: any = await getExpectedOutput(
           library,
           account,
@@ -152,8 +155,7 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
           swapFromAmt,
           slippage
         );
-      
-        
+
         if (tempAmount) {
           setExpected(tempAmount.formatted);
           focused === "input1"
@@ -172,7 +174,6 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
 
     const getExpectedIn = async () => {
       if (
-        selectedToken0.address &&
         selectedToken1.address &&
         swapFromAmt2 !== "" &&
         swapFromAmt2 !== "0"
@@ -187,19 +188,16 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
         );
         if (tempAmount) {
           if (tempAmount.err) {
-
-            setMaxError(true)
-          }
-          else{
-            setMaxError(false)
+            setMaxError(true);
+          } else {
+            setMaxError(false);
             setExpected(tempAmount.formatted);
             focused === "input2"
               ? setSwapFromAmt(tempAmount.formatted)
               : setSwapFromAmt2(tempAmount.formatted);
           }
-         
         }
-      } else {        
+      } else {
         setExpected("0");
         setSwapFromAmt2("0");
         setSwapFromAmt("0");
@@ -230,11 +228,12 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
     setSelectedToken0(token0);
     setSelectedToken1(token1);
   };
+
   return (
     <Flex
       width={"350px"}
       //   alignItems={"center"}
-     my='auto'
+      my="auto"
       mx={"auto"}
       borderRadius={"10px"}
       // height="606px"
@@ -298,7 +297,7 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
             borderColor: "transparent",
           }}
           onClick={() => setFocused("input1")}
-          defaultValue={0}
+          // defaultValue={0}
           value={focused === "input1" ? swapFromAmt : expected}
           onChange={(e) => {
             const valueNum = e;
@@ -347,7 +346,9 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
       </Text>
       <Flex
         position={"relative"}
-        border={invalidInput || maxError ? "solid 1px #e53e3e" : "solid 1px #dfe4ee"}
+        border={
+          invalidInput || maxError ? "solid 1px #e53e3e" : "solid 1px #dfe4ee"
+        }
         height={"56px"}
         w={"310px"}
         flexDir={"row"}
@@ -392,14 +393,17 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
           />
         </NumberInput>
       </Flex>
-      {maxError && <Text color={'#e53e3e'} textAlign='left' fontSize={"10px"} mt='5px'>Not enough liquidity in the pool</Text>}
+      {maxError && (
+        <Text color={"#e53e3e"} textAlign="left" fontSize={"10px"} mt="5px">
+          Not enough liquidity in the pool
+        </Text>
+      )}
       <Flex
         alignItems={"center"}
         justifyContent="space-between"
         h={"24px"}
         my={"12px"}
-      > 
-     
+      >
         <Text fontSize={"10px"}>
           Tokamak Swap Protocol wants to use your{" "}
           {selectedToken0.name ? selectedToken0.name : "tokens"}
@@ -420,22 +424,26 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
           _active={{}}
           disabled={
             selectedToken0.address === "" ||
+            tx === true ||
             !account ||
-            swapFromAmt === "0" ||
-            Number(swapFromAmt) <= allowed ||
+            allowed !== 0 ||
             selectedToken0.address === ZERO_ADDRESS
           }
           onClick={() =>
-            approve(
-              account,
-              library,
-              selectedToken0.address,
-              swapFromAmt,
-              setAllowed
-            )
+            approve(account, library, selectedToken0.address, setAllowed)
           }
         >
-          Approve
+          {tx === true && data ? (
+            <CircularProgress
+              isIndeterminate
+              size={4}
+              zIndex={100}
+              color="blue.500"
+              pos="absolute"
+            />
+          ) : (
+            "Approve"
+          )}
         </Button>
       </Flex>
       <ConversionComponent
@@ -470,7 +478,10 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
         _hover={{}}
         _active={{}}
         disabled={
-          selectedToken0.address === "" || maxError||
+          tx === true ||
+          selectedToken0.address === "" ||
+          Number(token0Balance) === 0 ||
+          maxError ||
           selectedToken1.address === "" ||
           Number(swapFromAmt) > allowed ||
           (Number(swapFromAmt) === 0 && Number(swapFromAmt2) === 0) ||

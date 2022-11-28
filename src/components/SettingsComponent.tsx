@@ -14,7 +14,6 @@ import {
   NumberInputField,
   Box,
 } from "@chakra-ui/react";
-import expand from "../assets/expand.png";
 import gear from "../assets/gear.png";
 import icon_arrow from "../assets/icon_arrow.png";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
@@ -29,11 +28,14 @@ export const SettingsComponent = (props: {
 }) => {
   const { setSlippage, focused, setAdvanced, advanced } = props;
   const [expanded, setExpanded] = useState<boolean>(false);
-  const [slippageAmnt, setSlippageAmnt] = useState<string>("0");
+  const [slippageAmnt, setSlippageAmnt] = useState<string>('0');
   const [invalidInput, setInvalidInput] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
 
+useEffect(() => {
+  setSlippageAmnt(focused === 'input1' ? '1':'3')
+},[focused])
   return (
     <Flex
       border="1px solid #dfe4ee"
