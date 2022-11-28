@@ -43,32 +43,32 @@ function TokamakGNB() {
       fontWeight={"bold"}
       justifyContent={"center"}
     >
-      <Menu title={"Vision"} w={"100px"} url={"https://vision-page.vercel.app/"}></Menu>
+      <Menu title={"Vision"} w={"100px"} url={"https://vision.tokamak.network/"}></Menu>
       <Menu
         title={"Tokamak Network"}
         w={"158px"}
-        url={"https://renewal-homepage.vercel.app/#/"}
+        url={"https://tokamak.network/#/"}
       ></Menu>
       <Menu
         title={"Simple Staking"}
         w={"137px"}
-        url={"https://rinkeby.simple.staking.tokamak.network/"}
+        url={"https://simple.staking.tokamak.network/"}
       ></Menu>
       <Menu
         title={"Tokamak Network DAO"}
         w={"190px"}
-        url={"https://rinkeby.dao.tokamak.network/#/"}
+        url={"https://dao.tokamak.network/#/"}
       ></Menu>
       <Menu
         title={"Swap"}
         w={"76px"}
         activetab={"true"}
-        url={"https://tonswapper.vercel.app/"}
+        url={"https://swap.tokamak.network/"}
       ></Menu>
       <Menu
         title={"TONStarter"}
         w={"114px"}
-        url={"https://rinkeby.tonstarter.tokamak.network/"}
+        url={"https://tonstarter.tokamak.network/"}
       ></Menu>
     </Flex>
   );
