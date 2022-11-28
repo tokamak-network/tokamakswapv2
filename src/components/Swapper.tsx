@@ -487,11 +487,7 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
           selectedToken1.address === "" ||
           Number(swapFromAmt) > allowed ||
           (Number(swapFromAmt) === 0 && Number(swapFromAmt2) === 0) ||
-          selectedToken0.address === selectedToken1.address ||
-          (selectedToken0.address === ZERO_ADDRESS &&
-            selectedToken1.address === WETH_ADDRESS) ||
-          (selectedToken0.address === WETH_ADDRESS &&
-            selectedToken1.address === ZERO_ADDRESS)
+          selectedToken0.address === selectedToken1.address || Number(swapFromAmt) > Number(token0Balance) 
         }
         onClick={
           focused === "input1"
