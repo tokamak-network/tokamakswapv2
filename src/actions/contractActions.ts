@@ -309,7 +309,7 @@ export const getExpectedOutput = async (library: any, userAddress: string | null
     const minimumAmountOut = amount;
     const formattedAmountOut = amount
     return { formatted, minimumAmountOut, formattedAmountOut }
-    
+
   }
 }
 
@@ -367,9 +367,9 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
       const tempAmountIn = amountIn.mul(numerator).div(denominator);
 
       const maximumAmountIn = address0.toLowerCase() === TON_ADDRESS.toLowerCase() ? (tempAmountIn.div(xx)).mul(xx) : tempAmountIn
-    
-      
-      if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() || address0.toLowerCase() === TON_ADDRESS.toLowerCase() ) {
+
+
+      if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() || address0.toLowerCase() === TON_ADDRESS.toLowerCase()) {
         const converted = convertNumber({
           amount: maximumAmountIn,
           type: "ray",
@@ -379,7 +379,7 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
           0,
           converted?.indexOf(".") + 3
         ) : converted
-        
+
         const convertedAmountOut = convertNumber({
           amount: amountIn,
           type: "ray",
@@ -407,12 +407,10 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
 
         return { maximumAmountIn, amountIn, amountOut, formatted, formattedAmountOut }
       }
-
     }
     catch (err) {
       return { err }
     }
-
   }
 
   else if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() && address1.toLowerCase() === TON_ADDRESS.toLowerCase() || address1.toLowerCase() === WTON_ADDRESS.toLowerCase() && address0.toLowerCase() === TON_ADDRESS.toLowerCase()) {
@@ -426,7 +424,7 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
     const minimumAmountOut = amount;
     const formattedAmountOut = amount
     return { formatted, minimumAmountOut, formattedAmountOut }
-    
+
   }
 }
 
@@ -753,10 +751,10 @@ export const swapExactOutput = async (library: any, userAddress: string | null |
     exactOutputWtonTon(library, userAddress, address0, amount)
   }
 
-else {
-  exactInputWethEth(library, userAddress, address1, amount)
-  
-}
+  else {
+    exactInputWethEth(library, userAddress, address1, amount)
+
+  }
 }
 
 
@@ -794,13 +792,13 @@ const exactOutputWtonTon = async (library: any, userAddress: string | null | und
       const amnt = ethers.utils.parseUnits(amount, '27');
       try {
         const tx = await swapperV2.connect(signer).wtonToTon(amnt)
-        store.dispatch(setTxPending({ tx: true}));
+        store.dispatch(setTxPending({ tx: true }));
         if (tx) {
           toastWithReceipt(tx, setTxPending, "Swapper");
         }
       }
       catch (err) {
-        store.dispatch(setTxPending({ tx: false}));
+        store.dispatch(setTxPending({ tx: false }));
         store.dispatch(
           //@ts-ignore
           openToast({
@@ -834,7 +832,7 @@ const exactInputWethEth = async (library: any, userAddress: string | null | unde
 
       }
       catch (err) {
-        store.dispatch(setTxPending({ tx: false}));
+        store.dispatch(setTxPending({ tx: false }));
         store.dispatch(
           //@ts-ignore
           openToast({
@@ -853,13 +851,13 @@ const exactInputWethEth = async (library: any, userAddress: string | null | unde
     else {
       try {
         const tx = await WETH.connect(signer).withdraw(amountIn);
-        store.dispatch(setTxPending({ tx: true}));
+        store.dispatch(setTxPending({ tx: true }));
         if (tx) {
           toastWithReceipt(tx, setTxPending, "Swapper");
         }
       }
       catch (err) {
-        store.dispatch(setTxPending({ tx: false}));
+        store.dispatch(setTxPending({ tx: false }));
         store.dispatch(
           //@ts-ignore
           openToast({
