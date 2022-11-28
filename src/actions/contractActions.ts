@@ -588,7 +588,7 @@ export const swapAdvance = async (library: any, userAddress: string | null | und
     outputUnwrapTON = address1.toLowerCase() === TON_ADDRESS.toLowerCase();
     outputUnwrapEth = address1.toLowerCase() === ZERO_ADDRESS.toLowerCase();
     const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
-    const amountOut = await quoteContract.callStatic.quoteExactInput(encoded, amountIn);
+    const amountOut = await quoteContract.callStatic.quoteExactInput(encoded, amountIn);    
     const minimumAmountOut = amountOut.mul(numerator).div(denominator);
     const signer = getSigner(library, userAddress);
     const swapperV2 = new Contract(SwapperV2Proxy, SwapperV2.abi, library);

@@ -32,7 +32,7 @@ export const SwapSummaryModal = () => {
   const slippage = data?.data?.slippage;
   const expected = data?.data?.expected;
   const minExpected = data?.data?.minExpected
-
+  
   return (
     <Modal
       isOpen={data.modal === "swap_summary" ? true : false}
@@ -116,7 +116,7 @@ export const SwapSummaryModal = () => {
                 justifyContent="center"
                 alignItems={"center"}
               >
-                <Flex flexWrap={"wrap"} color="#3d495d">
+                <Flex flexWrap={"wrap"} color="#3d495d" justifyContent={'flex-start'} width='100%'>
                   <Text mr="5px">{pools?.length} total swaps: </Text>
                   {pools?.map((pool: any, index: number) => (
                     <Text key={index}>

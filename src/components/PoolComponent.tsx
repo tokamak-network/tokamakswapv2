@@ -235,6 +235,7 @@ export const PoolComponent = (props: {
         <Flex mt="24px" flexDir={"column"}>
           <SelectToken
             setToken={setSelectedToken0}
+            advanced={true}
             selectedToken={
               poolNum > 0 && adPools[poolNum - 1].token1.address !== ""
                 ? adPools[poolNum - 1].token1
@@ -308,6 +309,7 @@ export const PoolComponent = (props: {
             <SelectToken
               setToken={setSelectedToken1}
               selectedToken={selectedToken1}
+              advanced={true}
             />
           </Flex>
           {err && <Flex w='100%' h='30px' border='solid 2px #e67878' bg='#f2c2c2' borderRadius={'7px'} mt='18px' justifyContent={'center'} alignItems='center' fontSize={'12px'} color='#3d495d'> Unable to swap {selectedToken0.name} to {selectedToken1.name}, try alternate path.</Flex>}

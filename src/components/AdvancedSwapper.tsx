@@ -193,7 +193,7 @@ useEffect(()=> {
         alignItems={"center"}
         justifyContent="space-between"
         h={"24px"}
-        my={"12px"}
+        mb={"12px"}
       > 
      
         <Text fontSize={"10px"}>

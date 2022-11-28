@@ -247,6 +247,7 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
       <SelectToken
         setToken={setSelectedToken0}
         selectedToken={selectedToken0}
+        advanced={false}
       />
       <Flex justifyContent={"space-between"} alignItems="center">
         <Text mt="18px" mb="8px" textAlign={"left"}>
@@ -340,6 +341,7 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
       <SelectToken
         setToken={setSelectedToken1}
         selectedToken={selectedToken1}
+        advanced={false}
       />
       <Text mt="18px" mb="8px" textAlign={"left"}>
         Balance: {formatNumberWithCommas(token1Balance)}

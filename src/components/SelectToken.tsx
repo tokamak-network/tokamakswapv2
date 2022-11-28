@@ -7,7 +7,7 @@ import {
   Box,
   Button,
   Avatar,
-  useDisclosure,
+  Link,
 } from "@chakra-ui/react";
 import icon_arrow from "../assets/icon_arrow.png";
 import TON_symbol from "../assets/TON_symbol.svg";
@@ -21,8 +21,8 @@ import * as TONABI from "../services/abis/TON.json";
 import { Contract } from "@ethersproject/contracts";
 import { useWeb3React } from "@web3-react/core";
 import { getSigner } from "../utils/contract";
-import { DEFAULT_NETWORK } from "../constants";
-
+import { DEFAULT_NETWORK, ETHERSCAN_URL } from "../constants";
+import {addToken} from '../actions/contractActions'
 type selectedToken = {
   name: string;
   address: string;
@@ -31,8 +31,9 @@ type selectedToken = {
 export const SelectToken = (props: {
   setToken: Dispatch<SetStateAction<any>>;
   selectedToken: selectedToken;
+  advanced:boolean
 }) => {
-  const { setToken, selectedToken } = props;
+  const { setToken, selectedToken,advanced } = props;
   const [selected, setSelected] = useState({ name: "", img: "" });
   const wrapperRef = useRef(null);
   const [expanded, setExpanded] = useState<boolean>(false);
@@ -50,7 +51,6 @@ export const SelectToken = (props: {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    
     async function getTokens() {
       const tokens: any = await getTokensData();
       const tokensOrdered: any[] = [];
@@ -63,17 +63,37 @@ export const SelectToken = (props: {
         },
         tokenAddress: ZERO_ADDRESS,
         tokenImage: "",
-      }
+      };
 
-      DEFAULT_NETWORK === 1 ? tokensOrdered.push(Eth,tokens[7], tokens[4], tokens[2], tokens[1], tokens[0], tokens[3], tokens[6]) : tokensOrdered.push(Eth,tokens[5], tokens[6], tokens[0], tokens[2], tokens[1], tokens[3], tokens[4])
+      DEFAULT_NETWORK === 1
+        ? tokensOrdered.push(
+            Eth,
+            tokens[7],
+            tokens[4],
+            tokens[2],
+            tokens[1],
+            tokens[0],
+            tokens[3],
+            tokens[6]
+          )
+        : tokensOrdered.push(
+            Eth,
+            tokens[5],
+            tokens[6],
+            tokens[0],
+            tokens[2],
+            tokens[1],
+            tokens[3],
+            tokens[4]
+          );
 
       setTokensFromAPI(tokensOrdered);
-    
-        setSelected({ name: selectedToken.name, img: selectedToken.img });
+
+      setSelected({ name: selectedToken.name, img: selectedToken.img });
     }
     getTokens();
   }, [selectedToken]);
-  
+
   function useOutsideAlerter(ref: any) {
     useEffect(() => {
       function handleClickOutside(event: any) {
@@ -131,7 +151,6 @@ export const SelectToken = (props: {
         alignItems={"center"}
         zIndex={1000}
         justifyContent="space-between"
-      
         onClick={() => {
           setSelected({ name: name, img: img });
           setExpanded(false);
@@ -141,7 +160,7 @@ export const SelectToken = (props: {
       >
         <Flex alignItems={"center"}>
           <Image
-            border='1px solid #e7edf3'
+            border="1px solid #e7edf3"
             src={img !== undefined && img !== "" ? img : ETH_symbol}
             h="32px"
             w="32px"
@@ -151,6 +170,9 @@ export const SelectToken = (props: {
 
           <Text>{name}</Text>
         </Flex>
+      
+         {address.toLocaleLowerCase()  !== ZERO_ADDRESS && <Text fontSize={"10px"} _hover={{textDecor:'underline'}}  onClick={()=> {addToken(address, library,img)}}>Import</Text>
+      }
       </Flex>
     );
   };
@@ -209,7 +231,6 @@ export const SelectToken = (props: {
         alignItems="center"
         onClick={() => setExpanded(!expanded)}
         _hover={{ cursor: "pointer" }}
-           
         zIndex={expanded ? 1000 : 0}
       >
         <Flex alignItems="center" justifyContent={"space-between"} w="100%">
@@ -226,14 +247,24 @@ export const SelectToken = (props: {
               </Text>
             </Flex>
           ) : (
-            <Flex alignItems="center" >
-              {selected.img === "" ? (
-                <Avatar name={selected.name} w="40px" h="40px" />
+            <Flex alignItems="center">
+              {selected.img === "" || !selected.img? (
+                selected.name === "ETH" || selected.name === "WETH" ? (
+                  <Image
+                    w="40px"
+                    h="40px"
+                    borderRadius={"50%"}
+                    src={ETH_symbol}
+                  ></Image>
+                ) : (
+                  <Avatar name={selected.name} w="40px" h="40px" />
+                )
               ) : (
                 <Image
                   w="40px"
                   h="40px"
                   borderRadius={"50%"}
+                  border={"1px solid #e7edf3"}
                   src={selected.img}
                 ></Image>
               )}
@@ -249,13 +280,7 @@ export const SelectToken = (props: {
             </Flex>
           )}
 
-          <Image
-            src={icon_arrow}
-            h="14px"
-            w="14px"
-            mr="16px"
-          
-          />
+          <Image src={icon_arrow} h="14px" w="14px" mr="16px" />
         </Flex>
       </Flex>
       {expanded && (
@@ -273,7 +298,8 @@ export const SelectToken = (props: {
           pt={'42px'}
           pb={'10px'}
         >
-          <Input
+
+       {advanced &&   <Input
             // mt="42px"
             borderRadius={"4px"}
             mb="18px"
@@ -282,7 +308,8 @@ export const SelectToken = (props: {
             value={searchString}
             focusBorderColor={!validAddress ? "#FF0000" : ""}
             onChange={(e: any) => setSearchString(e.target.value)}
-          ></Input>
+          ></Input>}
+         
           {searchString === "" ? (
             tokensFromAPI.map((token: any, index: number) => (
               <TokenComp
