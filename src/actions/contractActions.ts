@@ -351,7 +351,7 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
   //user input amount convert to ray ? when address0 == ton/wton or address1 == ton/wton?
 
 
-  if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase()) {
+  if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase() || address1.toLowerCase() === TON_ADDRESS.toLowerCase()) {
     amountOut = ethers.utils.parseUnits(amount, '27');
   }
   else {
@@ -361,14 +361,15 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
     const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
     let amountIn;
     try {
-      amountIn = await quoteContract.callStatic.quoteExactOutput(params.path, amountOut); // ray  when address0 is ton/wton // wei if address0 is doc/eth/...     
+      amountIn = await quoteContract.callStatic.quoteExactOutput(params.path, amountOut); // ray  when address0 is ton/wton // wei if address0 is doc/eth/...           
       const xx = BigNumber.from(1e9.toString())
 
       const tempAmountIn = amountIn.mul(numerator).div(denominator);
 
       const maximumAmountIn = address0.toLowerCase() === TON_ADDRESS.toLowerCase() ? (tempAmountIn.div(xx)).mul(xx) : tempAmountIn
-
-      if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() || address0.toLowerCase() === TON_ADDRESS.toLowerCase() || params.inputWrapWTON) {
+    
+      
+      if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() || address0.toLowerCase() === TON_ADDRESS.toLowerCase() ) {
         const converted = convertNumber({
           amount: maximumAmountIn,
           type: "ray",
@@ -378,7 +379,7 @@ export const getExpectedInput = async (library: any, userAddress: string | null 
           0,
           converted?.indexOf(".") + 3
         ) : converted
-
+        
         const convertedAmountOut = convertNumber({
           amount: amountIn,
           type: "ray",
