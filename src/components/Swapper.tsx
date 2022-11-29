@@ -1,4 +1,4 @@
-import { useState, useEffect, Dispatch, SetStateAction  } from "react";
+import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import {
   Text,
   Flex,
@@ -32,8 +32,11 @@ import {
   swapExactOutput,
 } from "../actions/contractActions";
 
-export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advanced:boolean}) => {
-  const {setAdvanced,advanced} = props
+export const Swapper = (props: {
+  setAdvanced: Dispatch<SetStateAction<any>>;
+  advanced: boolean;
+}) => {
+  const { setAdvanced, advanced } = props;
   const theme = useTheme();
   const { chainId, account, library } = useActiveWeb3React();
   const { tx, data } = useAppSelector(selectTxType);
@@ -66,8 +69,8 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
   const [token0Balance, setToken0Balance] = useState<string>("0");
   const [token1Balance, setToken1Balance] = useState<string>("0");
 
-  useEffect(() => {    
-    if (chainId !== Number(DEFAULT_NETWORK ) && chainId !== undefined) {
+  useEffect(() => {
+    if (chainId !== Number(DEFAULT_NETWORK) && chainId !== undefined) {
       const netType = DEFAULT_NETWORK === 1 ? "Mainnet" : "Göerli Test Network";
       //@ts-ignore
       // dispatch(fetchUserInfo({reset: true}));
@@ -77,13 +80,12 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
     /*eslint-disable*/
   }, [chainId]);
 
-  useEffect(() => {    
-    if (tx && !data ) {
+  useEffect(() => {
+    if (tx && !data) {
       setSwapFromAmt("0");
       setSwapFromAmt2("0");
     }
-   
-  }, [data,tx, transactionType, blockNumber]);
+  }, [data, tx, transactionType, blockNumber]);
 
   useEffect(() => {
     const getBalances = async () => {
@@ -143,7 +145,6 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
     selectedToken0,
     selectedToken1,
   ]);
-
 
   useEffect(() => {
     const getExpectedOut = async () => {
@@ -458,7 +459,12 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
         focused={focused}
         swapFromAmt2={swapFromAmt2}
       />
-      <SettingsComponent setSlippage={setSlippage} focused={focused} setAdvanced={setAdvanced} advanced={advanced}/>
+      <SettingsComponent
+        setSlippage={setSlippage}
+        focused={focused}
+        setAdvanced={setAdvanced}
+        advanced={advanced}
+      />
       <Button
         borderRadius={"28px"}
         border={"none"}
@@ -488,7 +494,8 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
           selectedToken1.address === "" ||
           allowed < Number(swapFromAmt) ||
           (Number(swapFromAmt) === 0 && Number(swapFromAmt2) === 0) ||
-          selectedToken0.address === selectedToken1.address || Number(swapFromAmt) > Number(token0Balance) 
+          selectedToken0.address === selectedToken1.address ||
+          Number(swapFromAmt) > Number(token0Balance)
         }
         onClick={
           focused === "input1"
@@ -534,7 +541,17 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
                     TON_ADDRESS.toLowerCase() &&
                   selectedToken1.address.toLowerCase() ===
                     WTON_ADDRESS.toLowerCase()
-                ? "Wrap" 
+                ? "Wrap"
+                : selectedToken0.address.toLowerCase() ===
+                    ZERO_ADDRESS.toLowerCase() &&
+                  selectedToken1.address.toLowerCase() ===
+                    WETH_ADDRESS.toLowerCase()
+                ? "Wrap"
+                : selectedToken0.address.toLowerCase() ===
+                WETH_ADDRESS.toLowerCase() &&
+                  selectedToken1.address.toLowerCase() ===
+                    ZERO_ADDRESS.toLowerCase()
+                ? "Unwrap"
                 : "Swap"
               : "Connect Wallet"}{" "}
           </Text>
