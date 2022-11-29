@@ -486,7 +486,7 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
           Number(token0Balance) === 0 ||
           maxError ||
           selectedToken1.address === "" ||
-
+          allowed < Number(swapFromAmt) ||
           (Number(swapFromAmt) === 0 && Number(swapFromAmt2) === 0) ||
           selectedToken0.address === selectedToken1.address || Number(swapFromAmt) > Number(token0Balance) 
         }
