@@ -428,7 +428,7 @@ export const Swapper = (props:{setAdvanced: Dispatch<SetStateAction<any>>, advan
             selectedToken0.address === "" ||
             tx === true ||
             !account ||
-            allowed !== 0 || allowed < Number(swapFromAmt) ||
+            allowed !== 0 || allowed > Number(swapFromAmt) ||
             selectedToken0.address === ZERO_ADDRESS
           }
           onClick={() =>
