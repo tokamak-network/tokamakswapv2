@@ -172,6 +172,7 @@ export const SwapSummaryModal = () => {
                   _active={{}}
                   onClick={() => {
                     swapAdvance(library, account, pools, amount, slippage)
+                    handleCloseModal()
                   }}
                 >
                   <Text>{"Confirm Swap"}</Text>

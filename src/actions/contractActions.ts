@@ -449,6 +449,7 @@ export const getExpectedAdvanced = async (library: any, userAddress: string | nu
   const calcToken1 = address1.toLowerCase() === TON_ADDRESS.toLowerCase() ? WTON_ADDRESS : address1.toLowerCase() === ZERO_ADDRESS.toLowerCase() ? WETH_ADDRESS : address1
 
   tempTokenPath.push(calcToken1)
+
   const encoded = encodePath(tempTokenPath, fees);
   let denominator;
   let numerator;
@@ -481,7 +482,9 @@ export const getExpectedAdvanced = async (library: any, userAddress: string | nu
     let outputUnwrapEth;
 
     if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() || address0.toLowerCase() === TON_ADDRESS.toLowerCase()) {
-      amountIn = ethers.utils.parseUnits(amount, '27');
+      const tempAmountIn = ethers.utils.parseUnits(amount, '27');
+      const xx = BigNumber.from(1e9.toString())
+      amountIn = (tempAmountIn.div(xx)).mul(xx)
     }
     else {
       amountIn = ethers.utils.parseEther(amount)
@@ -494,6 +497,7 @@ export const getExpectedAdvanced = async (library: any, userAddress: string | nu
 
     try {
       const amountOut = await quoteContract.callStatic.quoteExactInput(encoded, amountIn);
+
       const minimumAmountOut = amountOut.mul(numerator).div(denominator);
       if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase() || outputUnwrapTON) {
         const converted = convertNumber({
@@ -558,7 +562,10 @@ export const swapAdvance = async (library: any, userAddress: string | null | und
   })
   const address1 = pools[pools.length - 1].token1.address
   const address0 = pools[0].token0.address
-  tempTokenPath.push(address1)
+  // tempTokenPath.push(address1)
+  const calcToken1 = address1.toLowerCase() === TON_ADDRESS.toLowerCase() ? WTON_ADDRESS : address1.toLowerCase() === ZERO_ADDRESS.toLowerCase() ? WETH_ADDRESS : address1
+
+  tempTokenPath.push(calcToken1)
   const encoded = encodePath(tempTokenPath, fees);
 
   let denominator;
@@ -604,6 +611,7 @@ export const swapAdvance = async (library: any, userAddress: string | null | und
     const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
     const amountOut = await quoteContract.callStatic.quoteExactInput(encoded, amountIn);
     const minimumAmountOut = amountOut.mul(numerator).div(denominator);
+
     const signer = getSigner(library, userAddress);
     const swapperV2 = new Contract(SwapperV2Proxy, SwapperV2.abi, library);
     const getExactInputParams = {

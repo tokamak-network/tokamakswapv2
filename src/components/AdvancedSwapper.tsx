@@ -52,6 +52,8 @@ export const AdvancedSwapper = (props: {
    const [minExpected, setMinExpected] = useState<string| undefined>('')
    const [err, setErr] = useState(false)  
    const [allowed, setAllowed] = useState<number>(0);
+   const [balance, setBalance] = useState<string>("0");
+
    const [selectedToken0, setSelectedToken0] = useState({
     name: "",
     address: "",
@@ -63,10 +65,10 @@ export const AdvancedSwapper = (props: {
         pool.fee === 0 ||
         pool.token0.address === "" ||
         pool.token1.address === "" ||
-        pool.token0.address === pool.token1.address || allowed === 0
+        pool.token0.address === pool.token1.address || allowed === 0 || Number(amount) > Number(balance) ||amount ==='' ||Number(amount) ===0
     );
     setDisableBtn(arr.length !== 0 || pools.length === 10);
-  }, [pools,allowed]);
+  }, [pools,allowed,amount]);
 
 useEffect(()=> {
   const token = pools[0].token0
@@ -92,10 +94,12 @@ useEffect(()=> {
           setExpected('0')
         }
       }
-     
     }
     getExpected()
-    }, [pools]);
+    }, [pools,amount]);
+      
+
+    console.log('pools',pools);
     
   return (
     <Flex
@@ -144,12 +148,14 @@ useEffect(()=> {
         return (
           <PoolComponent
             // expanded={index === 0 ? true : false}
+            pool={pool}
             expanded={true}
             deletable={index === 0 ? false : true}
             key={index}
             setPools={setPools}
             setAmount={setAmount}
             setAllowed={setAllowed}
+            setBalance={setBalance}
             pools={pools}
             poolNum={index}
             amount={amount}

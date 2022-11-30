@@ -37,6 +37,8 @@ export const PoolComponent = (props: {
   setPools: Dispatch<SetStateAction<any>>;
   setAmount: Dispatch<SetStateAction<any>>;
   setAllowed:Dispatch<SetStateAction<any>>;
+  setBalance:Dispatch<SetStateAction<any>>;
+  pool:any;
   pools: any;
   poolNum: number;
   amount:string;
@@ -46,7 +48,7 @@ export const PoolComponent = (props: {
   const { WETH_ADDRESS } = DEPLOYED;
 
   const FeeAmount = [500, 3000, 10000];
-  const { expanded, deletable, setPools, pools, poolNum, setAmount , amount,slippage,setAllowed} = props;
+  const { expanded, deletable, setPools, pools, poolNum, setAmount , amount,slippage,setAllowed,setBalance,pool} = props;
   const [open, setOpen] = useState(false);
   const { chainId, account, library } = useActiveWeb3React();
   const [token0Balance, setToken0Balance] = useState<string>("0");
@@ -99,14 +101,36 @@ export const PoolComponent = (props: {
   }, [pools[poolNum]]);
 
   useEffect(() => {
-    const myPools = [...pools];
-    const mypool = myPools[poolNum];
-    mypool.token0 = selectedToken0;
-    mypool.token1 = selectedToken1;
-    mypool.fee = fee;
+
+    // const myPools = [...pools];
+    // const mypool = myPools[poolNum];
+    // const temp = {
+    //   token0:selectedToken0,
+    //   token1: selectedToken1,
+    //   fee:fee
+    // }
+
+
+    // mypool.token0 = selectedToken0;
+    // mypool.token1 = selectedToken1;
+    // mypool.fee = fee;
     
-    setPools(myPools);
-  }, [selectedToken0, selectedToken1, fee]);
+    // setPools(myPools);
+
+    const nextArraay = pools.map((pool:any, index:number) => {
+      if (index === poolNum) {
+        return {
+          ...pool,
+          token0: selectedToken0, 
+          token1: selectedToken1,
+          fee: fee
+        }
+      }
+      else { return pool}
+    })
+
+    setPools(nextArraay)
+  }, [selectedToken0, selectedToken1, fee,pool]);
 
   useEffect(() => {
     const getBalances = async () => {
@@ -122,6 +146,7 @@ export const PoolComponent = (props: {
         );
         if (tempToken0Balance) {
           setToken0Balance(tempToken0Balance);
+          setBalance(tempToken0Balance)
         }
       }
     };
