@@ -31,6 +31,12 @@ type Token = {
   img: string;
 };
 
+type Pool = {
+  token0: Token;
+  token1:Token;
+  fee:Number
+}
+
 export const PoolComponent = (props: {
   expanded: boolean;
   deletable: boolean;
@@ -85,7 +91,7 @@ export const PoolComponent = (props: {
   useEffect(() => {
     setOpen(expanded);
     setAdPools(pools);
-  }, [expanded, pools]);
+  }, [expanded,pools]);
 
   useEffect(() => {
     setSelectedToken0(
@@ -101,36 +107,42 @@ export const PoolComponent = (props: {
   }, [pools[poolNum]]);
 
   useEffect(() => {
+    
 
-    // const myPools = [...pools];
-    // const mypool = myPools[poolNum];
+    const myPools = [...pools];
+    
+    
+    const mypool = myPools[poolNum];
     // const temp = {
     //   token0:selectedToken0,
     //   token1: selectedToken1,
     //   fee:fee
     // }
 
-
-    // mypool.token0 = selectedToken0;
-    // mypool.token1 = selectedToken1;
-    // mypool.fee = fee;
+    console.log('mypool',mypool);
     
-    // setPools(myPools);
 
-    const nextArraay = pools.map((pool:any, index:number) => {
-      if (index === poolNum) {
-        return {
-          ...pool,
-          token0: selectedToken0, 
-          token1: selectedToken1,
-          fee: fee
-        }
-      }
-      else { return pool}
-    })
+    mypool.token0 = selectedToken0;
+    mypool.token1 = selectedToken1;
+    mypool.fee = fee;
+  
+    setPools(myPools);
 
-    setPools(nextArraay)
-  }, [selectedToken0, selectedToken1, fee,pool]);
+    // const nextArraay = pools.map((pool:any, index:number) => {
+    //   if (index === poolNum) {
+    //     return {
+    //       ...pool,
+    //       token0: selectedToken0, 
+    //       token1: selectedToken1,
+    //       fee: fee
+    //     }
+    //   }
+    //   else { return pool}
+    // })
+
+    // setPools(nextArraay)
+
+  }, [selectedToken0, selectedToken1, fee]);
 
   useEffect(() => {
     const getBalances = async () => {
