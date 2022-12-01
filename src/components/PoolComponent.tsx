@@ -90,8 +90,8 @@ export const PoolComponent = (props: {
 
   useEffect(() => {
     setOpen(expanded);
-    setAdPools(pools);
-  }, [expanded,pools]);
+    setAdPools(pools => pools);
+  }, [expanded]);
 
   useEffect(() => {
     setSelectedToken0(
@@ -104,45 +104,30 @@ export const PoolComponent = (props: {
         ? pools[poolNum].token1
         : { name: "", address: "", img: "" }
     );
-  }, [pools[poolNum]]);
+  }, [poolNum]);
 
-  useEffect(() => {
-    
+  const getPools = (pools:any,selectedToken0:Token, selectedToken1:Token, fee:Number,poolNum:Number) => {
+    const nextArraay = pools.filter((pool:any, index:number) => index === index)  
+   
+     
 
-    const myPools = [...pools];
-    
-    
-    const mypool = myPools[poolNum];
-    // const temp = {
-    //   token0:selectedToken0,
-    //   token1: selectedToken1,
-    //   fee:fee
-    // }
-
-    console.log('mypool',mypool);
-    
-
-    mypool.token0 = selectedToken0;
-    mypool.token1 = selectedToken1;
-    mypool.fee = fee;
+    const temp  = nextArraay.map((pl:any, index:number) => {
+        if (index === poolNum) {
+          return {
+            token0: selectedToken0, 
+            token1: selectedToken1,
+            fee: fee
+          }
+        }
+        else { return pl}
+      })      
+      return temp
+  }
   
-    setPools(myPools);
-
-    // const nextArraay = pools.map((pool:any, index:number) => {
-    //   if (index === poolNum) {
-    //     return {
-    //       ...pool,
-    //       token0: selectedToken0, 
-    //       token1: selectedToken1,
-    //       fee: fee
-    //     }
-    //   }
-    //   else { return pool}
-    // })
-
-    // setPools(nextArraay)
-
-  }, [selectedToken0, selectedToken1, fee]);
+    useEffect(() => {
+      setPools((pools:any) => getPools(pools,selectedToken0, selectedToken1, fee,poolNum))
+      setAdPools(getPools(pools,selectedToken0, selectedToken1, fee,poolNum))
+    }, [selectedToken0, selectedToken1, fee,poolNum]);
 
   useEffect(() => {
     const getBalances = async () => {
@@ -196,12 +181,13 @@ export const PoolComponent = (props: {
   useEffect(() => {  
       
     const getExpected = async() => {
-
-      if (pools && amount && selectedToken1.address !== '' && selectedToken0.address !== '' && fee !== 0) {
-        const getExptd= await getExpectedAdvanced(library,account,pools,amount,slippage)
+      
+      if (amount && selectedToken1.address !== '' && selectedToken0.address !== '' && fee !== 0) {
+        
+        const getExptd= await getExpectedAdvanced(library,account,pools,amount,slippage)        
         if (getExptd) {
 
-          if (getExptd.err) {
+          if (getExptd.err) {            
             setErr(true)                        
           }
 
@@ -213,8 +199,8 @@ export const PoolComponent = (props: {
     }
     else {}
   }
-    getExpected()
-    }, [fee,selectedToken1,selectedToken0 ]);
+      getExpected()
+    }, [pools[poolNum]]);
 
   const formatNumberWithCommas = (num: string) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");

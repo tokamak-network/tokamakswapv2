@@ -78,7 +78,7 @@ useEffect(()=> {
 
     useEffect(() => {    
     const getExpected = async() => {
-      if (pools && amount) {
+      if (pools && amount) {        
         const getExptd= await getExpectedAdvanced(library,account,pools,amount,slippage)
         if (getExptd) {
 
@@ -97,10 +97,7 @@ useEffect(()=> {
     }
     getExpected()
     }, [pools,amount]);
-      
-
-    console.log('pools',pools);
-    
+          
   return (
     <Flex
       width={"350px"}
@@ -108,8 +105,6 @@ useEffect(()=> {
       mx={"auto"}
       borderRadius={"10px"}
       position={"relative"}
-      // boxShadow={"0px 1px 1px 0px rgba(0,0,0,0.16)"}
-      // backgroundColor={"#fff"}
       flexDirection={"column"}
       p="20px"
       fontFamily={theme.fonts.roboto}

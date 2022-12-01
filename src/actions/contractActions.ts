@@ -24,11 +24,12 @@ const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 const FEE_SIZE = 3;
 
 const encodePath = (path: any, fees: any) => {
+  
   if (path.length !== fees.length + 1) {
     throw new Error("path/fee lengths do not match");
   }
   let encoded = "0x";
-  for (let i = 0; i < fees.length; i++) {
+  for (let i = 0; i < fees.length; i++) {    
     encoded += path[i].slice(2);
     encoded += fees[i].toString(16).padStart(2 * FEE_SIZE, "0");
   }
@@ -446,103 +447,113 @@ export const getExpectedAdvanced = async (library: any, userAddress: string | nu
   })
   const address1 = pools[pools.length - 1].token1.address
   const address0 = pools[0].token0.address
-  const calcToken1 = address1.toLowerCase() === TON_ADDRESS.toLowerCase() ? WTON_ADDRESS : address1.toLowerCase() === ZERO_ADDRESS.toLowerCase() ? WETH_ADDRESS : address1
+  
+  if (address1 !== undefined && address0  !== undefined && pools[pools.length - 1].fee !==0 ) {
+ 
+    const calcToken1 = address1.toLowerCase() === TON_ADDRESS.toLowerCase() ? WTON_ADDRESS : address1.toLowerCase() === ZERO_ADDRESS.toLowerCase() ? WETH_ADDRESS : address1
 
-  tempTokenPath.push(calcToken1)
+    tempTokenPath.push(calcToken1)
 
-  const encoded = encodePath(tempTokenPath, fees);
-  let denominator;
-  let numerator;
-  const int = Number.isInteger(Number(slippage));
-
-  if (slippage !== '' && Number(slippage) > 0 && Number(slippage) < 100) {
-    if (int) {
-      denominator = BigNumber.from("100")
-      const slippageCalc = 100 - Number(slippage)
-      numerator = BigNumber.from(slippageCalc.toString());
-    }
-    else {
-      const countDecimals = slippage.split('.')[1].length;
-      const denom = 100 * (10 ** countDecimals);
-      const slippageCalc = denom - (Number(slippage) * (10 ** countDecimals))
-      denominator = BigNumber.from(denom.toString());
-      numerator = BigNumber.from(slippageCalc.toString())
-    }
-  }
-  else {
-    denominator = BigNumber.from("100")
-    numerator = BigNumber.from("99")
-  }
-
-  if (library && userAddress && Number(amount) !== 0) {
-    let amountIn
-    let wrapEth
-    let inputWrapWTON;
-    let outputUnwrapTON;
-    let outputUnwrapEth;
-
-    if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() || address0.toLowerCase() === TON_ADDRESS.toLowerCase()) {
-      const tempAmountIn = ethers.utils.parseUnits(amount, '27');
-      const xx = BigNumber.from(1e9.toString())
-      amountIn = (tempAmountIn.div(xx)).mul(xx)
-    }
-    else {
-      amountIn = ethers.utils.parseEther(amount)
-    }
-    wrapEth = address0.toLowerCase() === ZERO_ADDRESS.toLowerCase()
-    inputWrapWTON = address0.toLowerCase() === TON_ADDRESS.toLowerCase();
-    outputUnwrapTON = address1.toLowerCase() === TON_ADDRESS.toLowerCase();
-    outputUnwrapEth = address1.toLowerCase() === ZERO_ADDRESS.toLowerCase();
-    const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
-
-    try {
-      const amountOut = await quoteContract.callStatic.quoteExactInput(encoded, amountIn);
-
-      const minimumAmountOut = amountOut.mul(numerator).div(denominator);
-      if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase() || outputUnwrapTON) {
-        const converted = convertNumber({
-          amount: minimumAmountOut,
-          type: "ray",
-        });
-
-        const formatted = converted && converted.indexOf(".") > -1 ? converted?.slice(
-          0,
-          converted?.indexOf(".") + 3
-        ) : converted
-
-
-        const convertedAmountOut = convertNumber({
-          amount: amountOut,
-          type: "ray",
-        });
-
-        const formattedAmountOut = convertedAmountOut && convertedAmountOut.indexOf(".") > -1 ? convertedAmountOut?.slice(
-          0,
-          convertedAmountOut?.indexOf(".") + 3
-        ) : convertedAmountOut
-
-        return { formatted, minimumAmountOut, amountIn, formattedAmountOut }
+    const encoded = encodePath(tempTokenPath, fees);
+    let denominator;
+    let numerator;
+    const int = Number.isInteger(Number(slippage));
+  
+    if (slippage !== '' && Number(slippage) > 0 && Number(slippage) < 100) {
+      if (int) {
+        denominator = BigNumber.from("100")
+        const slippageCalc = 100 - Number(slippage)
+        numerator = BigNumber.from(slippageCalc.toString());
       }
       else {
-        const converted = ethers.utils.formatEther(minimumAmountOut)
-        const formatted = converted && converted.indexOf(".") > -1 ? converted?.slice(
-          0,
-          converted?.indexOf(".") + 3
-        ) : converted
-        const convertedAmountOut = ethers.utils.formatEther(amountOut)
-        const formattedAmountOut = convertedAmountOut && convertedAmountOut.indexOf(".") > -1 ? convertedAmountOut?.slice(
-          0,
-          convertedAmountOut?.indexOf(".") + 3
-        ) : convertedAmountOut
-        return { formatted, minimumAmountOut, amountIn, formattedAmountOut }
+        const countDecimals = slippage.split('.')[1].length;
+        const denom = 100 * (10 ** countDecimals);
+        const slippageCalc = denom - (Number(slippage) * (10 ** countDecimals))
+        denominator = BigNumber.from(denom.toString());
+        numerator = BigNumber.from(slippageCalc.toString())
       }
     }
-    catch (err) {
-      return { err }
+    else {
+      denominator = BigNumber.from("100")
+      numerator = BigNumber.from("99")
     }
+  
+    if (library && userAddress && Number(amount) !== 0) {
+      let amountIn
+      let wrapEth
+      let inputWrapWTON;
+      let outputUnwrapTON;
+      let outputUnwrapEth;
+  
+      if (address0.toLowerCase() === WTON_ADDRESS.toLowerCase() || address0.toLowerCase() === TON_ADDRESS.toLowerCase()) {
+        const tempAmountIn = ethers.utils.parseUnits(amount, '27');
+        const xx = BigNumber.from(1e9.toString())
+        amountIn = (tempAmountIn.div(xx)).mul(xx)
+      }
+      else {
+        amountIn = ethers.utils.parseEther(amount)
+      }
+      
+      wrapEth = address0.toLowerCase() === ZERO_ADDRESS.toLowerCase()
+      inputWrapWTON = address0.toLowerCase() === TON_ADDRESS.toLowerCase();
+      outputUnwrapTON = address1.toLowerCase() === TON_ADDRESS.toLowerCase();
+      outputUnwrapEth = address1.toLowerCase() === ZERO_ADDRESS.toLowerCase();
+      const quoteContract = new Contract(Quoter_ADDRESS, QuoterABI.abi, library);
+            
+      try {
+        const amountOut = await quoteContract.callStatic.quoteExactInput(encoded, amountIn);        
 
+        const minimumAmountOut = amountOut.mul(numerator).div(denominator);
+        if (address1.toLowerCase() === WTON_ADDRESS.toLowerCase() || outputUnwrapTON) {
+          const converted = convertNumber({
+            amount: minimumAmountOut,
+            type: "ray",
+          });
+  
+          const formatted = converted && converted.indexOf(".") > -1 ? converted?.slice(
+            0,
+            converted?.indexOf(".") + 3
+          ) : converted
+  
+  
+          const convertedAmountOut = convertNumber({
+            amount: amountOut,
+            type: "ray",
+          });
+  
+          const formattedAmountOut = convertedAmountOut && convertedAmountOut.indexOf(".") > -1 ? convertedAmountOut?.slice(
+            0,
+            convertedAmountOut?.indexOf(".") + 3
+          ) : convertedAmountOut
+  
+          return { formatted, minimumAmountOut, amountIn, formattedAmountOut }
+        }
+        else {
+          const converted = ethers.utils.formatEther(minimumAmountOut)
+          const formatted = converted && converted.indexOf(".") > -1 ? converted?.slice(
+            0,
+            converted?.indexOf(".") + 3
+          ) : converted
+          const convertedAmountOut = ethers.utils.formatEther(amountOut)
+          const formattedAmountOut = convertedAmountOut && convertedAmountOut.indexOf(".") > -1 ? convertedAmountOut?.slice(
+            0,
+            convertedAmountOut?.indexOf(".") + 3
+          ) : convertedAmountOut
+          return { formatted, minimumAmountOut, amountIn, formattedAmountOut }
+        }
+      }
+      catch (err) {
+        
+        return { err }
+      }
+  
+    }  
   }
-}
+
+  else {
+    
+  }
+ }
 export const swapAdvance = async (library: any, userAddress: string | null | undefined, pools: any, amount: string, slippage: string) => {
   const fees = pools.map((pool: any) => {
     return pool.fee
