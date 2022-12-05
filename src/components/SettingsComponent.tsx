@@ -59,7 +59,7 @@ useEffect(() => {
       {expanded && (
         <Flex flexDir={"column"}   w="310px" mt="11px" textAlign={"left"}>
           <Text fontSize="16px" fontWeight={"bold"} mb="12px" h="21px">
-            Transaction Setting
+            Transaction Settings
           </Text>
           <Text fontSize="14px" fontWeight={"normal"} mb="12px" h="19px">
             Slippage tolerance
