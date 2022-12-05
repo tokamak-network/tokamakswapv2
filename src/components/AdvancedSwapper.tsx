@@ -177,7 +177,7 @@ useEffect(()=> {
       >
         <Image src={Plus} h="26px" w="26px" />
         <Text ml="8px" fontWeight={"normal"}>
-          Add another address
+          Add another swap
         </Text>
       </Button>
       <Flex
