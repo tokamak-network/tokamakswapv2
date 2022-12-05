@@ -17,7 +17,7 @@ import MobileTokamakGNB from "./MobileTokamakGNB";
 export const MainLayout = () => {
   const [walletState, setWalletState] = useState<string>("");
   const { onOpen, isOpen: isModalOpen, onClose } = useDisclosure();
-  const [advanced, setAdvanced] = useState(true)
+  const [advanced, setAdvanced] = useState(false)
   const { width } = useWindowDimensions();
 
   const handleWalletModalOpen = (state: string) => {
