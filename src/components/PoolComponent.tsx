@@ -335,7 +335,7 @@ export const PoolComponent = (props: {
               advanced={true}
             />
           </Flex>
-          {err && <Flex w='100%' h='100%' border='solid 2px #e67878' bg='#f2c2c2' borderRadius={'7px'} mt='18px' justifyContent={'center'} alignItems='center' fontSize={'12px'} color='#3d495d'> Unable to swap {selectedToken0.name} to {selectedToken1.name} at 0.03%, try an alternate path.</Flex>}
+          {err && <Flex w='100%' h='100%' border='solid 2px #e67878' bg='#f2c2c2' borderRadius={'7px'} mt='18px' justifyContent={'center'} alignItems='center' fontSize={'12px'} color='#3d495d'> Unable to swap {selectedToken0.name} to {selectedToken1.name} at {fee/10000}%, try an alternate path.</Flex>}
           <Flex mt="17px" h="35px" justifyContent={"space-between"}>
             {FeeAmount.map((feeX: any, index: number) => (
               <Flex
