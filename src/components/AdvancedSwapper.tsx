@@ -10,6 +10,7 @@ import {
   Image,
   CircularProgress,
   Switch,
+  Tooltip
 } from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import Plus from "../assets/Plus.png";
@@ -53,6 +54,7 @@ export const AdvancedSwapper = (props: {
    const [err, setErr] = useState(false)  
    const [allowed, setAllowed] = useState<number>(0);
    const [balance, setBalance] = useState<string>("0");
+   const [isLabelOpen, setIsLabelOpen] = useState(false)
 
    const [selectedToken0, setSelectedToken0] = useState({
     name: "",
@@ -125,7 +127,20 @@ useEffect(()=> {
           <Text fontSize={"16px"} fontWeight="bold">
             Advance Mode
           </Text>
-          <QuestionOutlineIcon ml="9px" />
+          <Tooltip
+                  label="Advance mode is a mode provided for those who want to swap, which is not provided by our TONSwapper service.
+Users must know the swap path to use this service and enter each address and fee.
+Advance mode allows for high slippage trades that result in loss of funds.
+Use this mode only if you know what you are doing."
+                  bg="#ffffff"
+                  color={"3d495d"}
+                  border={'2px solid #257eee'}
+                  placement='bottom'
+                  isOpen={isLabelOpen}
+                >
+                  <QuestionOutlineIcon ml="9px"  onMouseEnter={()=>setIsLabelOpen(true)}
+                  onMouseLeave={()=>setIsLabelOpen(false)} onClick={() => setIsLabelOpen(!isLabelOpen)}/>
+                </Tooltip>
         </Flex>
         <Switch
           isChecked

@@ -12,6 +12,7 @@ import {
   CircularProgress,
   NumberInput,
   NumberInputField,
+  Tooltip,
   Box,
 } from "@chakra-ui/react";
 import gear from "../assets/gear.png";
@@ -28,26 +29,33 @@ export const SettingsComponent = (props: {
 }) => {
   const { setSlippage, focused, setAdvanced, advanced } = props;
   const [expanded, setExpanded] = useState<boolean>(false);
-  const [slippageAmnt, setSlippageAmnt] = useState<string>('0');
+  const [slippageAmnt, setSlippageAmnt] = useState<string>("0");
   const [invalidInput, setInvalidInput] = useState<boolean>(false);
+  const [isLabelOpen, setIsLabelOpen] = useState(false)
 
   const dispatch = useAppDispatch();
 
-useEffect(() => {
-  setSlippageAmnt(focused === 'input1' ? '1':'3')
-},[focused])
+  useEffect(() => {
+    setSlippageAmnt(focused === "input1" ? "1" : "3");
+  }, [focused]);
   return (
     <Flex
       border="1px solid #dfe4ee"
       h={expanded ? (advanced ? "172px" : "232px") : "36px"}
       borderRadius={"18px"}
-      mb={ advanced? '12px':"30px"}
+      mb={advanced ? "12px" : "30px"}
       px="15px"
       flexDir={"column"}
       fontFamily={""}
       w="310px"
     >
-      <Flex justifyContent={"space-between"} mt='8px'  w="280px" h="19px" alignItems={'center'}>
+      <Flex
+        justifyContent={"space-between"}
+        mt="8px"
+        w="280px"
+        h="19px"
+        alignItems={"center"}
+      >
         <Text fontSize={"14px"}>Settings</Text>
         <Image
           src={gear}
@@ -57,7 +65,7 @@ useEffect(() => {
         />
       </Flex>
       {expanded && (
-        <Flex flexDir={"column"}   w="310px" mt="11px" textAlign={"left"}>
+        <Flex flexDir={"column"} w="310px" mt="11px" textAlign={"left"}>
           <Text fontSize="16px" fontWeight={"bold"} mb="12px" h="21px">
             Transaction Settings
           </Text>
@@ -157,7 +165,21 @@ useEffect(() => {
                 <Text fontSize={"16px"} fontWeight="bold">
                   Advance Mode
                 </Text>
-                <QuestionOutlineIcon ml="9px" />
+                <Tooltip
+                  label="Advance mode is a mode provided for those who want to swap, which is not provided by our TONSwapper service.
+Users must know the swap path to use this service and enter each address and fee.
+Advance mode allows for high slippage trades that result in loss of funds.
+Use this mode only if you know what you are doing."
+                  bg="#ffffff"
+                  color={"3d495d"}
+                  border={'2px solid #257eee'}
+                  placement='top'
+                  isOpen={isLabelOpen}
+                 
+                >
+                  <QuestionOutlineIcon ml="9px"  onMouseEnter={()=>setIsLabelOpen(true)}
+                  onMouseLeave={()=>setIsLabelOpen(false)} onClick={() => setIsLabelOpen(!isLabelOpen)} />
+                </Tooltip>
               </Flex>
               <Switch
                 onChange={() => {
