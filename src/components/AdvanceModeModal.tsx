@@ -50,10 +50,10 @@ export const AdvanceModeModal = () => {
               fontSize={"18px"}
               fontWeight="bold"
             >
-              Advance Mode
+              Advanced Mode
             </Text>
             <Text fontSize={"14px"}>
-              Using Advance mode can allow high slippage trades that result in
+              Using Advanced mode can allow high slippage trades that result in
               loss of funds. Use this mode only if you know what you are doing.
             </Text>
           </Flex>
@@ -69,7 +69,7 @@ export const AdvanceModeModal = () => {
            onClick={() =>{ data?.data?.setAdvanced(true)
             handleCloseModal()}}
           >
-            Start Advance Mode
+            Start Advanced Mode
           </Button>
         </ModalBody>
       </ModalContent>
