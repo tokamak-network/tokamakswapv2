@@ -125,12 +125,12 @@ useEffect(()=> {
       >
         <Flex alignItems={"center"} flexDir="row" w="100%">
           <Text fontSize={"16px"} fontWeight="bold">
-            Advance Mode
+            Advanced Mode
           </Text>
           <Tooltip
-                  label="Advance mode is a mode provided for those who want to swap, which is not provided by our TONSwapper service.
+                  label="Advanced mode is a mode provided for those who want to swap, which is not provided by our TONSwapper service.
 Users must know the swap path to use this service and enter each address and fee.
-Advance mode allows for high slippage trades that result in loss of funds.
+Advanced mode allows for high slippage trades.
 Use this mode only if you know what you are doing."
                   bg="#ffffff"
                   color={"3d495d"}
