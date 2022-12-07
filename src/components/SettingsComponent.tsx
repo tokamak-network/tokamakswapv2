@@ -119,7 +119,6 @@ export const SettingsComponent = (props: {
                 pl={"0px"}
               />
             </NumberInput>
-
             {/* <Button
               h="24px"
               w="60px"

@@ -32,12 +32,10 @@ export const AdvanceModeModal = () => {
     >
       <ModalOverlay />
       <ModalContent h={"221px"} w={"310px"}>
-        {/* <ModalCloseButton /> */}
         <ModalBody
         borderRadius={'10px'}
           p={"16px 14px 25px 18px"}
           display="flex"
-          //   alignItems="center"
           fontFamily={theme.fonts.roboto}
           flexDir="column"
           color="#707070"
