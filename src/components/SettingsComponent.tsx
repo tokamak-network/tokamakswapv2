@@ -61,6 +61,7 @@ export const SettingsComponent = (props: {
           src={gear}
           w="14px"
           h="14px"
+          _hover={{cursor:'pointer'}}
           onClick={() => setExpanded(!expanded)}
         />
       </Flex>
