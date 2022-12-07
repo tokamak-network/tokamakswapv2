@@ -74,14 +74,6 @@ export const ConversionComponent = (props: {
               {focused === 'input1'? `${minAmount} ${symbol1}`: `${swapFromAmt2}${symbol1}`}
             </Text>
           </Flex>
-          {/* <Flex justifyContent={"space-between"} w={"100%"} mt="11px">
-            <Text color="#3d495d" fontSize={"14px"} fontWeight="bold">
-              Price Impact
-            </Text>
-            <Text color="#3d495d" fontSize={"14px"} fontWeight="normal">
-              0.00%
-            </Text>
-          </Flex> */}
           <Box
             h={"1px"}
             bg={"#e9edf1"}

@@ -23,11 +23,7 @@ import { selectTxType } from "../store/tx.reducer";
 import { useAppDispatch } from "../hooks/useRedux";
 import { openModal } from "../store/modal.reducer";
 import {  getExpectedAdvanced } from "../actions/contractActions";
-import {
- 
-  approve,
- 
-} from "../actions/contractActions";
+import {approve} from "../actions/contractActions";
 
 type Token = {
   name: string;
