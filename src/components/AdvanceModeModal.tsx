@@ -67,7 +67,7 @@ export const AdvanceModeModal = () => {
            onClick={() =>{ data?.data?.setAdvanced(true)
             handleCloseModal()}}
           >
-            Start Advanced Mode
+            Start Advance Mode
           </Button>
         </ModalBody>
       </ModalContent>
