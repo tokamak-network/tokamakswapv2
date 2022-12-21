@@ -182,7 +182,13 @@ const MobileLinks = () => {
   return (
     <Flex direction={"row"} mr={4} mt={"12px"}>
       {mobileLinkItems.map((mobileLinkItem: any, index: number) => (
-        <Flex flexDir={"column"} alignItems={"center"} mr={"9px"} w={"60px"} key={index}>
+        <Flex
+          flexDir={"column"}
+          alignItems={"center"}
+          mr={"9px"}
+          w={"60px"}
+          key={index}
+        >
           <Link
             w={"60px"}
             h={"60px"}
@@ -228,16 +234,16 @@ export const Footer = () => {
 
   const { width } = useWindowDimensions();
 
- if (width < 740) {
+  if (width < 740) {
     return (
       <Flex
         maxW={"full"}
         mt={"50px"}
         // w={"316px"}
-      h='100%'
+        h="100%"
         mb={"20px"}
         p={"0px"}
-        justifyContent='center'
+        justifyContent="center"
       >
         <Flex flexDir={"column"}>
           <Flex
@@ -252,7 +258,7 @@ export const Footer = () => {
               //   fontFamily={theme.fonts.body}
               letterSpacing={"normal"}
             >
-              ONTHER PTE.LTD
+              Tokamak Network PTE.LTD
             </Text>
             <Flex alignItems={"center"}>
               <Box mr={"4px"}>
@@ -288,127 +294,16 @@ export const Footer = () => {
         </Flex>
       </Flex>
     );
-  }
-
-  else if ( width > 740 && width < 1270) {
+  } else if (width > 740 && width < 1270) {
     return (
-      <Flex
-      maxW={"full"}
-      w={"100%"}
-      h={"100%"}
-      p={"0px"}
-      mt='49px'
-    >
-      <Flex flexDir={"column"} mx='20px'  w={"100%"} >
-        <Flex
-         maxW={"100%"}
-          flexDir={"row"}
-          // alignItems={"center"}
-          justifyContent={"space-between"}
-        >
-          <Text
-            color={"gray.225"}
-            fontWeight={600}
-            fontSize={14}
-            //   fontFamily={theme.fonts.body}
-            letterSpacing={"normal"}
+      <Flex maxW={"full"} w={"100%"} h={"100%"} p={"0px"} mt="49px">
+        <Flex flexDir={"column"} mx="20px" w={"100%"}>
+          <Flex
+            maxW={"100%"}
+            flexDir={"row"}
+            // alignItems={"center"}
+            justifyContent={"space-between"}
           >
-            ONTHER PTE.LTD
-          </Text>
-          <Text
-            color={"gray.175"}
-            fontSize={13}
-            //   fontFamily={theme.fonts.body}
-            fontWeight={"normal"}
-          >
-            111 SOMERSET ROAD #06-07O 111 SOMERSET SINGAPORE 238164
-          </Text>
-         
-        </Flex>
-        <Flex mt={"5px"} justifyContent={"center"} mb='10px'   maxW={"100%"}>
-        <Flex justifyContent={"center"} w={"100%"} alignItems='center'>
-            <Box mr={"4px"}>
-              <EmailIcon color={"#84919e"}></EmailIcon>
-            </Box>
-            <Text
-              color={"gray.250"}
-              fontSize={13}
-              mr={'30px'}
-              //   fontFamily={theme.fonts.body}
-              fontWeight={"normal"}
-            >
-              hello@tokamak.network
-            </Text>
-            <MobileSocialLinks />
-            <Menu isLazy>
-              <MenuButton
-                border={"1px solid #dfe4ee"}
-                padding={"10px"}
-                borderRadius={"2px"}
-                h={"30px"}
-                color={"#3e495c"}
-                fontSize={"12px"}
-                w={"190px"}
-              >
-                <Text
-                  w={"100%"}
-                  display={"flex"}
-                  flexDir={"row"}
-                  alignItems={"center"}
-                  justifyContent={"space-between"}
-                >
-                  {selectedMenuItem}
-                  <span>
-                    <ChevronUpIcon />
-                  </span>
-                </Text>
-              </MenuButton>
-              <MenuList m={"0px"} minWidth="190px" background={"#ffffff"}>
-                {dropdownItems.map((item: any, index) => (
-                  <Link href={item.url} isExternal={true} key={index}>
-                    <MenuItem
-                      h={"30px"}
-                      color={"#3e495c"}
-                      fontSize={"12px"}
-                      w={"190px"}
-                      m={"0px"}
-                      value={item.id}
-                      _hover={{ background: "transparent", color: "blue.100" }}
-                      _focus={{ background: "transparent" }}
-                      key={index}
-                    >
-                      {item.name}
-                    </MenuItem>
-                  </Link>
-                ))}
-              </MenuList>
-            </Menu>
-          </Flex>
-        </Flex>
-      
-      </Flex>
-    </Flex>
-    )
-  }
-  return (
-      <Flex
-        flexDirection={{ base: "column", md: "row" }}
-        justifyContent={"space-between"}
-        alignItems={"center"}
-        width={"100%"}
-        mt='49px'
-        px='40px'
-    //  bottom={'0px'}
-    //  position='relative'
-    //  mt='46px'
-      >
-        <Flex
-          flexGrow={2}
-          h={'76px'}
-          direction={{ base: "column", md: "row" }}
-          alignItems={"center"}
-        >
-          <Box mr={"25px"}>
             <Text
               color={"gray.225"}
               fontWeight={600}
@@ -416,10 +311,8 @@ export const Footer = () => {
               //   fontFamily={theme.fonts.body}
               letterSpacing={"normal"}
             >
-              ONTHER PTE.LTD
+              Tokamak Network PTE.LTD
             </Text>
-          </Box>
-          <Box mr={"25px"} py={{ base: 4, md: 0 }}>
             <Text
               color={"gray.175"}
               fontSize={13}
@@ -428,75 +321,181 @@ export const Footer = () => {
             >
               111 SOMERSET ROAD #06-07O 111 SOMERSET SINGAPORE 238164
             </Text>
-          </Box>
-          <Box mr={{ base: 0, md: 3 }}>
-            <EmailIcon color={"#84919e"}></EmailIcon>
-          </Box>
-          <Box justifyContent={"center"} alignItems={"center"}>
-            <Text
-              color={"gray.250"}
-              fontSize={13}
-              //   fontFamily={theme.fonts.body}
-              fontWeight={"normal"}
-            >
-              hello@tokamak.network
-            </Text>
-          </Box>
-        </Flex>
-        <Box maxW={"full"}>
-          <Flex
-            py={{ base: 4, md: 0 }}
-            grow={2}
-            direction={{ base: "column", lg: "row" }}
-            justifyContent={"flex-end"}
-            alignItems={"center"}
-          >
-            <SocialLinks />
-            <Menu isLazy>
-              <MenuButton
-                border={"1px solid #dfe4ee"}
-                padding={"10px"}
-                borderRadius={"2px"}
-                h={"30px"}
-                color={"#3e495c"}
-                fontSize={"12px"}
-                w={"190px"}
-              >
-                <Text
-                  w={"100%"}
-                  display={"flex"}
-                  flexDir={"row"}
-                  alignItems={"center"}
-                  justifyContent={"space-between"}
-                >
-                  {selectedMenuItem}
-                  <span>
-                    <ChevronUpIcon />
-                  </span>
-                </Text>
-              </MenuButton>
-              <MenuList m={"0px"} minWidth="190px" background={"#ffffff"}>
-                {dropdownItems.map((item: any, index) => (
-                  <Link href={item.url} isExternal={true} key={index}>
-                    <MenuItem
-                      h={"30px"}
-                      color={"#3e495c"}
-                      fontSize={"12px"}
-                      w={"190px"}
-                      m={"0px"}
-                      value={item.id}
-                      _hover={{ background: "transparent", color: "blue.100" }}
-                      _focus={{ background: "transparent" }}
-                      key={index}
-                    >
-                      {item.name}
-                    </MenuItem>
-                  </Link>
-                ))}
-              </MenuList>
-            </Menu>
           </Flex>
+          <Flex mt={"5px"} justifyContent={"center"} mb="10px" maxW={"100%"}>
+            <Flex justifyContent={"center"} w={"100%"} alignItems="center">
+              <Box mr={"4px"}>
+                <EmailIcon color={"#84919e"}></EmailIcon>
+              </Box>
+              <Text
+                color={"gray.250"}
+                fontSize={13}
+                mr={"30px"}
+                //   fontFamily={theme.fonts.body}
+                fontWeight={"normal"}
+              >
+                hello@tokamak.network
+              </Text>
+              <MobileSocialLinks />
+              <Menu isLazy>
+                <MenuButton
+                  border={"1px solid #dfe4ee"}
+                  padding={"10px"}
+                  borderRadius={"2px"}
+                  h={"30px"}
+                  color={"#3e495c"}
+                  fontSize={"12px"}
+                  w={"190px"}
+                >
+                  <Text
+                    w={"100%"}
+                    display={"flex"}
+                    flexDir={"row"}
+                    alignItems={"center"}
+                    justifyContent={"space-between"}
+                  >
+                    {selectedMenuItem}
+                    <span>
+                      <ChevronUpIcon />
+                    </span>
+                  </Text>
+                </MenuButton>
+                <MenuList m={"0px"} minWidth="190px" background={"#ffffff"}>
+                  {dropdownItems.map((item: any, index) => (
+                    <Link href={item.url} isExternal={true} key={index}>
+                      <MenuItem
+                        h={"30px"}
+                        color={"#3e495c"}
+                        fontSize={"12px"}
+                        w={"190px"}
+                        m={"0px"}
+                        value={item.id}
+                        _hover={{
+                          background: "transparent",
+                          color: "blue.100",
+                        }}
+                        _focus={{ background: "transparent" }}
+                        key={index}
+                      >
+                        {item.name}
+                      </MenuItem>
+                    </Link>
+                  ))}
+                </MenuList>
+              </Menu>
+            </Flex>
+          </Flex>
+        </Flex>
+      </Flex>
+    );
+  }
+  return (
+    <Flex
+      flexDirection={{ base: "column", md: "row" }}
+      justifyContent={"space-between"}
+      alignItems={"center"}
+      width={"100%"}
+      mt="49px"
+      px="40px"
+      //  bottom={'0px'}
+      //  position='relative'
+      //  mt='46px'
+    >
+      <Flex
+        flexGrow={2}
+        h={"76px"}
+        direction={{ base: "column", md: "row" }}
+        alignItems={"center"}
+      >
+        <Box mr={"25px"}>
+          <Text
+            color={"gray.225"}
+            fontWeight={600}
+            fontSize={14}
+            //   fontFamily={theme.fonts.body}
+            letterSpacing={"normal"}
+          >
+            Tokamak Network PTE.LTD
+          </Text>
+        </Box>
+        <Box mr={"25px"} py={{ base: 4, md: 0 }}>
+          <Text
+            color={"gray.175"}
+            fontSize={13}
+            //   fontFamily={theme.fonts.body}
+            fontWeight={"normal"}
+          >
+            111 SOMERSET ROAD #06-07O 111 SOMERSET SINGAPORE 238164
+          </Text>
+        </Box>
+        <Box mr={{ base: 0, md: 3 }}>
+          <EmailIcon color={"#84919e"}></EmailIcon>
+        </Box>
+        <Box justifyContent={"center"} alignItems={"center"}>
+          <Text
+            color={"gray.250"}
+            fontSize={13}
+            //   fontFamily={theme.fonts.body}
+            fontWeight={"normal"}
+          >
+            hello@tokamak.network
+          </Text>
         </Box>
       </Flex>
+      <Box maxW={"full"}>
+        <Flex
+          py={{ base: 4, md: 0 }}
+          grow={2}
+          direction={{ base: "column", lg: "row" }}
+          justifyContent={"flex-end"}
+          alignItems={"center"}
+        >
+          <SocialLinks />
+          <Menu isLazy>
+            <MenuButton
+              border={"1px solid #dfe4ee"}
+              padding={"10px"}
+              borderRadius={"2px"}
+              h={"30px"}
+              color={"#3e495c"}
+              fontSize={"12px"}
+              w={"190px"}
+            >
+              <Text
+                w={"100%"}
+                display={"flex"}
+                flexDir={"row"}
+                alignItems={"center"}
+                justifyContent={"space-between"}
+              >
+                {selectedMenuItem}
+                <span>
+                  <ChevronUpIcon />
+                </span>
+              </Text>
+            </MenuButton>
+            <MenuList m={"0px"} minWidth="190px" background={"#ffffff"}>
+              {dropdownItems.map((item: any, index) => (
+                <Link href={item.url} isExternal={true} key={index}>
+                  <MenuItem
+                    h={"30px"}
+                    color={"#3e495c"}
+                    fontSize={"12px"}
+                    w={"190px"}
+                    m={"0px"}
+                    value={item.id}
+                    _hover={{ background: "transparent", color: "blue.100" }}
+                    _focus={{ background: "transparent" }}
+                    key={index}
+                  >
+                    {item.name}
+                  </MenuItem>
+                </Link>
+              ))}
+            </MenuList>
+          </Menu>
+        </Flex>
+      </Box>
+    </Flex>
   );
 };
