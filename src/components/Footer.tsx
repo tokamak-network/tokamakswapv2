@@ -44,7 +44,7 @@ const socialLinks = [
   {
     title: "GitHub",
     icon: IconGithub,
-    href: "https://github.com/Onther-Tech/tonswapper",
+    href: "https://github.com/tokamak-network/tonswapper",
     isExternal: true,
   },
   {
