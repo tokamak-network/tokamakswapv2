@@ -208,7 +208,7 @@ Advanced mode allows for high slippage trades. Use this mode only if you know wh
       > 
      
         <Text fontSize={"10px"}>
-          Tokamak Swap Protocol wants to use your{" "}
+          Tokamak Network Swap wants to use your{" "}
           {selectedToken0.name ? selectedToken0.name : "tokens"}
         </Text>
         <Button

@@ -409,7 +409,7 @@ export const Swapper = (props: {
         my={"12px"}
       >
         <Text fontSize={"10px"}>
-          Tokamak Swap Protocol wants to use your{" "}
+        Tokamak Network Swap wants to use your{" "}
           {selectedToken0.name ? selectedToken0.name : "tokens"}
         </Text>
         <Button
